@@ -10,27 +10,24 @@
 
 // Copyright (c) Petr Bena 2019
 
-#ifndef RINGLOG_H
-#define RINGLOG_H
+#ifndef RINGLOG_ITEM_H
+#define RINGLOG_ITEM_H
 
-#include <QList>
-#include <QObject>
+#include <QDateTime>
 #include <QString>
-#include "ringlog_item.h"
 
 namespace PE
 {
-    class RingLog : public QObject
+    class RingLog_Item
     {
-            Q_OBJECT
         public:
-            RingLog();
-            void WriteText(const QString &text);
-
+            RingLog_Item(const QString &Text);
+            QString GetText();
+            QDateTime GetTS();
         private:
-            int size = 2000;
-            QList<RingLog_Item> items;
+            QString text;
+            QDateTime ts;
     };
 }
 
-#endif // RINGLOG_H
+#endif // RINGLOG_ITEM_H

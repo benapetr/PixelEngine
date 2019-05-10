@@ -26,18 +26,3 @@ void RingLog::WriteText(const QString& text)
     this->items.append(RingLog_Item(text));
 }
 
-RingLog_Item::RingLog_Item(const QString &Text)
-{
-    this->ts = QDateTime::currentDateTime();
-    this->text = Text;
-}
-
-QString RingLog_Item::GetText()
-{
-    return this->text;
-}
-
-QDateTime RingLog_Item::GetTS()
-{
-    return this->ts;
-}

@@ -35,7 +35,7 @@ Engine::Engine()
 {
     this->startupTime = QDateTime::currentDateTime();
     this->RL = new RingLog();
-    PE_WRITE_RING(QString("PixelEngine v. ") + QString(PE_VERSION_STRING) + " initialized");
+    this->RL->WriteText(QString("PixelEngine v. ") + QString(PE_VERSION_STRING) + " initialized");
 }
 
 PE::Engine::~Engine()
