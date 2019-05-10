@@ -1,0 +1,38 @@
+PROJECT(pixelengine)
+SET(CMAKE_AUTOMOC ON)
+SET(QT_USE_QTCORE TRUE)
+SET(QT_USE_QTNETWORK TRUE)
+
+if(QT5_BUILD)
+  find_package(Qt5Core REQUIRED)
+  find_package(Qt5Network REQUIRED)
+  set(QT_INCLUDES ${Qt5Gui_INCLUDE_DIRS} ${Qt5Widgets_INCLUDE_DIRS} ${Qt5Network_INCLUDE_DIRS} ${Qt5Svg_INCLUDE_DIRS})
+  include_directories(${QT_INCLUDES})
+else()
+  find_package(Qt4 REQUIRED)
+endif()
+
+file (GLOB src "*.cpp")
+file (GLOB resources "*.qrc")
+file (GLOB hx "*.h")
+
+if(QT5_BUILD)
+    QT5_WRAP_CPP(pixelengine_HEADERS_MOC ${pixelengine_HEADERS})
+    QT5_ADD_RESOURCES(pixelengine_RESOURCES_RCC ${resources})
+else()
+    QT4_WRAP_CPP(pixelengine_HEADERS_MOC ${pixelengine_HEADERS})
+    QT4_ADD_RESOURCES(pixelengine_RESOURCES_RCC ${resources})
+endif()
+
+if (NOT QT5_BUILD)
+  INCLUDE(${QT_USE_FILE})
+endif()
+
+ADD_DEFINITIONS(${QT_DEFINITIONS})
+ADD_DEFINITIONS(-DQT_USE_QSTRINGBUILDER)
+
+ADD_LIBRARY(pixelengine SHARED ${src} ${hx})
+TARGET_LINK_LIBRARIES(pixelengine ${QT_LIBRARIES})
+if (NOT WIN32)
+  INSTALL(TARGETS pixelengine LIBRARY DESTINATION lib)
+endif()
