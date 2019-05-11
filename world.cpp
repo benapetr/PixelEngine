@@ -12,6 +12,7 @@
 
 #include "world.h"
 #include "actor.h"
+#include "collider.h"
 #include "renderer.h"
 #include "rigidbody.h"
 
@@ -35,14 +36,12 @@ World::~World()
         }
     }
     this->objects.clear();
+    qDeleteAll(this->colliders);
 }
 
 void World::Render(Renderer *r)
 {
     r->Clear();
-
-    if (this->HasBorder)
-        r->DrawRect(0, 0, static_cast<int>(this->world_width - 1), static_cast<int>(this->world_height - 1), 6, QColor("blue"));
 
     // layers
     QList<int> indexes = this->objects.keys();
@@ -57,6 +56,9 @@ void World::Render(Renderer *r)
     }
     if (r->ManualUpdate)
         r->HasUpdate = true;
+
+    if (this->HasBorder)
+        r->DrawRect(0, 0, static_cast<int>(this->world_width - 1), static_cast<int>(this->world_height - 1), 6, QColor("blue"));
 }
 
 void World::Update()
@@ -80,6 +82,11 @@ void World::RegisterActor(Actor *a, int zindex)
         this->objects.insert(zindex, QList<Object*>());
     this->objects[zindex].append(a);
     this->actors.append(a);
+}
+
+void World::RegisterCollider(Collider *c)
+{
+    this->colliders.append(c);
 }
 
 void World::updateGravity()
@@ -107,8 +114,44 @@ void World::updateMovement()
             continue;
 
         Vector movement = a->RigidBody->GetMovement();
+        if (movement == Vector::Zero)
+            continue;
 
-        a->Position.X += movement.X;
-        a->Position.Y += movement.Y;
+        // Check if this actor has some colliders, if yes, we need to check if there is a collision caused by this movement
+        // if yes, don't move
+        Vector old_position = a->Position;
+        a->SetPosition(a->Position + movement);
+
+        QList<Collider*> ac = a->GetColliders();
+        if (!ac.isEmpty() && !this->colliders.isEmpty())
+        {
+            Collider *collision_target = nullptr;
+            Collider *collision_source = nullptr;
+            foreach (Collider *collider_actor, ac)
+            {
+                if (collision_target)
+                    break;
+                foreach (Collider *collider_other, this->colliders)
+                {
+                    if (collider_actor == collider_other)
+                        continue;
+                    if (collider_actor->GetParent() == collider_other->GetParent())
+                        continue;
+                    if (collider_actor->IntersectionMatch(collider_other))
+                    {
+                        // There is a collision
+                        collision_target = collider_other;
+                        collision_source = collider_actor;
+                        break;
+                    }
+                }
+            }
+            if (collision_target)
+            {
+                collision_source->Event_OnCollision(collision_target);
+                // We can't move this object, let's move it back
+                a->SetPosition(old_position);
+            }
+        }
     }
 }

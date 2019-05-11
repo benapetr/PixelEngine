@@ -22,15 +22,15 @@ namespace PE
         public:
             BoxCollider(double x, double y, double w, double h);
             bool PositionMatch(Vector position) override;
-            double GetX() const { return this->X; }
-            double GetY() const { return this->Y; }
+            bool IntersectionMatch(Collider *collider) override;
+            double GetX() const { return this->Position.X; }
+            double GetY() const { return this->Position.Y; }
             double GetWidth() const { return this->width; };
             double GetHeight() const { return this->height; };
             ColliderType GetColliderType() override { return ColliderType_Box; }
 
         private:
-            double X;
-            double Y;
+            bool boxMatch(BoxCollider *c);
             double width;
             double height;
     };

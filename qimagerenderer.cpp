@@ -46,6 +46,8 @@ QPixmap QImageRenderer::GetPixmap()
 
 void QImageRenderer::DrawPixel(int x, int y, QColor color)
 {
+    if (!this->Enabled)
+        return;
     if (x < 0 || x > this->r_width)
         return;
     if (y < 0 || y > this->r_height)
@@ -57,6 +59,9 @@ void QImageRenderer::DrawPixel(int x, int y, QColor color)
 
 void QImageRenderer::DrawRect(int x, int y, int width, int height, int line_width, QColor color)
 {
+    if (!this->Enabled)
+        return;
+
     int X;
     int Y;
 

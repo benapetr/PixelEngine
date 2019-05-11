@@ -16,22 +16,44 @@ using namespace PE;
 
 BoxCollider::BoxCollider(double x, double y, double w, double h)
 {
-    this->X = x;
-    this->Y = y;
+    this->Position.X = x;
+    this->Position.Y = y;
     this->width = w;
     this->height = h;
 }
 
 bool BoxCollider::PositionMatch(Vector position)
 {
-    if (position.X < this->X)
+    if (position.X < this->Position.X)
         return false;
-    if (position.Y < this->Y)
+    if (position.Y < this->Position.Y)
         return false;
-    if (position.X > this->X + this->width)
+    if (position.X > this->Position.X + this->width)
         return false;
-    if (position.Y > this->Y + this->height)
+    if (position.Y > this->Position.Y + this->height)
         return false;
     return true;
+}
+
+bool BoxCollider::IntersectionMatch(Collider *collider)
+{
+    if (collider->GetColliderType() == PE::ColliderType_Box)
+        return this->boxMatch(dynamic_cast<BoxCollider*>(collider));
+
+    return false;
+}
+
+bool BoxCollider::boxMatch(BoxCollider *c)
+{
+    if (this->Position.X < c->Position.X + c->width &&
+        this->Position.X + this->width > c->Position.X &&
+        this->Position.Y < c->Position.Y + c->height &&
+        this->Position.Y + this->height > c->Position.Y)
+    {
+        // there is collision
+        return true;
+    }
+
+    return false;
 }
 

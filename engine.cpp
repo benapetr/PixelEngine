@@ -31,6 +31,11 @@ Engine *Engine::GetEngine()
     return Engine::engine;
 }
 
+QString Engine::GetVersion()
+{
+    return QString(PE_VERSION_STRING);
+}
+
 Engine::Engine()
 {
     this->startupTime = QDateTime::currentDateTime();

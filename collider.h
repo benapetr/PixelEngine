@@ -29,6 +29,7 @@ namespace PE
             Collider();
             // Returns true in case that position is inside body of this collider
             virtual bool PositionMatch(Vector position)=0;
+            virtual bool IntersectionMatch(Collider *collider)=0;
             virtual ColliderType GetColliderType()=0;
             PE_ObjectType GetType() override;
     };

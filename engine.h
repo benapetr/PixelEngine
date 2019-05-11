@@ -27,6 +27,7 @@ namespace PE
         public:
             static void Initialize();
             static Engine *GetEngine();
+            static QString GetVersion();
 
             Engine();
             virtual ~Engine();

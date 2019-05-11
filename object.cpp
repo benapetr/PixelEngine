@@ -21,7 +21,7 @@ Object::Object(Object *p)
 
 Object::~Object()
 {
-    delete this->childrens;
+    delete this->children;
 }
 
 Object *Object::GetParent()
@@ -36,5 +36,29 @@ PE_ObjectType Object::GetType()
 
 bool Object::HasChildren()
 {
-    return !(this->childrens == nullptr || this->childrens->isEmpty());
+    return !(this->children == nullptr || this->children->isEmpty());
+}
+
+void Object::AddChildren(Object *obj)
+{
+    if (this->children == nullptr)
+        this->children = new QList<Object*>();
+    this->children->append(obj);
+    obj->parent = this;
+}
+
+void Object::SetPosition(Vector p)
+{
+    this->Position = p;
+    if (this->children == nullptr)
+        return;
+    foreach (Object *c, *this->children)
+    {
+        c->SetPosition(p + c->RelativePosition);
+    }
+}
+
+Vector Object::GetPosition() const
+{
+    return this->Position;
 }

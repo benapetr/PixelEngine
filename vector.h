@@ -47,6 +47,14 @@ namespace PE
             {
                 return {this->X * scalar, this->Y * scalar};
             }
+            bool operator!=(const Vector &v)
+            {
+                return this->X != v.X && this->Y != v.Y;
+            }
+            bool operator==(const Vector &v)
+            {
+                return this->X == v.X && this->Y == v.Y;
+            }
     };
 }
 

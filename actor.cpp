@@ -11,6 +11,7 @@
 // Copyright (c) Petr Bena 2019
 
 #include "actor.h"
+#include "collider.h"
 #include "rigidbody.h"
 
 using namespace PE;
@@ -28,4 +29,16 @@ Actor::~Actor()
 PE_ObjectType Actor::GetType()
 {
     return PE_ObjectType_Actor;
+}
+
+void Actor::AddChildren(Object *obj)
+{
+    Object::AddChildren(obj);
+    if (obj->GetType() == PE_ObjectType_Collider)
+        this->colliders.append(dynamic_cast<Collider*>(obj));
+}
+
+QList<Collider*> Actor::GetColliders() const
+{
+    return this->colliders;
 }

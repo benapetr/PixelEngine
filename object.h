@@ -41,12 +41,19 @@ namespace PE
             Object *GetParent();
             virtual PE_ObjectType GetType();
             bool HasChildren();
+            virtual void AddChildren(Object *obj);
+            //! Set position of this object and all children
+            virtual void SetPosition(Vector p);
             virtual void Event_OnCollision(Collider *collider) { (void)collider; }
+            virtual Vector GetPosition() const;
+            //! Current absolute position of object in the world
             Vector Position;
+            //! This is relative position to parent object, if it has no parent, then there is no point in using this
+            Vector RelativePosition;
 
         private:
             Object *parent;
-            QList<Object*> *childrens = nullptr;
+            QList<Object*> *children = nullptr;
     };
 }
 

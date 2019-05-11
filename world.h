@@ -21,6 +21,7 @@ namespace PE
     class Actor;
     class Object;
     class Terrain;
+    class Collider;
     class World
     {
         public:
@@ -31,6 +32,7 @@ namespace PE
             void RegisterActor(Actor *a, int zindex = 1);
             void RegisterObject(Object *o, int zindex = 1);
             void RegisterTerrain(Terrain *t, int zindex = 0);
+            void RegisterCollider(Collider *c);
             bool HasBorder = true;
             // Every object that makes it under this Y is automatically destroyed
             // this is here to handle players that fall behind terrain
@@ -45,6 +47,7 @@ namespace PE
 
         private:
             QList<Actor*> actors;
+            QList<Collider*> colliders;
             QHash<int, QList<Object*>> objects;
             QHash<int, QList<Terrain*>> terrains;
             double world_width;

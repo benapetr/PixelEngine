@@ -29,6 +29,7 @@ namespace PE
             //! If true the underlying image has changed and should be redrawn to the screen
             bool HasUpdate = false;
             bool ManualUpdate = false;
+            bool Enabled = true;
         protected:
             int r_height;
             int r_width;

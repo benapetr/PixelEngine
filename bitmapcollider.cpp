@@ -24,3 +24,8 @@ bool BitmapCollider::PositionMatch(Vector position)
 {
     return false;
 }
+
+bool BitmapCollider::IntersectionMatch(Collider *collider)
+{
+    return false;
+}

@@ -14,19 +14,27 @@
 #define ACTOR_H
 
 #include "object.h"
+#include <QList>
 
 namespace PE
 {
     class Rigidbody;
+    class Collider;
     class Actor : public Object
     {
         public:
             Actor();
             ~Actor();
             PE_ObjectType GetType() override;
+            void AddChildren(Object *obj) override;
             virtual void Update() {}
+            QList<Collider*> GetColliders() const;
             // Only actors with rigidbody have any physics applied to them
             Rigidbody *RigidBody = nullptr;
+
+        protected:
+            // List of colliders bound to this actor, this is used as a cache only
+            QList<Collider*> colliders;
     };
 }
 
