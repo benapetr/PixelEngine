@@ -30,3 +30,9 @@ Vector Rigidbody::GetMovement()
     movement.Y += -1 * this->GravityForce;
     return movement;
 }
+
+void Rigidbody::ResetForceAfterImpact()
+{
+    this->GravityForce = 0;
+    this->Movement = Vector::Zero;
+}

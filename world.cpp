@@ -15,6 +15,7 @@
 #include "collider.h"
 #include "renderer.h"
 #include "rigidbody.h"
+#include <QDateTime>
 
 using namespace PE;
 
@@ -63,6 +64,7 @@ void World::Render(Renderer *r)
 
 void World::Update()
 {
+    this->lastUpdate = QDateTime::currentDateTime().toMSecsSinceEpoch();
     this->updatePhysics();
     foreach (Actor *a, this->actors)
     {
@@ -123,15 +125,26 @@ void World::updateMovement()
         a->SetPosition(a->Position + movement);
 
         QList<Collider*> ac = a->GetColliders();
-        if (!ac.isEmpty() && !this->colliders.isEmpty())
+        if (!ac.isEmpty())
         {
+            // Get a list of all colliders in world (terrain colliders + other (actor) colliders)
+            QList<Collider*> all_colliders = this->colliders;
+            foreach (Actor *foreign_actor, this->actors)
+            {
+                if (foreign_actor == a)
+                    continue;
+                all_colliders.append(foreign_actor->GetColliders());
+            }
+
             Collider *collision_target = nullptr;
             Collider *collision_source = nullptr;
             foreach (Collider *collider_actor, ac)
             {
                 if (collision_target)
                     break;
-                foreach (Collider *collider_other, this->colliders)
+                // Check collision with terrain colliders of world, these are more likely, especially
+                // since most of actors are grounded, so check these first
+                foreach (Collider *collider_other, all_colliders)
                 {
                     if (collider_actor == collider_other)
                         continue;
@@ -145,12 +158,19 @@ void World::updateMovement()
                         break;
                     }
                 }
+                if (collision_target)
+                    break;
+                // Check collision with other actors
+
             }
             if (collision_target)
             {
                 collision_source->Event_OnCollision(collision_target);
                 // We can't move this object, let's move it back
                 a->SetPosition(old_position);
+
+                // Now let's try to find a position between the source and target colider, to prevent any space gaps in between them
+                a->RigidBody->ResetForceAfterImpact();
             }
         }
     }

@@ -11,6 +11,7 @@
 // Copyright (c) Petr Bena 2019
 
 #include "qimagerenderer.h"
+#include <QPainter>
 #include <QImage>
 
 using namespace PE;
@@ -20,12 +21,19 @@ QImageRenderer::QImageRenderer(int width, int height)
     this->image = new QImage(width, height, QImage::Format_RGB32);
     this->r_width = width;
     this->r_height = height;
+    this->painter = new QPainter(this->image);
     this->Clear();
+}
+
+QImageRenderer::~QImageRenderer()
+{
+    delete this->painter;
+    delete this->image;
 }
 
 void QImageRenderer::Render()
 {
-    delete this->image;
+    //delete this->image;
 }
 
 QImage *QImageRenderer::GetImage()
@@ -62,50 +70,8 @@ void QImageRenderer::DrawRect(int x, int y, int width, int height, int line_widt
     if (!this->Enabled)
         return;
 
-    int X;
-    int Y;
-
-    int rgb = color.rgb();
-
-    // Draw the top line
-    X = x;
-    Y = this->worldToQtY(this->trimY(y + height));
-    int target_x = this->trimX(x + width);
-    while (X < target_x)
-    {
-        this->image->setPixel(X++, Y, rgb);
-    }
-
-    // Draw the right line
-    X = x + width;
-    //Y = this->worldToQtY(y + height);
-    int target_y = this->worldToQtY(this->trimY(y));
-    while (Y < target_y)
-    {
-        this->image->setPixel(X, Y++, rgb);
-    }
-
-    // Draw the left line
-    X = x;
-    Y = this->worldToQtY(this->trimY(y + height));
-    target_y = this->worldToQtY(this->trimY(y));
-    while (Y < target_y)
-    {
-        this->image->setPixel(X, Y++, rgb);
-    }
-
-    // Draw the bottom line
-    X = x;
-    Y = this->worldToQtY(this->trimY(y));
-    target_x = x + width;
-    if (target_x > 32000)
-    {
-        target_x = 0;
-    }
-    while (X < target_x+1)
-    {
-        this->image->setPixel(X++, Y, rgb);
-    }
+    this->painter->setPen(color);
+    this->painter->drawRect(this->trimX(x), this->worldToQtY(y), width, -1 * height);
 
     // recursive evil :)
     if (line_width > 1)

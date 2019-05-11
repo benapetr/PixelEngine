@@ -25,6 +25,7 @@ namespace PE
             // If object is not grounded, gravity will apply to it, as long as its Weight is higher than 0
             bool IsGrounded();
             Vector GetMovement();
+            void ResetForceAfterImpact();
             Collider *GroundCollider = nullptr;
             Vector Movement;
             double Weight = 1;

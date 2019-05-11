@@ -52,6 +52,7 @@ namespace PE
             QHash<int, QList<Terrain*>> terrains;
             double world_width;
             double world_height;
+            qint64 lastUpdate = 0;
     };
 }
 

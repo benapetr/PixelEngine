@@ -50,6 +50,8 @@ namespace PE
             Vector Position;
             //! This is relative position to parent object, if it has no parent, then there is no point in using this
             Vector RelativePosition;
+            //! This value is used by physics cache
+            qint64 LastUpdate = 0;
 
         private:
             Object *parent;

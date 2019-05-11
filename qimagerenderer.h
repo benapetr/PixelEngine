@@ -17,6 +17,7 @@
 #include <QPixmap>
 
 class QImage;
+class QPainter;
 
 namespace PE
 {
@@ -24,6 +25,7 @@ namespace PE
     {
         public:
             QImageRenderer(int width, int height);
+            ~QImageRenderer() override;
             void Render() override;
             QImage *GetImage();
             void Clear() override;
@@ -36,6 +38,7 @@ namespace PE
             int trimY(int y);
             //! Qt has Y other way this function maps the world Y to Qt Y
             int worldToQtY(int y);
+            QPainter *painter;
             QImage *image;
     };
 }

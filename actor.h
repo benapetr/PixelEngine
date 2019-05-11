@@ -27,7 +27,7 @@ namespace PE
             ~Actor();
             PE_ObjectType GetType() override;
             void AddChildren(Object *obj) override;
-            virtual void Update() {}
+            virtual void Update(qint64 time = 0) {}
             QList<Collider*> GetColliders() const;
             // Only actors with rigidbody have any physics applied to them
             Rigidbody *RigidBody = nullptr;
