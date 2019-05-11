@@ -10,29 +10,30 @@
 
 // Copyright (c) Petr Bena 2019
 
-#ifndef BITMAPCOLLIDER_H
-#define BITMAPCOLLIDER_H
+#ifndef BOXCOLLIDER_H
+#define BOXCOLLIDER_H
 
 #include "collider.h"
 
 namespace PE
 {
-    //! Bitmap collision - for obvious reasons (memory) works with integers only
-    //! smallest collision unit is one integer (one pixel)
-    class BitmapCollider : public Collider
+    class BoxCollider : public Collider
     {
         public:
-            BitmapCollider(int x, int y, int w, int h);
+            BoxCollider(double x, double y, double w, double h);
             bool PositionMatch(Vector position) override;
-            ColliderType GetColliderType() override { return ColliderType_Bitmap; }
+            double GetX() const { return this->X; }
+            double GetY() const { return this->Y; }
+            double GetWidth() const { return this->width; };
+            double GetHeight() const { return this->height; };
+            ColliderType GetColliderType() override { return ColliderType_Box; }
 
         private:
-            int X;
-            int Y;
-            int width;
-            int height;
-            char **bitmap;
+            double X;
+            double Y;
+            double width;
+            double height;
     };
 }
 
-#endif // BITMAPCOLLIDER_H
+#endif // BOXCOLLIDER_H

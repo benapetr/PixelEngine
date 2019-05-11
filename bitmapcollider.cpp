@@ -14,7 +14,13 @@
 
 using namespace PE;
 
-BitmapCollider::BitmapCollider()
+BitmapCollider::BitmapCollider(int x, int y, int w, int h)
 {
+    this->width = w;
+    this->height = h;
+}
 
+bool BitmapCollider::PositionMatch(Vector position)
+{
+    return false;
 }

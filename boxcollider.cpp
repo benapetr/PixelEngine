@@ -10,28 +10,28 @@
 
 // Copyright (c) Petr Bena 2019
 
-#ifndef COLLIDER_H
-#define COLLIDER_H
+#include "boxcollider.h"
 
-#include "object.h"
+using namespace PE;
 
-namespace PE
+BoxCollider::BoxCollider(double x, double y, double w, double h)
 {
-    enum ColliderType
-    {
-        ColliderType_Box,
-        ColliderType_Bitmap
-    };
-
-    class Collider : public Object
-    {
-        public:
-            Collider();
-            // Returns true in case that position is inside body of this collider
-            virtual bool PositionMatch(Vector position)=0;
-            virtual ColliderType GetColliderType()=0;
-            PE_ObjectType GetType() override;
-    };
+    this->X = x;
+    this->Y = y;
+    this->width = w;
+    this->height = h;
 }
 
-#endif // COLLIDER_H
+bool BoxCollider::PositionMatch(Vector position)
+{
+    if (position.X < this->X)
+        return false;
+    if (position.Y < this->Y)
+        return false;
+    if (position.X > this->X + this->width)
+        return false;
+    if (position.Y > this->Y + this->height)
+        return false;
+    return true;
+}
+
