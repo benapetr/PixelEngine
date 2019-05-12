@@ -14,9 +14,11 @@
 #define RENDERER_H
 
 #include <QColor>
+#include "vector.h"
 
 namespace PE
 {
+    class Vector;
     class Renderer
     {
         public:
@@ -26,6 +28,7 @@ namespace PE
             virtual void Clear()=0;
             virtual void DrawPixel(int x, int y, QColor color)=0;
             virtual void DrawRect(int x, int y, int width, int height, int line_width, QColor color)=0;
+            virtual void DrawLine(Vector source, Vector target, int line_width, QColor color)=0;
             //! If true the underlying image has changed and should be redrawn to the screen
             bool HasUpdate = false;
             bool ManualUpdate = false;

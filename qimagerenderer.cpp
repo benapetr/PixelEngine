@@ -65,17 +65,37 @@ void QImageRenderer::DrawPixel(int x, int y, QColor color)
         this->HasUpdate = true;
 }
 
+void QImageRenderer::DrawLine(Vector source, Vector target, int line_width, QColor color)
+{
+    if (!this->Enabled)
+        return;
+
+    QPen pen(color);
+    pen.setWidth(line_width);
+    pen.setCapStyle(Qt::RoundCap);
+    pen.setJoinStyle(Qt::MiterJoin);
+    this->painter->setPen(pen);
+    this->painter->drawLine(this->trimX(source.X2int()), this->worldToQtY(source.Y2int()), this->trimX(target.X2int()), this->worldToQtY(target.Y2int()));
+
+    if (!this->ManualUpdate)
+        this->HasUpdate = true;
+}
+
 void QImageRenderer::DrawRect(int x, int y, int width, int height, int line_width, QColor color)
 {
     if (!this->Enabled)
         return;
 
-    this->painter->setPen(color);
-    this->painter->drawRect(this->trimX(x), this->worldToQtY(y), width, -1 * height);
+    QPen pen(color);
+    pen.setWidth(line_width);
+    pen.setCapStyle(Qt::SquareCap);
+    pen.setJoinStyle(Qt::MiterJoin);
+    this->painter->setPen(pen);
+    this->painter->drawRect(this->trimX(x), this->worldToQtY(y + height), width, height);
 
     // recursive evil :)
-    if (line_width > 1)
-        this->DrawRect(x + 1, y + 1, width - 2, height - 2, line_width - 1, color);
+    //if (line_width > 1)
+    //    this->DrawRect(x + 1, y + 1, width - 2, height - 2, line_width - 1, color);
 
     if (!this->ManualUpdate)
         this->HasUpdate = true;

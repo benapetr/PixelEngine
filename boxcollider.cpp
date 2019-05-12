@@ -18,6 +18,7 @@ BoxCollider::BoxCollider(double x, double y, double w, double h)
 {
     this->Position.X = x;
     this->Position.Y = y;
+    this->RelativePosition = this->Position;
     this->width = w;
     this->height = h;
 }

@@ -38,7 +38,7 @@ namespace PE
             Object(Object *p = nullptr);
             virtual ~Object();
             virtual void Render(Renderer *r) { (void)r; };
-            Object *GetParent();
+            Object *GetParent() { return this->parent; };
             virtual PE_ObjectType GetType();
             bool HasChildren();
             virtual void AddChildren(Object *obj);
@@ -46,12 +46,13 @@ namespace PE
             virtual void SetPosition(Vector p);
             virtual void Event_OnCollision(Collider *collider) { (void)collider; }
             virtual Vector GetPosition() const;
+            void UpdateRecursivelyLastMovement(qint64 time);
             //! Current absolute position of object in the world
             Vector Position;
             //! This is relative position to parent object, if it has no parent, then there is no point in using this
             Vector RelativePosition;
             //! This value is used by physics cache
-            qint64 LastUpdate = 0;
+            qint64 LastMovementUpdate = 0;
 
         private:
             Object *parent;

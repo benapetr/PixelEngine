@@ -22,11 +22,17 @@ namespace PE
     class Object;
     class Terrain;
     class Collider;
+
+    /*!
+     * \brief The World class is engine base for a world - containing all actors and terrains.
+     *
+     * Every component of the engine should be a part of some world, each world has its own rules of physics
+     */
     class World
     {
         public:
             World(double width, double height);
-            ~World();
+            virtual ~World();
             void Render(Renderer *r);
             void Update();
             void RegisterActor(Actor *a, int zindex = 1);

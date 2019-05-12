@@ -99,7 +99,7 @@ void World::updateGravity()
         if (!a->RigidBody)
             continue;
 
-        if (a->RigidBody->IsGrounded())
+        if (a->RigidBody->IsGrounded() && a->LastMovementUpdate >= a->RigidBody->GroundCollider->LastMovementUpdate)
             continue;
 
         a->RigidBody->GravityForce += this->Gravity * a->RigidBody->Weight;
@@ -115,14 +115,14 @@ void World::updateMovement()
         if (!a->RigidBody)
             continue;
 
-        Vector movement = a->RigidBody->GetMovement();
-        if (movement == Vector::Zero)
+        Vector current_velocity = a->RigidBody->GetMovement();
+        if (current_velocity == Vector::Zero)
             continue;
 
         // Check if this actor has some colliders, if yes, we need to check if there is a collision caused by this movement
         // if yes, don't move
         Vector old_position = a->Position;
-        a->SetPosition(a->Position + movement);
+        a->SetPosition(a->Position + current_velocity);
 
         QList<Collider*> ac = a->GetColliders();
         if (!ac.isEmpty())
@@ -138,12 +138,9 @@ void World::updateMovement()
 
             Collider *collision_target = nullptr;
             Collider *collision_source = nullptr;
+
             foreach (Collider *collider_actor, ac)
             {
-                if (collision_target)
-                    break;
-                // Check collision with terrain colliders of world, these are more likely, especially
-                // since most of actors are grounded, so check these first
                 foreach (Collider *collider_other, all_colliders)
                 {
                     if (collider_actor == collider_other)
@@ -160,17 +157,28 @@ void World::updateMovement()
                 }
                 if (collision_target)
                     break;
-                // Check collision with other actors
-
             }
             if (collision_target)
             {
+                // In case that collision is under the object (or blocking it from falling down), let's ground the object
+                // we don't do this check if object is moving to side
+                if (current_velocity.X == 0 && current_velocity.Y < 0 && (old_position.Y - a->Position.Y) <= 0.5)
+                {
+                    a->RigidBody->GroundCollider = collision_target;
+                    // Update cache times
+                    a->LastMovementUpdate = this->lastUpdate;
+                    collision_target->LastMovementUpdate = this->lastUpdate;
+                }
                 collision_source->Event_OnCollision(collision_target);
                 // We can't move this object, let's move it back
                 a->SetPosition(old_position);
 
                 // Now let's try to find a position between the source and target colider, to prevent any space gaps in between them
                 a->RigidBody->ResetForceAfterImpact();
+            } else
+            {
+                // The object has moved, let's update the physics cache so that all objects that are related to this one will know it
+                a->UpdateRecursivelyLastMovement(this->lastUpdate);
             }
         }
     }

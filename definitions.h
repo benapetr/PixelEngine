@@ -16,4 +16,10 @@
 #define PE_VERSION_STRING "1.0.0.0"
 #define PE_RING_LOG_SIZE  600
 
+// Math
+#define PE_PI 3.14159265
+
+// PI / 180 for radian
+#define PE_PI_RAD_CNV 1.74532925
+
 #endif // DEFINITIONS_H

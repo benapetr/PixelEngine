@@ -27,7 +27,8 @@ namespace PE
             Vector GetMovement();
             void ResetForceAfterImpact();
             Collider *GroundCollider = nullptr;
-            Vector Movement;
+            //! Movement
+            Vector Velocity;
             double Weight = 1;
             // Even if this doesn't make much sense, it makes the game more fun to play - we set a limit to
             // gravitational force on a world level, so that objects can't fall faster than that, unless they

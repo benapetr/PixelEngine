@@ -24,11 +24,6 @@ Object::~Object()
     delete this->children;
 }
 
-Object *Object::GetParent()
-{
-    return this->parent;
-}
-
 PE_ObjectType Object::GetType()
 {
     return PE_ObjectType_Object;
@@ -61,4 +56,16 @@ void Object::SetPosition(Vector p)
 Vector Object::GetPosition() const
 {
     return this->Position;
+}
+
+void Object::UpdateRecursivelyLastMovement(qint64 time)
+{
+    this->LastMovementUpdate = time;
+    if (!this->HasChildren())
+        return;
+
+    foreach (Object *c, *this->children)
+    {
+        c->UpdateRecursivelyLastMovement(time);
+    }
 }
