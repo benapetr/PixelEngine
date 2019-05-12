@@ -22,6 +22,9 @@
 // PI / 180 for radian
 #define PE_PI_RAD_CNV 1.74532925
 
+// Bitmap size
+#define PE_BITSET_MAX 10000
+
 // stolen from boost/current_function.hpp
 // enhanced by Petr Bena, keep the enhancement in case you wanted to update this
 

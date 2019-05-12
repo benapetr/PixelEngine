@@ -17,6 +17,7 @@
 
 namespace PE
 {
+    class ColliderMath;
     class BoxCollider : public Collider
     {
         public:
@@ -27,12 +28,14 @@ namespace PE
             double GetY() const { return this->Position.Y; }
             double GetWidth() const { return this->width; };
             double GetHeight() const { return this->height; };
-            ColliderType GetColliderType() override { return ColliderType_Box; }
+            PE_ColliderType GetColliderType() override { return PE_ColliderType_Box; }
 
         private:
             bool boxMatch(BoxCollider *c);
             double width;
             double height;
+
+            friend class ColliderMath;
     };
 }
 

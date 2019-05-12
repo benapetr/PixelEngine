@@ -24,7 +24,7 @@ Terrain::Terrain(double x, double y, int width, int height)
 
 Terrain::~Terrain()
 {
-    delete this->Collider;
+    //delete this->Collider;
 }
 
 PE_ObjectType Terrain::GetType()

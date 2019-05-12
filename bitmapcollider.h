@@ -13,10 +13,16 @@
 #ifndef BITMAPCOLLIDER_H
 #define BITMAPCOLLIDER_H
 
+#include "definitions.h"
 #include "collider.h"
+#include <bitset>
+
+typedef std::bitset<PE_BITSET_MAX> pe_bitset;
 
 namespace PE
 {
+    class ColliderMath;
+
     //! Bitmap collision - for obvious reasons (memory) works with integers only
     //! smallest collision unit is one integer (one pixel)
     class BitmapCollider : public Collider
@@ -24,16 +30,18 @@ namespace PE
         public:
             BitmapCollider(int x, int y, int w, int h);
             bool PositionMatch(Vector position) override;
-            ColliderType GetColliderType() override { return ColliderType_Bitmap; }
+            PE_ColliderType GetColliderType() override { return PE_ColliderType_Bitmap; }
             bool IntersectionMatch(Collider *collider) override;
             int GetWidth() { return this->width; }
             int GetHeight() { return this->height; }
+            QList<pe_bitset> Bitmap;
         private:
             int X;
             int Y;
             int width;
             int height;
-            char **bitmap;
+
+            friend class ColliderMath;
     };
 }
 

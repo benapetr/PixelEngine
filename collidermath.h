@@ -10,29 +10,19 @@
 
 // Copyright (c) Petr Bena 2019
 
-#ifndef COLLIDER_H
-#define COLLIDER_H
-
-#include "object.h"
+#ifndef COLLIDERMATH_H
+#define COLLIDERMATH_H
 
 namespace PE
 {
-    enum PE_ColliderType
-    {
-        PE_ColliderType_Box,
-        PE_ColliderType_Bitmap
-    };
-
-    class Collider : public Object
+    class BoxCollider;
+    class BitmapCollider;
+    class ColliderMath
     {
         public:
-            Collider();
-            // Returns true in case that position is inside body of this collider
-            virtual bool PositionMatch(Vector position)=0;
-            virtual bool IntersectionMatch(Collider *collider)=0;
-            virtual PE_ColliderType GetColliderType()=0;
-            PE_ObjectType GetType() override;
+        static bool IntersectionCheckBoxBox(BoxCollider *a, BoxCollider *b);
+        static bool IntersectionCheckBoxBitmap(BoxCollider *a, BitmapCollider *b);
     };
 }
 
-#endif // COLLIDER_H
+#endif // COLLIDERMATH_H

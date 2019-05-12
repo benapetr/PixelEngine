@@ -66,6 +66,12 @@ Terrain *WorldGenerator::GenerateRandom(int w_width, int w_height)
 
           // draw column
           painter.drawLine(x, 0, x, height);
+
+          int real_height = w_height - height;
+          while (real_height > 0)
+          {
+              w->Collider->Bitmap[x][real_height--] = true;
+          }
      }
     w->BitMap = QBitmap(QPixmap::fromImage(image));
 

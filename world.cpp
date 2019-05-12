@@ -16,6 +16,7 @@
 #include "renderer.h"
 #include "rigidbody.h"
 #include "terrain.h"
+#include "bitmapcollider.h"
 #include <QDateTime>
 
 using namespace PE;
@@ -98,6 +99,7 @@ void World::RegisterActor(Actor *a, int zindex)
 void World::RegisterTerrain(Terrain *t, int zindex)
 {
     this->terrains.append(t);
+    this->colliders.append(t->Collider);
 }
 
 void World::RegisterCollider(Collider *c)

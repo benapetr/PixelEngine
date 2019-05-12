@@ -11,6 +11,8 @@
 // Copyright (c) Petr Bena 2019
 
 #include "boxcollider.h"
+#include "bitmapcollider.h"
+#include "collidermath.h"
 
 using namespace PE;
 
@@ -38,23 +40,13 @@ bool BoxCollider::PositionMatch(Vector position)
 
 bool BoxCollider::IntersectionMatch(Collider *collider)
 {
-    if (collider->GetColliderType() == PE::ColliderType_Box)
-        return this->boxMatch(dynamic_cast<BoxCollider*>(collider));
+    if (collider->GetColliderType() == PE::PE_ColliderType_Box)
+        return ColliderMath::IntersectionCheckBoxBox(this, dynamic_cast<BoxCollider*>(collider));
+
+    if (collider->GetColliderType() == PE::PE_ColliderType_Bitmap)
+        return ColliderMath::IntersectionCheckBoxBitmap(this, dynamic_cast<BitmapCollider*>(collider));
 
     return false;
 }
 
-bool BoxCollider::boxMatch(BoxCollider *c)
-{
-    if (this->Position.X < c->Position.X + c->width &&
-        this->Position.X + this->width > c->Position.X &&
-        this->Position.Y < c->Position.Y + c->height &&
-        this->Position.Y + this->height > c->Position.Y)
-    {
-        // there is collision
-        return true;
-    }
-
-    return false;
-}
 
