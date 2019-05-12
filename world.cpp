@@ -15,12 +15,14 @@
 #include "collider.h"
 #include "renderer.h"
 #include "rigidbody.h"
+#include "terrain.h"
 #include <QDateTime>
 
 using namespace PE;
 
 World::World(double width, double height)
 {
+    this->BackgroundColor = Qt::white;
     this->world_width = width;
     this->world_height = height;
 }
@@ -38,11 +40,18 @@ World::~World()
     }
     this->objects.clear();
     qDeleteAll(this->colliders);
+    qDeleteAll(this->terrains);
 }
 
 void World::Render(Renderer *r)
 {
-    r->Clear();
+    r->Clear(this->BackgroundColor);
+
+    // terrains
+    foreach (Terrain *t, this->terrains)
+    {
+        t->Render(r);
+    }
 
     // layers
     QList<int> indexes = this->objects.keys();
@@ -84,6 +93,11 @@ void World::RegisterActor(Actor *a, int zindex)
         this->objects.insert(zindex, QList<Object*>());
     this->objects[zindex].append(a);
     this->actors.append(a);
+}
+
+void World::RegisterTerrain(Terrain *t, int zindex)
+{
+    this->terrains.append(t);
 }
 
 void World::RegisterCollider(Collider *c)

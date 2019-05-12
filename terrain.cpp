@@ -11,15 +11,28 @@
 // Copyright (c) Petr Bena 2019
 
 #include "terrain.h"
+#include "bitmapcollider.h"
+#include "renderer.h"
 
 using namespace PE;
 
-Terrain::Terrain()
+Terrain::Terrain(double x, double y, int width, int height)
 {
+    this->Position = Vector(x, y);
+    this->Collider = new BitmapCollider(static_cast<int>(x), static_cast<int>(y), width, height);
+}
 
+Terrain::~Terrain()
+{
+    delete this->Collider;
 }
 
 PE_ObjectType Terrain::GetType()
 {
     return PE_ObjectType_Terrain;
+}
+
+void Terrain::Render(Renderer *r)
+{
+    r->DrawBitmap(this->Position.X2int(), this->Position.Y2int(), this->Collider->GetWidth(), this->Collider->GetHeight(), this->BitMap);
 }

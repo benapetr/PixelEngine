@@ -26,7 +26,8 @@ namespace PE
             bool PositionMatch(Vector position) override;
             ColliderType GetColliderType() override { return ColliderType_Bitmap; }
             bool IntersectionMatch(Collider *collider) override;
-
+            int GetWidth() { return this->width; }
+            int GetHeight() { return this->height; }
         private:
             int X;
             int Y;

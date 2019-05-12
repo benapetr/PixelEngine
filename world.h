@@ -14,6 +14,7 @@
 #define WORLD_H
 
 #include <QHash>
+#include <QColor>
 
 namespace PE
 {
@@ -45,6 +46,7 @@ namespace PE
             double DeathZone = -20;
             double Gravity = 1;
             double GravityMax = 10;
+            QColor BackgroundColor;
 
         protected:
             void updatePhysics();
@@ -55,7 +57,7 @@ namespace PE
             QList<Actor*> actors;
             QList<Collider*> colliders;
             QHash<int, QList<Object*>> objects;
-            QHash<int, QList<Terrain*>> terrains;
+            QList<Terrain*> terrains;
             double world_width;
             double world_height;
             qint64 lastUpdate = 0;

@@ -16,12 +16,11 @@
 
 namespace PE
 {
-    class World;
+    class Terrain;
     class WorldGenerator
     {
         public:
-            static World *GenerateRandom(double w_width, double w_height);
-            WorldGenerator();
+            static PE::Terrain *GenerateRandom(int w_width, int w_height);
     };
 }
 

@@ -10,17 +10,13 @@
 
 // Copyright (c) Petr Bena 2019
 
-#include "exception.h"
+#include "pemath.h"
+#include <QDateTime>
+#include <QRandomGenerator>
 
 using namespace PE;
 
-Exception::Exception(const QString &what, const QString &where)
+qint32 PEMath::GetRandom(qint32 min, qint32 max)
 {
-    this->Where = where;
-    this->What = what;
-}
-
-PE::Exception::~Exception()
-{
-
+    return QRandomGenerator::global()->bounded(min, max);
 }

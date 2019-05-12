@@ -20,7 +20,7 @@ namespace PE
     class NullPointerException : public Exception
     {
         public:
-            NullPointerException();
+            NullPointerException(const QString &what, const QString &where);
     };
 }
 

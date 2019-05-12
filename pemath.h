@@ -10,17 +10,18 @@
 
 // Copyright (c) Petr Bena 2019
 
-#include "exception.h"
+#ifndef PEMATH_H
+#define PEMATH_H
 
-using namespace PE;
+#include <QtGlobal>
 
-Exception::Exception(const QString &what, const QString &where)
+namespace PE
 {
-    this->Where = where;
-    this->What = what;
+    class PEMath
+    {
+        public:
+            static qint32 GetRandom(qint32 min, qint32 max);
+    };
 }
 
-PE::Exception::~Exception()
-{
-
-}
+#endif // PEMATH_H

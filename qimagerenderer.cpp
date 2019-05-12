@@ -43,7 +43,12 @@ QImage *QImageRenderer::GetImage()
 
 void QImageRenderer::Clear()
 {
-    this->image->fill(QColor("white"));
+    this->image->fill(Qt::white);
+}
+
+void QImageRenderer::Clear(QColor color)
+{
+    this->image->fill(color);
 }
 
 QPixmap QImageRenderer::GetPixmap()
@@ -65,6 +70,16 @@ void QImageRenderer::DrawPixel(int x, int y, QColor color)
         this->HasUpdate = true;
 }
 
+void QImageRenderer::DrawBitmap(int x, int y, int width, int height, QBitmap bitmap)
+{
+    if (!this->Enabled)
+        return;
+    this->painter->setPen(QPen());
+    this->painter->drawPixmap(x, y, width, height, bitmap);
+    if (!this->ManualUpdate)
+        this->HasUpdate = true;
+}
+
 void QImageRenderer::DrawLine(Vector source, Vector target, int line_width, QColor color)
 {
     if (!this->Enabled)
@@ -81,17 +96,25 @@ void QImageRenderer::DrawLine(Vector source, Vector target, int line_width, QCol
         this->HasUpdate = true;
 }
 
-void QImageRenderer::DrawRect(int x, int y, int width, int height, int line_width, QColor color)
+void QImageRenderer::DrawRect(int x, int y, int width, int height, int line_width, QColor color, bool fill)
 {
     if (!this->Enabled)
         return;
 
-    QPen pen(color);
-    pen.setWidth(line_width);
-    pen.setCapStyle(Qt::SquareCap);
-    pen.setJoinStyle(Qt::MiterJoin);
-    this->painter->setPen(pen);
-    this->painter->drawRect(this->trimX(x), this->worldToQtY(y + height), width, height);
+    if (fill)
+    {
+        QBrush brush(color, Qt::SolidPattern);
+        this->painter->fillRect(this->trimX(x), this->worldToQtY(y + height), width, height, brush);
+    }
+    else
+    {
+        QPen pen(color);
+        pen.setWidth(line_width);
+        pen.setCapStyle(Qt::SquareCap);
+        pen.setJoinStyle(Qt::MiterJoin);
+        this->painter->setPen(pen);
+        this->painter->drawRect(this->trimX(x), this->worldToQtY(y + height), width, height);
+    }
 
     // recursive evil :)
     //if (line_width > 1)

@@ -13,13 +13,18 @@
 #ifndef EXCEPTION_H
 #define EXCEPTION_H
 
+#include <QString>
+
 namespace PE
 {
     class Exception
     {
         public:
-            Exception();
+            Exception(const QString &what, const QString &where);
             virtual ~Exception();
+            // What happened
+            QString What;
+            QString Where;
     };
 }
 

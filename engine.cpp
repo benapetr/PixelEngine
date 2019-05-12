@@ -11,6 +11,7 @@
 // Copyright (c) Petr Bena 2019
 
 #include "engine.h"
+#include "pemath.h"
 #include "nullpointerexception.h"
 #include "ringlog.h"
 
@@ -28,6 +29,9 @@ void Engine::Initialize()
 
 Engine *Engine::GetEngine()
 {
+    if (!Engine::engine)
+        throw NullPointerException("Engine::engine", BOOST_CURRENT_FUNCTION);
+
     return Engine::engine;
 }
 

@@ -14,7 +14,7 @@
 
 using namespace PE;
 
-NullPointerException::NullPointerException()
+NullPointerException::NullPointerException(const QString& what, const QString& where) : Exception (what, where)
 {
 
 }

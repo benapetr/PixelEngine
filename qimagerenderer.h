@@ -29,10 +29,12 @@ namespace PE
             void Render() override;
             QImage *GetImage();
             void Clear() override;
+            void Clear(QColor color) override;
             QPixmap GetPixmap();
             void DrawPixel(int x, int y, QColor color) override;
+            void DrawBitmap(int x, int y, int width, int height, QBitmap bitmap) override;
             void DrawLine(Vector source, Vector target, int line_width, QColor color) override;
-            void DrawRect(int x, int y, int width, int height, int line_width, QColor color) override;
+            void DrawRect(int x, int y, int width, int height, int line_width, QColor color, bool fill = false) override;
 
         private:
             int trimX(int x);

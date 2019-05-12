@@ -14,6 +14,7 @@
 #define RENDERER_H
 
 #include <QColor>
+#include <QBitmap>
 #include "vector.h"
 
 namespace PE
@@ -26,9 +27,11 @@ namespace PE
             virtual ~Renderer();
             virtual void Render()=0;
             virtual void Clear()=0;
+            virtual void Clear(QColor color)=0;
             virtual void DrawPixel(int x, int y, QColor color)=0;
-            virtual void DrawRect(int x, int y, int width, int height, int line_width, QColor color)=0;
+            virtual void DrawRect(int x, int y, int width, int height, int line_width, QColor color, bool fill = false)=0;
             virtual void DrawLine(Vector source, Vector target, int line_width, QColor color)=0;
+            virtual void DrawBitmap(int x, int y, int width, int height, QBitmap bitmap)=0;
             //! If true the underlying image has changed and should be redrawn to the screen
             bool HasUpdate = false;
             bool ManualUpdate = false;

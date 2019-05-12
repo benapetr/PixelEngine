@@ -14,14 +14,20 @@
 #define TERRAIN_H
 
 #include "object.h"
+#include <QBitmap>
 
 namespace PE
 {
+    class BitmapCollider;
     class Terrain : public Object
     {
         public:
-            Terrain();
+            Terrain(double x, double y, int width, int height);
+            ~Terrain() override;
             PE_ObjectType GetType() override;
+            BitmapCollider *Collider;
+            void Render(Renderer *r) override;
+            QBitmap BitMap;
     };
 }
 
