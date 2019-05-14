@@ -13,6 +13,8 @@
 #ifndef WORLD_H
 #define WORLD_H
 
+#include "definitions.h"
+#include "GC/collectable_smartptr.h"
 #include <QHash>
 #include <QColor>
 
@@ -40,6 +42,8 @@ namespace PE
             void RegisterObject(Object *o, int zindex = 1);
             void RegisterTerrain(Terrain *t, int zindex = 0);
             void RegisterCollider(Collider *c);
+            void ProcessKeyPress(int key);
+            void ProcessKeyRelease(int key);
             bool HasBorder = true;
             // Every object that makes it under this Y is automatically destroyed
             // this is here to handle players that fall behind terrain
@@ -54,10 +58,10 @@ namespace PE
             void updateMovement();
 
         private:
-            QList<Actor*> actors;
-            QList<Collider*> colliders;
-            QHash<int, QList<Object*>> objects;
-            QList<Terrain*> terrains;
+            QList<Collectable_SmartPtr<Actor>> actors;
+            QList<Collectable_SmartPtr<Collider>> colliders;
+            QHash<int, QList<Collectable_SmartPtr<Object>>> objects;
+            QList<Collectable_SmartPtr<Terrain>> terrains;
             double world_width;
             double world_height;
             qint64 lastUpdate = 0;

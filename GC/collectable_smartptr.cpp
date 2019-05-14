@@ -8,22 +8,21 @@
 //MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //GNU Lesser General Public License for more details.
 
-// Copyright (c) Petr Bena 2019
+// Copyright (c) Petr Bena 2014 - 2019
 
-#ifndef WORLDGENERATOR_H
-#define WORLDGENERATOR_H
+#include "collectable_smartptr.h"
+#include "../exception.h"
+#include "../object.h"
+#include "../collider.h"
+#include "../actor.h"
+#include "../terrain.h"
+#include "gc.h"
 
-#include "GC/collectable_smartptr.h"
-#include "terrain.h"
-
+// Required by MSVC
 namespace PE
 {
-    class Terrain;
-    class WorldGenerator
-    {
-        public:
-            static Collectable_SmartPtr<Terrain> GenerateRandom(int w_width, int w_height);
-    };
+    template class Collectable_SmartPtr<Object>;
+    template class Collectable_SmartPtr<Actor>;
+    template class Collectable_SmartPtr<Collider>;
+    template class Collectable_SmartPtr<Terrain>;
 }
-
-#endif // WORLDGENERATOR_H

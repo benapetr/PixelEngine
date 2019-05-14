@@ -10,35 +10,26 @@
 
 // Copyright (c) Petr Bena 2019
 
-#include "actor.h"
-#include "collider.h"
-#include "rigidbody.h"
+#ifndef GC_H
+#define GC_H
 
-using namespace PE;
+#include <QList>
 
-Actor::Actor()
+namespace PE
 {
-
+    class Collectable;
+    class GC_thread;
+    class GC
+    {
+        public:
+            GC();
+            virtual ~GC();
+            void Start();
+            void Stop();
+            int Collect();
+        private:
+            GC_thread *thread;
+    };
 }
 
-Actor::~Actor()
-{
-    delete this->RigidBody;
-}
-
-PE_ObjectType Actor::GetType()
-{
-    return PE_ObjectType_Actor;
-}
-
-void Actor::AddChildren(Object *obj)
-{
-    Object::AddChildren(obj);
-    if (obj->GetType() == PE_ObjectType_Collider)
-        this->colliders.append(dynamic_cast<Collider*>(obj));
-}
-
-QList<Collectable_SmartPtr<Collider>> Actor::GetColliders() const
-{
-    return this->colliders;
-}
+#endif // GC_H

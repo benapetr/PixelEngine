@@ -33,6 +33,11 @@ BitmapCollider::BitmapCollider(int x, int y, int w, int h)
 
 bool BitmapCollider::PositionMatch(Vector position)
 {
+    if (position.X < this->Position.X || position.X > this->Position.X + static_cast<double>(this->width))
+        return false;
+    if (position.Y < this->Position.Y || position.Y > this->Position.Y + static_cast<double>(this->height))
+        return false;
+
     return (this->Bitmap[position.X2int()][position.Y2int()]);
 }
 

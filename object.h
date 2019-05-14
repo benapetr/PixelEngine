@@ -14,6 +14,8 @@
 #define OBJECT_H
 
 #include "vector.h"
+#include "GC/collectable.h"
+#include "GC/collectable_smartptr.h"
 #include <QList>
 
 namespace PE
@@ -31,12 +33,13 @@ namespace PE
 
     class Collider;
 
-    //! Objects are static transforms that can render to world
-    class Object
+    //! Objects are static transforms that can render to world. Basically every world component is inherited from this class.
+    //! Each object can also have multiple childrens and 1 parent
+    class Object : public Collectable
     {
         public:
             Object(Object *p = nullptr);
-            virtual ~Object();
+            ~Object() override;
             virtual void Render(Renderer *r) { (void)r; };
             Object *GetParent() { return this->parent; };
             virtual PE_ObjectType GetType();
@@ -55,8 +58,8 @@ namespace PE
             qint64 LastMovementUpdate = 0;
 
         private:
-            Object *parent;
-            QList<Object*> *children = nullptr;
+            Collectable_SmartPtr<Object> parent;
+            QList<Collectable_SmartPtr<Object>> *children = nullptr;
     };
 }
 

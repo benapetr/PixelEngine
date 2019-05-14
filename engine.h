@@ -21,6 +21,7 @@
 namespace PE
 {
     class RingLog;
+    class GC;
 
     class Engine
     {
@@ -32,9 +33,11 @@ namespace PE
             Engine();
             virtual ~Engine();
             RingLog *RL = nullptr;
+            GC *GetGC() const;
 
         private:
             static Engine *engine;
+            GC *gc;
             QDateTime startupTime;
     };
 }

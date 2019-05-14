@@ -31,17 +31,9 @@ World::World(double width, double height)
 World::~World()
 {
     this->actors.clear();
-    QList<int> indexes = this->objects.keys();
-    foreach (int i, indexes)
-    {
-        foreach (Object *x, this->objects[i])
-        {
-            delete x;
-        }
-    }
     this->objects.clear();
-    qDeleteAll(this->colliders);
-    qDeleteAll(this->terrains);
+    this->terrains.clear();
+    this->colliders.clear();
 }
 
 void World::Render(Renderer *r)
@@ -91,7 +83,7 @@ void World::updatePhysics()
 void World::RegisterActor(Actor *a, int zindex)
 {
     if (!this->objects.contains(zindex))
-        this->objects.insert(zindex, QList<Object*>());
+        this->objects.insert(zindex, QList<Collectable_SmartPtr<Object>>());
     this->objects[zindex].append(a);
     this->actors.append(a);
 }
@@ -99,12 +91,24 @@ void World::RegisterActor(Actor *a, int zindex)
 void World::RegisterTerrain(Terrain *t, int zindex)
 {
     this->terrains.append(t);
-    this->colliders.append(t->Collider);
+    this->colliders.append(dynamic_cast<Collider*>(t->Collider.GetPtr()));
 }
 
 void World::RegisterCollider(Collider *c)
 {
     this->colliders.append(c);
+}
+
+void World::ProcessKeyPress(int key)
+{
+    foreach (Actor *a, this->actors)
+        a->Event_KeyPress(key);
+}
+
+void World::ProcessKeyRelease(int key)
+{
+    foreach (Actor *a, this->actors)
+        a->Event_KeyRelease(key);
 }
 
 void World::updateGravity()
@@ -140,11 +144,11 @@ void World::updateMovement()
         Vector old_position = a->Position;
         a->SetPosition(a->Position + current_velocity);
 
-        QList<Collider*> ac = a->GetColliders();
+        QList<Collectable_SmartPtr<Collider>> ac = a->GetColliders();
         if (!ac.isEmpty())
         {
             // Get a list of all colliders in world (terrain colliders + other (actor) colliders)
-            QList<Collider*> all_colliders = this->colliders;
+            QList<Collectable_SmartPtr<Collider>> all_colliders = this->colliders;
             foreach (Actor *foreign_actor, this->actors)
             {
                 if (foreign_actor == a)

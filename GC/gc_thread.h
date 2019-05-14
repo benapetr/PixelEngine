@@ -10,35 +10,27 @@
 
 // Copyright (c) Petr Bena 2019
 
-#include "actor.h"
-#include "collider.h"
-#include "rigidbody.h"
+#ifndef GC_THREAD_H
+#define GC_THREAD_H
 
-using namespace PE;
+#include <QThread>
 
-Actor::Actor()
+namespace PE
 {
-
+    class GC_thread : public QThread
+    {
+            Q_OBJECT
+        public:
+            GC_thread();
+            void Stop();
+            bool IsStopped() const;
+            bool IsRunning() const;
+        protected:
+            void run() override;
+        private:
+            bool running = true;
+            bool stopped = false;
+    };
 }
 
-Actor::~Actor()
-{
-    delete this->RigidBody;
-}
-
-PE_ObjectType Actor::GetType()
-{
-    return PE_ObjectType_Actor;
-}
-
-void Actor::AddChildren(Object *obj)
-{
-    Object::AddChildren(obj);
-    if (obj->GetType() == PE_ObjectType_Collider)
-        this->colliders.append(dynamic_cast<Collider*>(obj));
-}
-
-QList<Collectable_SmartPtr<Collider>> Actor::GetColliders() const
-{
-    return this->colliders;
-}
+#endif // GC_THREAD_H

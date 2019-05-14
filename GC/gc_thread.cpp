@@ -10,35 +10,40 @@
 
 // Copyright (c) Petr Bena 2019
 
-#include "actor.h"
-#include "collider.h"
-#include "rigidbody.h"
+#include "gc_thread.h"
+#include "gc.h"
+#include "../engine.h"
 
 using namespace PE;
 
-Actor::Actor()
+GC_thread::GC_thread()
 {
 
 }
 
-Actor::~Actor()
+void GC_thread::Stop()
 {
-    delete this->RigidBody;
+    this->running = false;
 }
 
-PE_ObjectType Actor::GetType()
+bool GC_thread::IsStopped() const
 {
-    return PE_ObjectType_Actor;
+    return this->stopped;
 }
 
-void Actor::AddChildren(Object *obj)
+bool GC_thread::IsRunning() const
 {
-    Object::AddChildren(obj);
-    if (obj->GetType() == PE_ObjectType_Collider)
-        this->colliders.append(dynamic_cast<Collider*>(obj));
+    return this->running;
 }
 
-QList<Collectable_SmartPtr<Collider>> Actor::GetColliders() const
+void GC_thread::run()
 {
-    return this->colliders;
+    while (this->running)
+    {
+        if (!Engine::GetEngine()->GetGC()->Collect())
+            GC_thread::usleep(20000);
+        GC_thread::usleep(2000);
+    }
+
+    this->stopped = true;
 }

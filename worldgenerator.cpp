@@ -11,7 +11,6 @@
 // Copyright (c) Petr Bena 2019
 
 #include "worldgenerator.h"
-#include "terrain.h"
 #include "bitmapcollider.h"
 #include "pemath.h"
 #include <QImage>
@@ -22,9 +21,9 @@
 
 using namespace PE;
 
-Terrain *WorldGenerator::GenerateRandom(int w_width, int w_height)
+Collectable_SmartPtr<Terrain> WorldGenerator::GenerateRandom(int w_width, int w_height)
 {
-    Terrain *w = new Terrain(0, 0, w_width, w_height);
+    Collectable_SmartPtr<Terrain> w = new Terrain(0, 0, w_width, w_height);
     QImage image(w_width, w_height, QImage::Format_RGB32);
     image.fill(Qt::black);
     QPainter painter(&image);

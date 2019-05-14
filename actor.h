@@ -14,6 +14,7 @@
 #define ACTOR_H
 
 #include "object.h"
+#include "GC/collectable_smartptr.h"
 #include <QList>
 
 namespace PE
@@ -24,17 +25,19 @@ namespace PE
     {
         public:
             Actor();
-            ~Actor();
+            ~Actor() override;
             PE_ObjectType GetType() override;
             void AddChildren(Object *obj) override;
+            virtual void Event_KeyPress(int key) { (void)key; }
+            virtual void Event_KeyRelease(int key) {}
             virtual void Update(qint64 time = 0) {}
-            QList<Collider*> GetColliders() const;
+            QList<Collectable_SmartPtr<Collider>> GetColliders() const;
             // Only actors with rigidbody have any physics applied to them
             Rigidbody *RigidBody = nullptr;
 
         protected:
             // List of colliders bound to this actor, this is used as a cache only
-            QList<Collider*> colliders;
+            QList<Collectable_SmartPtr<Collider>> colliders;
     };
 }
 

@@ -37,7 +37,7 @@ bool Object::HasChildren()
 void Object::AddChildren(Object *obj)
 {
     if (this->children == nullptr)
-        this->children = new QList<Object*>();
+        this->children = new QList<Collectable_SmartPtr<Object>>();
     this->children->append(obj);
     obj->parent = this;
 }

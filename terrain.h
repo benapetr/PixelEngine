@@ -19,13 +19,14 @@
 namespace PE
 {
     class BitmapCollider;
+    class Collider;
     class Terrain : public Object
     {
         public:
             Terrain(double x, double y, int width, int height);
             ~Terrain() override;
             PE_ObjectType GetType() override;
-            BitmapCollider *Collider;
+            Collectable_SmartPtr<BitmapCollider> Collider;
             void Render(Renderer *r) override;
             QBitmap BitMap;
     };

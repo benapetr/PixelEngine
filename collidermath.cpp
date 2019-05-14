@@ -37,6 +37,9 @@ bool ColliderMath::IntersectionCheckBoxBitmap(BoxCollider *a, BitmapCollider *b)
         return true;
 
     Vector p = a->Position;
+    p.X += a->width / 2;
+    if (b->PositionMatch(p))
+        return true;
     p.X += a->width;
     if (b->PositionMatch(p))
         return true;
