@@ -26,6 +26,7 @@ World::World(double width, double height)
     this->BackgroundColor = Qt::white;
     this->world_width = width;
     this->world_height = height;
+    this->redrawNeeded = true;
 }
 
 World::~World()
@@ -38,6 +39,11 @@ World::~World()
 
 void World::Render(Renderer *r)
 {
+    if (!this->redrawNeeded)
+        return;
+
+    this->redrawNeeded = false;
+
     r->Clear(this->BackgroundColor);
 
     // terrains
@@ -86,12 +92,14 @@ void World::RegisterActor(Actor *a, int zindex)
         this->objects.insert(zindex, QList<Collectable_SmartPtr<Object>>());
     this->objects[zindex].append(a);
     this->actors.append(a);
+    this->redrawNeeded = true;
 }
 
 void World::RegisterTerrain(Terrain *t, int zindex)
 {
     this->terrains.append(t);
     this->colliders.append(dynamic_cast<Collider*>(t->Collider.GetPtr()));
+    this->redrawNeeded = true;
 }
 
 void World::RegisterCollider(Collider *c)
@@ -199,6 +207,7 @@ void World::updateMovement()
             {
                 // The object has moved, let's update the physics cache so that all objects that are related to this one will know it
                 a->UpdateRecursivelyLastMovement(this->lastUpdate);
+                this->redrawNeeded = true;
             }
         }
     }

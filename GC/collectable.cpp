@@ -12,6 +12,7 @@
 
 #include "collectable.h"
 #include "../exception.h"
+#include <assert.h>
 
 using namespace PE;
 
@@ -36,6 +37,11 @@ Collectable::Collectable()
 
 Collectable::~Collectable()
 {
+    //if (this->_refCount > 0)
+    //    throw new Exception("Managed resource with references removal", BOOST_CURRENT_FUNCTION);
+
+    assert(this->_refCount == 0);
+
     Collectable::CollectablesLock->lock();
 #ifdef PE_DEBUG
     if (!Collectable::Collectables.removeOne(this))

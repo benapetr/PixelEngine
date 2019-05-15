@@ -64,6 +64,7 @@ namespace PE
             QList<Collectable_SmartPtr<Terrain>> terrains;
             double world_width;
             double world_height;
+            bool redrawNeeded;
             qint64 lastUpdate = 0;
     };
 }
