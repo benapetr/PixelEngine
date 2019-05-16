@@ -34,6 +34,8 @@ namespace PE
             QList<Collectable_SmartPtr<Collider>> GetColliders() const;
             // Only actors with rigidbody have any physics applied to them
             Rigidbody *RigidBody = nullptr;
+            //! If this actor explicitly needs to redraw, this is necessary by rendering optimizations
+            bool RedrawNeeded = false;
 
         protected:
             // List of colliders bound to this actor, this is used as a cache only
