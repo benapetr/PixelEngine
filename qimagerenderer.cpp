@@ -69,7 +69,7 @@ void QImageRenderer::DrawBitmap(int x, int y, int width, int height, QBitmap bit
     if (!this->Enabled)
         return;
     this->painter->setPen(QPen());
-    this->painter->drawPixmap(x, y, width, height, bitmap);
+    this->painter->drawPixmap(x, this->worldToQtY(y) - height, width, height, bitmap);
     if (!this->ManualUpdate)
         this->HasUpdate = true;
 }

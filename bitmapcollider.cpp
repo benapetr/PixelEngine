@@ -29,12 +29,23 @@ BitmapCollider::BitmapCollider(int x, int y, int w, int h)
 
 bool BitmapCollider::PositionMatch(Vector position)
 {
+    // This check is probably not necessary, we do more advanced boundary check
     if (position.X < this->Position.X || position.X > this->Position.X + static_cast<double>(this->width))
         return false;
     if (position.Y < 0 || position.Y < this->Position.Y || position.Y > this->Position.Y + static_cast<double>(this->height))
         return false;
 
-    return (this->Bitmap[position.X2int()][position.Y2int()]);
+    // Shift the position by the collider position vector
+    int position_x = position.X2int() - this->Position.X2int();
+    int position_y = position.Y2int() - this->Position.Y2int();
+
+    // Check again if this position is within bitmap boundary
+    if (position_x < 0 || position_x > this->width)
+        return false;
+    if (position_y < 0 || position_y > this->height)
+        return false;
+
+    return (this->Bitmap[position_x][position_y]);
 }
 
 bool BitmapCollider::IntersectionMatch(Collider *collider)

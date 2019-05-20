@@ -22,8 +22,9 @@ namespace PE
             Terrain(double x, double y, int width, int height);
             ~Terrain() override;
             PE_ObjectType GetType() override;
-            Collectable_SmartPtr<BitmapCollider> Collider;
             void Render(Renderer *r, Camera *c) override;
+            void SetPosition(Vector p) override;
+            Collectable_SmartPtr<BitmapCollider> Collider;
             QBitmap BitMap;
     };
 }

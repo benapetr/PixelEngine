@@ -34,3 +34,9 @@ void Terrain::Render(Renderer *r, Camera *c)
     Vector position = c->ProjectedPosition(this->Position);
     r->DrawBitmap(position.X2int(), position.Y2int(), this->Collider->GetWidth(), this->Collider->GetHeight(), this->BitMap);
 }
+
+void Terrain::SetPosition(Vector p)
+{
+    Object::SetPosition(p);
+    this->Collider->Position = p;
+}

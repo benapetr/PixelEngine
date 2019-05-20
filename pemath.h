@@ -5,6 +5,7 @@
 // Proprietary and confidential
 
 // Written by Petr Bena 2019
+
 #ifndef PEMATH_H
 #define PEMATH_H
 

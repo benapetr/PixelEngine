@@ -32,8 +32,6 @@ namespace PE
             int GetHeight() { return this->height; }
             QList<pe_bitset> Bitmap;
         private:
-            int X;
-            int Y;
             int width;
             int height;
 

@@ -5,6 +5,7 @@
 // Proprietary and confidential
 
 // Written by Petr Bena 2019
+
 #include "object.h"
 
 using namespace PE;
