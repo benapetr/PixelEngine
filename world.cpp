@@ -42,8 +42,20 @@ World::~World()
 
 void World::Render(Renderer *r)
 {
-    //if (!this->redrawNeeded)
-    //    return;
+    if (!this->redrawNeeded)
+    {
+        foreach (Actor *a, this->actors)
+        {
+            if (a->RedrawNeeded)
+            {
+                this->redrawNeeded = true;
+                break;
+            }
+        }
+    }
+
+    if (!this->redrawNeeded)
+        return;
 
     this->redrawNeeded = false;
 
