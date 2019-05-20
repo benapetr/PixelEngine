@@ -23,7 +23,7 @@ namespace PE
     class Renderer
     {
         public:
-            Renderer();
+            Renderer(int width, int height);
             virtual ~Renderer();
             virtual void Render()=0;
             virtual void Clear()=0;
@@ -32,6 +32,8 @@ namespace PE
             virtual void DrawRect(int x, int y, int width, int height, int line_width, QColor color, bool fill = false)=0;
             virtual void DrawLine(Vector source, Vector target, int line_width, QColor color)=0;
             virtual void DrawBitmap(int x, int y, int width, int height, QBitmap bitmap)=0;
+            int GetHeight() { return this->r_height; }
+            int GetWidth() { return this->r_width; }
             //! If true the underlying image has changed and should be redrawn to the screen
             bool HasUpdate = false;
             bool ManualUpdate = false;

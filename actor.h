@@ -29,8 +29,8 @@ namespace PE
             PE_ObjectType GetType() override;
             void AddChildren(Object *obj) override;
             virtual void Event_KeyPress(int key) { (void)key; }
-            virtual void Event_KeyRelease(int key) {}
-            virtual void Update(qint64 time = 0) {}
+            virtual void Event_KeyRelease(int key) { (void)key; }
+            virtual void Update(qint64 time = 0) { (void)time; }
             QList<Collectable_SmartPtr<Collider>> GetColliders() const;
             // Only actors with rigidbody have any physics applied to them
             Rigidbody *RigidBody = nullptr;

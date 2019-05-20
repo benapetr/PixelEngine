@@ -27,7 +27,7 @@ namespace PE
             ~Terrain() override;
             PE_ObjectType GetType() override;
             Collectable_SmartPtr<BitmapCollider> Collider;
-            void Render(Renderer *r) override;
+            void Render(Renderer *r, Camera *c) override;
             QBitmap BitMap;
     };
 }

@@ -12,6 +12,7 @@
 
 #include "world.h"
 #include "actor.h"
+#include "camera.h"
 #include "collider.h"
 #include "renderer.h"
 #include "rigidbody.h"
@@ -27,6 +28,7 @@ World::World(double width, double height)
     this->world_width = width;
     this->world_height = height;
     this->redrawNeeded = true;
+    this->camera = new Camera();
 }
 
 World::~World()
@@ -35,12 +37,13 @@ World::~World()
     this->objects.clear();
     this->terrains.clear();
     this->colliders.clear();
+    delete this->camera;
 }
 
 void World::Render(Renderer *r)
 {
-    if (!this->redrawNeeded)
-        return;
+    //if (!this->redrawNeeded)
+    //    return;
 
     this->redrawNeeded = false;
 
@@ -49,7 +52,7 @@ void World::Render(Renderer *r)
     // terrains
     foreach (Terrain *t, this->terrains)
     {
-        t->Render(r);
+        t->Render(r, this->camera);
     }
 
     // layers
@@ -60,7 +63,7 @@ void World::Render(Renderer *r)
     {
         foreach (Object *x, this->objects[i])
         {
-            x->Render(r);
+            x->Render(r, this->camera);
         }
     }
     if (r->ManualUpdate)
@@ -93,6 +96,13 @@ void World::RegisterActor(Actor *a, int zindex)
     this->objects[zindex].append(a);
     this->actors.append(a);
     this->redrawNeeded = true;
+}
+
+void World::RegisterObject(Object *o, int zindex)
+{
+    if (!this->objects.contains(zindex))
+        this->objects.insert(zindex, QList<Collectable_SmartPtr<Object>>());
+    this->objects[zindex].append(o);
 }
 
 void World::RegisterTerrain(Terrain *t, int zindex)

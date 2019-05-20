@@ -16,11 +16,9 @@
 
 using namespace PE;
 
-QImageRenderer::QImageRenderer(int width, int height)
+QImageRenderer::QImageRenderer(int width, int height) : Renderer(width, height)
 {
     this->image = new QImage(width, height, QImage::Format_RGB32);
-    this->r_width = width;
-    this->r_height = height;
     this->painter = new QPainter(this->image);
     this->Clear();
 }

@@ -22,6 +22,7 @@ namespace PE
 {
     class Renderer;
     class Actor;
+    class Camera;
     class Object;
     class Terrain;
     class Collider;
@@ -58,6 +59,7 @@ namespace PE
             void updateMovement();
 
         private:
+            Camera *camera;
             QList<Collectable_SmartPtr<Actor>> actors;
             QList<Collectable_SmartPtr<Collider>> colliders;
             QHash<int, QList<Collectable_SmartPtr<Object>>> objects;

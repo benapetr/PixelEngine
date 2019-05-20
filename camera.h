@@ -10,17 +10,22 @@
 
 // Copyright (c) Petr Bena 2019
 
-#include "renderer.h"
+#ifndef CAMERA_H
+#define CAMERA_H
 
-using namespace PE;
+#include "vector.h"
 
-Renderer::Renderer(int width, int height)
+namespace PE
 {
-    this->r_height = height;
-    this->r_width = width;
+    class Camera
+    {
+        public:
+            Camera();
+            Vector GetNegated();
+            //! Position relative to world from current camera point of view
+            Vector ProjectedPosition(Vector position);
+            Vector Position;
+    };
 }
 
-Renderer::~Renderer()
-{
-
-}
+#endif // CAMERA_H

@@ -32,6 +32,7 @@ namespace PE
     };
 
     class Collider;
+    class Camera;
 
     //! Objects are static transforms that can render to world. Basically every world component is inherited from this class.
     //! Each object can also have multiple childrens and 1 parent
@@ -40,8 +41,8 @@ namespace PE
         public:
             Object(Object *p = nullptr);
             ~Object() override;
-            virtual void Render(Renderer *r) { (void)r; };
-            Object *GetParent() { return this->parent; };
+            virtual void Render(Renderer *r, Camera *c) { (void)r; }
+            Object *GetParent() { return this->parent; }
             virtual PE_ObjectType GetType();
             bool HasChildren();
             virtual void AddChildren(Object *obj);

@@ -11,6 +11,7 @@
 // Copyright (c) Petr Bena 2019
 
 #include "terrain.h"
+#include "camera.h"
 #include "bitmapcollider.h"
 #include "renderer.h"
 
@@ -32,7 +33,8 @@ PE_ObjectType Terrain::GetType()
     return PE_ObjectType_Terrain;
 }
 
-void Terrain::Render(Renderer *r)
+void Terrain::Render(Renderer *r, Camera *c)
 {
-    r->DrawBitmap(this->Position.X2int(), this->Position.Y2int(), this->Collider->GetWidth(), this->Collider->GetHeight(), this->BitMap);
+    Vector position = c->ProjectedPosition(this->Position);
+    r->DrawBitmap(position.X2int(), position.Y2int(), this->Collider->GetWidth(), this->Collider->GetHeight(), this->BitMap);
 }
