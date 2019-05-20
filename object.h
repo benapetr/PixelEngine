@@ -1,14 +1,10 @@
-//This program is free software: you can redistribute it and/or modify
-//it under the terms of the GNU Lesser General Public License as published by
-//the Free Software Foundation, either version 3 of the License, or
-//(at your option) any later version.
+// PixelEngine
+// --------------------------------------------------------------------------
+// Copyright (C) Petr Bena - All Rights Reserved
+// Unauthorized copying of this file, via any medium is strictly prohibited
+// Proprietary and confidential
 
-//This program is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//GNU Lesser General Public License for more details.
-
-// Copyright (c) Petr Bena 2019
+// Written by Petr Bena 2019
 
 #ifndef OBJECT_H
 #define OBJECT_H
@@ -51,12 +47,16 @@ namespace PE
             virtual void Event_OnCollision(Collider *collider) { (void)collider; }
             virtual Vector GetPosition() const;
             void UpdateRecursivelyLastMovement(qint64 time);
+            //! Optional optimization function - if returns false, the object will not redraw even if RedrawNeeded is true
+            virtual bool IsVisibleOnCamera(Camera *c) { (void)c; return true; }
             //! Current absolute position of object in the world
             Vector Position;
             //! This is relative position to parent object, if it has no parent, then there is no point in using this
             Vector RelativePosition;
             //! This value is used by physics cache
             qint64 LastMovementUpdate = 0;
+            //! If this object explicitly needs to redraw, this is necessary for rendering optimizations
+            bool RedrawNeeded = false;
 
         private:
             Collectable_SmartPtr<Object> parent;

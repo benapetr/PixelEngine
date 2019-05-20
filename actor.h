@@ -1,15 +1,10 @@
-//This program is free software: you can redistribute it and/or modify
-//it under the terms of the GNU Lesser General Public License as published by
-//the Free Software Foundation, either version 3 of the License, or
-//(at your option) any later version.
+// PixelEngine
+// --------------------------------------------------------------------------
+// Copyright (C) Petr Bena - All Rights Reserved
+// Unauthorized copying of this file, via any medium is strictly prohibited
+// Proprietary and confidential
 
-//This program is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//GNU Lesser General Public License for more details.
-
-// Copyright (c) Petr Bena 2019
-
+// Written by Petr Bena 2019
 #ifndef ACTOR_H
 #define ACTOR_H
 
@@ -34,8 +29,6 @@ namespace PE
             QList<Collectable_SmartPtr<Collider>> GetColliders() const;
             // Only actors with rigidbody have any physics applied to them
             Rigidbody *RigidBody = nullptr;
-            //! If this actor explicitly needs to redraw, this is necessary by rendering optimizations
-            bool RedrawNeeded = false;
 
         protected:
             // List of colliders bound to this actor, this is used as a cache only

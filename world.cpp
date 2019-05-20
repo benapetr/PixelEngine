@@ -1,14 +1,10 @@
-//This program is free software: you can redistribute it and/or modify
-//it under the terms of the GNU Lesser General Public License as published by
-//the Free Software Foundation, either version 3 of the License, or
-//(at your option) any later version.
+// PixelEngine
+// --------------------------------------------------------------------------
+// Copyright (C) Petr Bena - All Rights Reserved
+// Unauthorized copying of this file, via any medium is strictly prohibited
+// Proprietary and confidential
 
-//This program is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//GNU Lesser General Public License for more details.
-
-// Copyright (c) Petr Bena 2019
+// Written by Petr Bena 2019
 
 #include "world.h"
 #include "actor.h"
@@ -48,8 +44,14 @@ void World::Render(Renderer *r)
         {
             if (a->RedrawNeeded)
             {
-                this->redrawNeeded = true;
-                break;
+                if (a->IsVisibleOnCamera(this->camera))
+                {
+                    this->redrawNeeded = true;
+                    break;
+                } else
+                {
+                    a->RedrawNeeded = false;
+                }
             }
         }
     }
@@ -75,7 +77,9 @@ void World::Render(Renderer *r)
     {
         foreach (Object *x, this->objects[i])
         {
-            x->Render(r, this->camera);
+            if (x->IsVisibleOnCamera(this->camera))
+                x->Render(r, this->camera);
+            x->RedrawNeeded = false;
         }
     }
     if (r->ManualUpdate)
