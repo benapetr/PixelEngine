@@ -18,6 +18,9 @@
 // PI / 180 for radian
 #define PE_PI_RAD_CNV 1.74532925
 
+// Radians to degree
+#define PE_RAD_DEG_CNV 57.2958
+
 // Bitmap size
 #define PE_BITSET_MAX 10000
 

@@ -118,6 +118,19 @@ void QImageRenderer::DrawRect(int x, int y, int width, int height, int line_widt
         this->HasUpdate = true;
 }
 
+void QImageRenderer::DrawText(int x, int y, QString text, QColor color)
+{
+    if (!this->Enabled)
+        return;
+
+    QPen pen(color);
+    this->painter->setPen(pen);
+    this->painter->drawText(x, this->worldToQtY(y), text);
+
+    if (!this->ManualUpdate)
+        this->HasUpdate = true;
+}
+
 int QImageRenderer::trimX(int x)
 {
     if (x < 0)

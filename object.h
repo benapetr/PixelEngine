@@ -37,7 +37,7 @@ namespace PE
         public:
             Object(Object *p = nullptr);
             ~Object() override;
-            virtual void Render(Renderer *r, Camera *c) { (void)r; }
+            virtual void Render(Renderer *r, Camera *c) { (void)r; (void)c; }
             Object *GetParent() { return this->parent; }
             virtual PE_ObjectType GetType();
             bool HasChildren();
@@ -49,6 +49,10 @@ namespace PE
             void UpdateRecursivelyLastMovement(qint64 time);
             //! Optional optimization function - if returns false, the object will not redraw even if RedrawNeeded is true
             virtual bool IsVisibleOnCamera(Camera *c) { (void)c; return true; }
+            //! Called when object is being destroyed - this will remove all references to other objects and prepare this object
+            //! for deletion from operating memory
+            virtual void Destroy();
+            bool IsDestroyed() { return this->isDestroyed; };
             //! Current absolute position of object in the world
             Vector Position;
             //! This is relative position to parent object, if it has no parent, then there is no point in using this
@@ -59,6 +63,7 @@ namespace PE
             bool RedrawNeeded = false;
 
         private:
+            bool isDestroyed = false;
             Collectable_SmartPtr<Object> parent;
             QList<Collectable_SmartPtr<Object>> *children = nullptr;
     };
