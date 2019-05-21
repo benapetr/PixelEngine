@@ -9,7 +9,7 @@
 #include "bitmapcollider.h"
 #include "collidermath.h"
 #include "boxcollider.h"
-#include "exception.h"
+#include "../exception.h"
 
 using namespace PE;
 
@@ -53,5 +53,5 @@ bool BitmapCollider::IntersectionMatch(Collider *collider)
     if (collider->GetColliderType() == PE_ColliderType_Box)
         return ColliderMath::IntersectionCheckBoxBitmap(dynamic_cast<BoxCollider*>(collider), this);
 
-    return false;
+    return this->PositionMatch(collider->Position);
 }

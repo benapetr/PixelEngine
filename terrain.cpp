@@ -8,8 +8,8 @@
 
 #include "terrain.h"
 #include "camera.h"
-#include "bitmapcollider.h"
-#include "renderer.h"
+#include "Physics/bitmapcollider.h"
+#include "Graphics/renderer.h"
 
 using namespace PE;
 

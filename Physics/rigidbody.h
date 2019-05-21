@@ -9,7 +9,7 @@
 #ifndef RIGIDBODY_H
 #define RIGIDBODY_H
 
-#include "vector.h"
+#include "../vector.h"
 
 namespace PE
 {

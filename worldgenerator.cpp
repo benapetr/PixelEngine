@@ -7,7 +7,7 @@
 // Written by Petr Bena 2019
 
 #include "worldgenerator.h"
-#include "bitmapcollider.h"
+#include "Physics/bitmapcollider.h"
 #include "pemath.h"
 #include <QImage>
 #include <QPen>

@@ -11,7 +11,7 @@
 
 #include <QColor>
 #include <QBitmap>
-#include "vector.h"
+#include "../vector.h"
 
 namespace PE
 {

@@ -9,7 +9,7 @@
 #include "collectable_smartptr.h"
 #include "../exception.h"
 #include "../object.h"
-#include "../collider.h"
+#include "../Physics/collider.h"
 #include "../actor.h"
 #include "../terrain.h"
 #include "gc.h"

@@ -9,11 +9,11 @@
 #include "world.h"
 #include "actor.h"
 #include "camera.h"
-#include "collider.h"
-#include "renderer.h"
-#include "rigidbody.h"
+#include "Physics/collider.h"
+#include "Graphics/renderer.h"
+#include "Physics/rigidbody.h"
 #include "terrain.h"
-#include "bitmapcollider.h"
+#include "Physics/bitmapcollider.h"
 #include <QDateTime>
 
 using namespace PE;
@@ -256,6 +256,9 @@ void World::updateMovement()
 
                 // Now let's try to find a position between the source and target colider, to prevent any space gaps in between them
                 a->RigidBody->ResetForceAfterImpact();
+
+                // Spawn the event
+                a->Event_OnCollision(collision_target);
             } else
             {
                 // The object has moved, let's update the physics cache so that all objects that are related to this one will know it

@@ -16,8 +16,8 @@ namespace PE
     class ColliderMath
     {
         public:
-        static bool IntersectionCheckBoxBox(BoxCollider *a, BoxCollider *b);
-        static bool IntersectionCheckBoxBitmap(BoxCollider *a, BitmapCollider *b);
+            static bool IntersectionCheckBoxBox(BoxCollider *a, BoxCollider *b);
+            static bool IntersectionCheckBoxBitmap(BoxCollider *a, BitmapCollider *b);
     };
 }
 

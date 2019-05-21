@@ -9,12 +9,13 @@
 #ifndef COLLIDER_H
 #define COLLIDER_H
 
-#include "object.h"
+#include "../object.h"
 
 namespace PE
 {
     enum PE_ColliderType
     {
+        PE_ColliderType_Pixel,
         PE_ColliderType_Box,
         PE_ColliderType_Bitmap
     };

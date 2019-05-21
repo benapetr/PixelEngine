@@ -7,8 +7,8 @@
 // Written by Petr Bena 2019
 
 #include "actor.h"
-#include "collider.h"
-#include "rigidbody.h"
+#include "Physics/collider.h"
+#include "Physics/rigidbody.h"
 
 using namespace PE;
 

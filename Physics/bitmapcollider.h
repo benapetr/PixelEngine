@@ -9,7 +9,7 @@
 #ifndef BITMAPCOLLIDER_H
 #define BITMAPCOLLIDER_H
 
-#include "definitions.h"
+#include "../definitions.h"
 #include "collider.h"
 #include <bitset>
 

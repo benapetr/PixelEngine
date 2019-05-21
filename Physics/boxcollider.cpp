@@ -42,7 +42,7 @@ bool BoxCollider::IntersectionMatch(Collider *collider)
     if (collider->GetColliderType() == PE::PE_ColliderType_Bitmap)
         return ColliderMath::IntersectionCheckBoxBitmap(this, dynamic_cast<BitmapCollider*>(collider));
 
-    return false;
+    return this->PositionMatch(collider->Position);
 }
 
 
