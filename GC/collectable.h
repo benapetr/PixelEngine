@@ -30,6 +30,8 @@ namespace PE
             void DecRef();
 
         private:
+            void collectable_Register();
+            bool collectable_isRegistered = false;
             //! Number of references pointing to this collectable
             unsigned int _refCount = 0;
             // For fast memory access

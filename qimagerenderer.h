@@ -32,6 +32,8 @@ namespace PE
             void DrawLine(Vector source, Vector target, int line_width, QColor color) override;
             void DrawRect(int x, int y, int width, int height, int line_width, QColor color, bool fill = false) override;
             void DrawText(int x, int y, QString text, QColor color) override;
+            void DrawEllipse(int x, int y, int width, int height, QColor color, int line_width=1) override;
+
 
         private:
             int trimX(int x);

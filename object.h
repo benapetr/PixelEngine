@@ -53,6 +53,8 @@ namespace PE
             //! for deletion from operating memory
             virtual void Destroy();
             bool IsDestroyed() { return this->isDestroyed; };
+            //! If positive value, this object will be destroyed after this time value
+            qint64 DestroyAfter = -1;
             //! Current absolute position of object in the world
             Vector Position;
             //! This is relative position to parent object, if it has no parent, then there is no point in using this

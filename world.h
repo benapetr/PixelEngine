@@ -39,8 +39,10 @@ namespace PE
             void RegisterObject(Object *o, int zindex = 1);
             void RegisterTerrain(Terrain *t, int zindex = 0);
             void RegisterCollider(Collider *c);
+            void DestroyObject(Collectable_SmartPtr<Object> o);
             void ProcessKeyPress(int key);
             void ProcessKeyRelease(int key);
+            qint64 GetTime();
             bool HasBorder = true;
             // Every object that makes it under this Y is automatically destroyed
             // this is here to handle players that fall behind terrain
@@ -53,6 +55,7 @@ namespace PE
             void updatePhysics();
             void updateGravity();
             void updateMovement();
+            void deleteOld();
 
         private:
             Camera *camera;

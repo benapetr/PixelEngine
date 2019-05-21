@@ -91,7 +91,8 @@ void World::Render(Renderer *r)
 
 void World::Update()
 {
-    this->lastUpdate = QDateTime::currentDateTime().toMSecsSinceEpoch();
+    this->lastUpdate = this->GetTime();
+    this->deleteOld();
     this->updatePhysics();
     foreach (Actor *a, this->actors)
     {
@@ -133,6 +134,22 @@ void World::RegisterCollider(Collider *c)
     this->colliders.append(c);
 }
 
+void World::DestroyObject(Collectable_SmartPtr<Object> o)
+{
+    o->Destroy();
+    if (o->GetType() == PE_ObjectType_Actor)
+    {
+        Collectable_SmartPtr<Actor> a(dynamic_cast<Actor*>(o.GetPtr()));
+        this->actors.removeAll(a);
+    }
+    QList<int> indexes = this->objects.keys();
+    foreach (int i, indexes)
+    {
+        this->objects[i].removeAll(o);
+    }
+    this->redrawNeeded = true;
+}
+
 void World::ProcessKeyPress(int key)
 {
     foreach (Actor *a, this->actors)
@@ -143,6 +160,11 @@ void World::ProcessKeyRelease(int key)
 {
     foreach (Actor *a, this->actors)
         a->Event_KeyRelease(key);
+}
+
+qint64 World::GetTime()
+{
+    return QDateTime::currentDateTime().toMSecsSinceEpoch();
 }
 
 void World::updateGravity()
@@ -156,9 +178,14 @@ void World::updateGravity()
         if (a->RigidBody->IsGrounded() && a->LastMovementUpdate >= a->RigidBody->GroundCollider->LastMovementUpdate)
             continue;
 
-        a->RigidBody->GravityForce += this->Gravity * a->RigidBody->Weight;
+        /*a->RigidBody->GravityForce += this->Gravity * a->RigidBody->Weight;
         if (a->RigidBody->GravityForce > this->GravityMax)
-            a->RigidBody->GravityForce = this->GravityMax;
+            a->RigidBody->GravityForce = this->GravityMax;*/
+
+
+        a->RigidBody->Velocity.Y += -1 * this->Gravity * a->RigidBody->Weight;
+        if (a->RigidBody->Velocity.Y > this->GravityMax)
+            a->RigidBody->Velocity.Y = this->GravityMax;
     }
 }
 
@@ -235,6 +262,20 @@ void World::updateMovement()
                 a->UpdateRecursivelyLastMovement(this->lastUpdate);
                 this->redrawNeeded = true;
             }
+        } else if (old_position != a->Position)
+        {
+            this->redrawNeeded = true;
         }
+    }
+}
+
+void World::deleteOld()
+{
+    foreach (Actor *a, this->actors)
+    {
+        if (a->DestroyAfter < 0)
+            continue;
+        if (a->DestroyAfter < this->lastUpdate)
+            this->DestroyObject(a);
     }
 }

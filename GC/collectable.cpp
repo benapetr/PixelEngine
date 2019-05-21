@@ -26,9 +26,9 @@ int Collectable::GetCollectablesCount()
 
 Collectable::Collectable()
 {
-    Collectable::CollectablesLock->lock();
-    Collectable::Collectables.append(this);
-    Collectable::CollectablesLock->unlock();
+    // We don't register this object until refCount is increased at least once
+    // so that we have time to actually increment reference counter before GC
+    // find this
 }
 
 Collectable::~Collectable()
@@ -55,6 +55,8 @@ Collectable::~Collectable()
 void Collectable::IncRef()
 {
     this->_refCount++;
+    if (!this->collectable_isRegistered)
+        this->collectable_Register();
 }
 
 void Collectable::DecRef()
@@ -62,4 +64,14 @@ void Collectable::DecRef()
     if (this->_refCount == 0)
         throw new Exception("Negative reference count", BOOST_CURRENT_FUNCTION);
     this->_refCount--;
+}
+
+void Collectable::collectable_Register()
+{
+    if (this->collectable_isRegistered)
+        throw new Exception("Registering collectable that already was registered", BOOST_CURRENT_FUNCTION);
+    this->collectable_isRegistered = true;
+    Collectable::CollectablesLock->lock();
+    Collectable::Collectables.append(this);
+    Collectable::CollectablesLock->unlock();
 }

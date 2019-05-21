@@ -118,37 +118,37 @@ namespace PE
     };
 
     template <class H>
-    bool operator==(Collectable_SmartPtr<H> &smart_ptr, Collectable_SmartPtr<H> &smart_ptx)
+    bool operator==(const Collectable_SmartPtr<H> &smart_ptr, const Collectable_SmartPtr<H> &smart_ptx)
     {
         return smart_ptr.GetPtr() == smart_ptx.GetPtr();
     }
 
     template <class H>
-    bool operator!=(Collectable_SmartPtr<H> &smart_ptr, Collectable_SmartPtr<H> &smart_ptx)
+    bool operator!=(const Collectable_SmartPtr<H> &smart_ptr, const Collectable_SmartPtr<H> &smart_ptx)
     {
         return smart_ptr.GetPtr() != smart_ptx.GetPtr();
     }
 
     template <class H>
-    bool operator==(Collectable_SmartPtr<H> &smart_ptr, std::nullptr_t ptr)
+    bool operator==(const Collectable_SmartPtr<H> &smart_ptr, std::nullptr_t ptr)
     {
         return smart_ptr.GetPtr() == ptr;
     }
 
     template <class H>
-    bool operator!=(Collectable_SmartPtr<H> &smart_ptr, std::nullptr_t ptr)
+    bool operator!=(const Collectable_SmartPtr<H> &smart_ptr, std::nullptr_t ptr)
     {
         return smart_ptr.GetPtr() != ptr;
     }
 
     template <class H>
-    bool operator==(Collectable_SmartPtr<H> &smart_ptr, H* ptr)
+    bool operator==(const Collectable_SmartPtr<H> &smart_ptr, H* ptr)
     {
         return smart_ptr.GetPtr() == ptr;
     }
 
     template <class H>
-    bool operator!=(Collectable_SmartPtr<H> &smart_ptr, H* ptr)
+    bool operator!=(const Collectable_SmartPtr<H> &smart_ptr, H* ptr)
     {
         return smart_ptr.GetPtr() != ptr;
     }

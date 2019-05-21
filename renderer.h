@@ -29,6 +29,7 @@ namespace PE
             virtual void DrawLine(Vector source, Vector target, int line_width, QColor color)=0;
             virtual void DrawBitmap(int x, int y, int width, int height, QBitmap bitmap)=0;
             virtual void DrawText(int x, int y, QString text, QColor color)=0;
+            virtual void DrawEllipse(int x, int y, int width, int height, QColor color, int line_width=1)=0;
             int GetHeight() { return this->r_height; }
             int GetWidth() { return this->r_width; }
             //! If true the underlying image has changed and should be redrawn to the screen

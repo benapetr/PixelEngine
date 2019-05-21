@@ -69,7 +69,7 @@ void QImageRenderer::DrawBitmap(int x, int y, int width, int height, QBitmap bit
     if (!this->Enabled)
         return;
     this->painter->setPen(QPen());
-    this->painter->drawPixmap(x, this->worldToQtY(y) - height, width, height, bitmap);
+    this->painter->drawPixmap(x, this->worldToQtY(y + height), width, height, bitmap);
     if (!this->ManualUpdate)
         this->HasUpdate = true;
 }
@@ -126,6 +126,20 @@ void QImageRenderer::DrawText(int x, int y, QString text, QColor color)
     QPen pen(color);
     this->painter->setPen(pen);
     this->painter->drawText(x, this->worldToQtY(y), text);
+
+    if (!this->ManualUpdate)
+        this->HasUpdate = true;
+}
+
+void QImageRenderer::DrawEllipse(int x, int y, int width, int height, QColor color, int line_width)
+{
+    if (!this->Enabled)
+        return;
+
+    QPen pen(color);
+    pen.setWidth(line_width);
+    this->painter->setPen(pen);
+    this->painter->drawEllipse(x, this->worldToQtY(y + height), width, height);
 
     if (!this->ManualUpdate)
         this->HasUpdate = true;

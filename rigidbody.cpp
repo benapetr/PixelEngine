@@ -27,6 +27,11 @@ Vector Rigidbody::GetMovement()
     return movement;
 }
 
+void Rigidbody::AddForce(Vector force)
+{
+    this->Velocity += force;
+}
+
 void Rigidbody::ResetForceAfterImpact()
 {
     this->GravityForce = 0;

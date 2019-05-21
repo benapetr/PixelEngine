@@ -28,7 +28,17 @@ Vector::Vector(double x, double y)
     this->Y = y;
 }
 
+Vector::~Vector()
+{
+
+}
+
 double Vector::Magnitude()
 {
-    return sqrt((this->X * this->X) + (this->Y * this->Y));
+    return std::sqrt((this->X * this->X) + (this->Y * this->Y));
+}
+
+double Vector::DistanceTo(const Vector &v)
+{
+    return std::sqrt(std::pow(this->X - v.X, 2) + std::pow(this->Y - v.Y, 2));
 }
