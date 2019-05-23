@@ -10,7 +10,7 @@
 
 using namespace PE;
 
-Collider::Collider()
+Collider::Collider(Object *parent) : Object(parent)
 {
 
 }

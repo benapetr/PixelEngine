@@ -20,6 +20,9 @@ Actor::Actor()
 Actor::~Actor()
 {
     delete this->RigidBody;
+    // In case someone else implements deletion of rigidbody in their own destructor this will
+    // prevent shooting in foot
+    this->RigidBody = nullptr;
 }
 
 PE_ObjectType Actor::GetType()

@@ -49,7 +49,7 @@ namespace PE
             // this is here to handle players that fall behind terrain
             double DeathZone = -20;
             double Gravity = 1;
-            double GravityMax = 10;
+            //double GravityMax = 10;
             QColor BackgroundColor;
 
         protected:

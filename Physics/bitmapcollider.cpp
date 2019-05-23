@@ -13,7 +13,7 @@
 
 using namespace PE;
 
-BitmapCollider::BitmapCollider(int x, int y, int w, int h)
+BitmapCollider::BitmapCollider(int x, int y, int w, int h, Object *parent) : Collider(parent)
 {
     if (w > PE_BITSET_MAX)
         throw new Exception("Width of BitMap collider can't be higher than PE_BITSET_MAX", BOOST_CURRENT_FUNCTION);

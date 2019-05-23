@@ -67,14 +67,14 @@ void Object::UpdateRecursivelyLastMovement(qint64 time)
     }
 }
 
-void Object::Destroy()
+void Object::DestroyNow()
 {
     this->isDestroyed = true;
     // Clear references to children objects
     if (this->children != nullptr)
     {
         foreach (Object *o, *this->children)
-            o->Destroy();
+            o->DestroyNow();
         this->children->clear();
     }
     // Clear reference to parent

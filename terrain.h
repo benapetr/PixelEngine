@@ -10,7 +10,10 @@
 #define TERRAIN_H
 
 #include "object.h"
-#include <QBitmap>
+#include <QPixmap>
+#include <QImage>
+
+class QPainter;
 
 namespace PE
 {
@@ -24,8 +27,22 @@ namespace PE
             PE_ObjectType GetType() override;
             void Render(Renderer *r, Camera *c) override;
             void SetPosition(Vector p) override;
+            //! Will replace pixel in underlying SourceImage with BackgroundColor and also removes the bit in collision map
+            //! this function is optimized for high speed, after you are done removing all pixels you need, you also have
+            //! to call RefreshPixmap for graphical changes to take effect
+            void DestroyPixel(Vector p);
+            void RefreshPixmap();
             Collectable_SmartPtr<BitmapCollider> Collider;
-            QBitmap BitMap;
+            QPixmap BitMap;
+            QImage SourceImage;
+            QColor BackgroundColor;
+
+        protected:
+            int terrainToQtY(int y);
+            int t_width;
+            int t_height;
+            QPainter *getPainter();
+            QPainter *painter = nullptr;
     };
 }
 

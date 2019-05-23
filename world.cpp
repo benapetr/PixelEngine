@@ -136,7 +136,7 @@ void World::RegisterCollider(Collider *c)
 
 void World::DestroyObject(Collectable_SmartPtr<Object> o)
 {
-    o->Destroy();
+    o->DestroyNow();
     if (o->GetType() == PE_ObjectType_Actor)
     {
         Collectable_SmartPtr<Actor> a(dynamic_cast<Actor*>(o.GetPtr()));
@@ -184,8 +184,9 @@ void World::updateGravity()
 
 
         a->RigidBody->Velocity.Y += -1 * this->Gravity * a->RigidBody->Weight;
+        /*
         if (a->RigidBody->Velocity.Y > this->GravityMax)
-            a->RigidBody->Velocity.Y = this->GravityMax;
+            a->RigidBody->Velocity.Y = this->GravityMax;*/
     }
 }
 
@@ -218,7 +219,7 @@ void World::updateMovement()
             }
 
             Collider *collision_target = nullptr;
-            Collider *collision_source = nullptr;
+            Object *collision_source = nullptr;
 
             foreach (Collider *collider_actor, ac)
             {
@@ -253,6 +254,8 @@ void World::updateMovement()
                 collision_source->Event_OnCollision(collision_target);
                 // We can't move this object, let's move it back
                 a->SetPosition(old_position);
+
+                a->Event_OnImpact(a->RigidBody->Velocity);
 
                 // Now let's try to find a position between the source and target colider, to prevent any space gaps in between them
                 a->RigidBody->ResetForceAfterImpact();

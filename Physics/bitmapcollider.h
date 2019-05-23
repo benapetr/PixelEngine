@@ -24,7 +24,7 @@ namespace PE
     class BitmapCollider : public Collider
     {
         public:
-            BitmapCollider(int x, int y, int w, int h);
+            BitmapCollider(int x, int y, int w, int h, Object *parent = nullptr);
             bool PositionMatch(Vector position) override;
             PE_ColliderType GetColliderType() override { return PE_ColliderType_Bitmap; }
             bool IntersectionMatch(Collider *collider) override;

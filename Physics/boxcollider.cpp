@@ -12,7 +12,7 @@
 
 using namespace PE;
 
-BoxCollider::BoxCollider(double x, double y, double w, double h)
+BoxCollider::BoxCollider(double x, double y, double w, double h, Object *parent) : Collider(parent)
 {
     this->Position.X = x;
     this->Position.Y = y;

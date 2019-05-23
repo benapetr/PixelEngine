@@ -64,7 +64,7 @@ void QImageRenderer::DrawPixel(int x, int y, QColor color)
         this->HasUpdate = true;
 }
 
-void QImageRenderer::DrawBitmap(int x, int y, int width, int height, QBitmap bitmap)
+void QImageRenderer::DrawBitmap(int x, int y, int width, int height, QPixmap bitmap)
 {
     if (!this->Enabled)
         return;
@@ -168,6 +168,6 @@ int QImageRenderer::trimY(int y)
 
 int QImageRenderer::worldToQtY(int y)
 {
-    return (this->r_height-1) - y;
+    return (this->r_height) - y;
 }
 

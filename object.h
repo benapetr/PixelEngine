@@ -51,9 +51,12 @@ namespace PE
             virtual bool IsVisibleOnCamera(Camera *c) { (void)c; return true; }
             //! Called when object is being destroyed - this will remove all references to other objects and prepare this object
             //! for deletion from operating memory
-            virtual void Destroy();
+            //! This will not remove object from any underlying worlds, this function is typically called by world itself.
+            //! If you just want to destroy object and not handle its removal from world, then call just Destroy() and let
+            //! world perform the clean-up for you
+            virtual void DestroyNow();
             //! Schedule object for destruction after specific ms, the destruction is handled by underlying world
-            virtual void Destroy(qint64 time);
+            virtual void Destroy(qint64 time = 0);
             bool IsDestroyed() { return this->isDestroyed; };
             //! If positive value, this object will be destroyed after this time value
             qint64 DestroyAfter = -1;

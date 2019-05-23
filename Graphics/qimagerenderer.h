@@ -28,7 +28,7 @@ namespace PE
             void Clear(QColor color) override;
             QPixmap GetPixmap();
             void DrawPixel(int x, int y, QColor color) override;
-            void DrawBitmap(int x, int y, int width, int height, QBitmap bitmap) override;
+            void DrawBitmap(int x, int y, int width, int height, QPixmap bitmap) override;
             void DrawLine(Vector source, Vector target, int line_width, QColor color) override;
             void DrawRect(int x, int y, int width, int height, int line_width, QColor color, bool fill = false) override;
             void DrawText(int x, int y, QString text, QColor color, int size = 10) override;

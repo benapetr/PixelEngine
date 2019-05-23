@@ -10,18 +10,21 @@
 #include "camera.h"
 #include "Physics/bitmapcollider.h"
 #include "Graphics/renderer.h"
+#include <QPainter>
 
 using namespace PE;
 
 Terrain::Terrain(double x, double y, int width, int height)
 {
     this->Position = Vector(x, y);
-    this->Collider = new BitmapCollider(static_cast<int>(x), static_cast<int>(y), width, height);
+    this->Collider = new BitmapCollider(static_cast<int>(x), static_cast<int>(y), width, height, this);
+    this->t_width = width;
+    this->t_height = height;
 }
 
 Terrain::~Terrain()
 {
-    //delete this->Collider;
+    delete this->painter;
 }
 
 PE_ObjectType Terrain::GetType()
@@ -39,4 +42,37 @@ void Terrain::SetPosition(Vector p)
 {
     Object::SetPosition(p);
     this->Collider->Position = p;
+}
+
+void Terrain::DestroyPixel(Vector p)
+{
+    int x = static_cast<int>(p.X);
+    int y = static_cast<int>(p.Y);
+    if (x < 0 || x > this->t_width)
+        return;
+    if (y < 0 || y > this->t_height)
+        return;
+    this->getPainter()->drawPoint(p.X2int(), this->terrainToQtY(p.Y2int()));
+    this->Collider->Bitmap[p.X2int()][p.Y2int()] = false;
+}
+
+void Terrain::RefreshPixmap()
+{
+    this->BitMap = QPixmap::fromImage(this->SourceImage);
+}
+
+int Terrain::terrainToQtY(int y)
+{
+    return (this->t_height) - y;
+}
+
+QPainter *Terrain::getPainter()
+{
+    if (!this->painter)
+    {
+        this->painter = new QPainter(&this->SourceImage);
+        this->painter->setPen(this->BackgroundColor);
+        this->painter->setPen(QColor("orange"));
+    }
+    return this->painter;
 }
