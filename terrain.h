@@ -31,6 +31,7 @@ namespace PE
             //! this function is optimized for high speed, after you are done removing all pixels you need, you also have
             //! to call RefreshPixmap for graphical changes to take effect
             void DestroyPixel(Vector p);
+            void DestroyPixel(int x, int y);
             void RefreshPixmap();
             Collectable_SmartPtr<BitmapCollider> Collider;
             QPixmap BitMap;

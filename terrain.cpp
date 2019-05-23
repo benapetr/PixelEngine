@@ -48,12 +48,19 @@ void Terrain::DestroyPixel(Vector p)
 {
     int x = static_cast<int>(p.X);
     int y = static_cast<int>(p.Y);
-    if (x < 0 || x > this->t_width)
+    this->DestroyPixel(x, y);
+}
+
+void Terrain::DestroyPixel(int x, int y)
+{
+    x -= this->Position.X2int();
+    y -= this->Position.Y2int();
+    if (x < 0 || x >= this->t_width)
         return;
-    if (y < 0 || y > this->t_height)
+    if (y < 0 || y >= this->t_height)
         return;
-    this->getPainter()->drawPoint(p.X2int(), this->terrainToQtY(p.Y2int()));
-    this->Collider->Bitmap[p.X2int()][p.Y2int()] = false;
+    this->getPainter()->drawPoint(x, this->terrainToQtY(y));
+    this->Collider->Bitmap[x][y] = false;
 }
 
 void Terrain::RefreshPixmap()
@@ -72,7 +79,7 @@ QPainter *Terrain::getPainter()
     {
         this->painter = new QPainter(&this->SourceImage);
         this->painter->setPen(this->BackgroundColor);
-        this->painter->setPen(QColor("orange"));
+        //this->painter->setPen(QColor("orange"));
     }
     return this->painter;
 }

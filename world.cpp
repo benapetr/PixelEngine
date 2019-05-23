@@ -175,18 +175,14 @@ void World::updateGravity()
         if (!a->RigidBody)
             continue;
 
-        if (a->RigidBody->IsGrounded() && a->LastMovementUpdate >= a->RigidBody->GroundCollider->LastMovementUpdate)
-            continue;
-
-        /*a->RigidBody->GravityForce += this->Gravity * a->RigidBody->Weight;
-        if (a->RigidBody->GravityForce > this->GravityMax)
-            a->RigidBody->GravityForce = this->GravityMax;*/
-
-
+        if (a->RigidBody->IsGrounded())
+        {
+            if (a->LastMovementUpdate >= a->RigidBody->GroundCollider->LastMovementUpdate)
+                continue;
+            else
+                a->RigidBody->GroundCollider = nullptr;
+        }
         a->RigidBody->Velocity.Y += -1 * this->Gravity * a->RigidBody->Weight;
-        /*
-        if (a->RigidBody->Velocity.Y > this->GravityMax)
-            a->RigidBody->Velocity.Y = this->GravityMax;*/
     }
 }
 
@@ -229,6 +225,33 @@ void World::updateMovement()
                         continue;
                     if (collider_actor->GetParent() == collider_other->GetParent())
                         continue;
+
+                    // Ray tracing hack for pixel colliders - should be improved
+                    if (collider_actor->GetColliderType() == PE_ColliderType_Pixel)
+                    {
+                        // Only ray trace if speed is worth it
+                        if (a->RigidBody->Velocity.X > 2 || a->RigidBody->Velocity.Y > 2)
+                        {
+                            double distance = old_position.DistanceTo(a->Position);
+                            Vector step = a->RigidBody->Velocity / distance;
+                            int current_step = 0;
+                            while (++current_step < static_cast<int>(distance))
+                            {
+                                Vector cp = a->Position + (step * current_step);
+                                if (collider_other->PositionMatch(cp))
+                                {
+                                    collision_target = collider_other;
+                                    collision_source = collider_actor;
+                                    // Because we did a pixel ray trace and hit something, we know exactly where is last pixel
+                                    // where we didn't hit it. So we can shift the old_position to that place, so that object
+                                    // is moved right in front of whatever is there
+                                    old_position = a->Position + (step * (current_step-1));
+                                    goto loop_exit;
+                                }
+                            }
+                        }
+                    }
+
                     if (collider_actor->IntersectionMatch(collider_other))
                     {
                         // There is a collision
@@ -240,6 +263,9 @@ void World::updateMovement()
                 if (collision_target)
                     break;
             }
+
+            loop_exit:
+
             if (collision_target)
             {
                 // In case that collision is under the object (or blocking it from falling down), let's ground the object
