@@ -22,18 +22,15 @@ bool Rigidbody::IsGrounded()
 
 Vector Rigidbody::GetMovement()
 {
-    Vector movement = this->Velocity;
-    movement.Y += -1 * this->GravityForce;
-    return movement;
+    return this->Velocity;
 }
 
-void Rigidbody::AddForce(Vector force)
+void Rigidbody::AddForce(const Vector &force)
 {
     this->Velocity += force;
 }
 
 void Rigidbody::ResetForceAfterImpact()
 {
-    this->GravityForce = 0;
     this->Velocity = Vector::Zero;
 }

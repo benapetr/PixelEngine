@@ -52,6 +52,8 @@ namespace PE
             //! Called when object is being destroyed - this will remove all references to other objects and prepare this object
             //! for deletion from operating memory
             virtual void Destroy();
+            //! Schedule object for destruction after specific ms, the destruction is handled by underlying world
+            virtual void Destroy(qint64 time);
             bool IsDestroyed() { return this->isDestroyed; };
             //! If positive value, this object will be destroyed after this time value
             qint64 DestroyAfter = -1;

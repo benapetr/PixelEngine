@@ -39,6 +39,7 @@ namespace PE
             void RegisterObject(Object *o, int zindex = 1);
             void RegisterTerrain(Terrain *t, int zindex = 0);
             void RegisterCollider(Collider *c);
+            //! Immediately destroy object and remove it from world
             void DestroyObject(Collectable_SmartPtr<Object> o);
             void ProcessKeyPress(int key);
             void ProcessKeyRelease(int key);

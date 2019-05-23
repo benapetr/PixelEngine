@@ -28,7 +28,7 @@ namespace PE
             virtual void DrawRect(int x, int y, int width, int height, int line_width, QColor color, bool fill = false)=0;
             virtual void DrawLine(Vector source, Vector target, int line_width, QColor color)=0;
             virtual void DrawBitmap(int x, int y, int width, int height, QBitmap bitmap)=0;
-            virtual void DrawText(int x, int y, QString text, QColor color)=0;
+            virtual void DrawText(int x, int y, QString text, QColor color, int size = 10)=0;
             virtual void DrawEllipse(int x, int y, int width, int height, QColor color, int line_width=1)=0;
             int GetHeight() { return this->r_height; }
             int GetWidth() { return this->r_width; }

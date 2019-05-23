@@ -7,6 +7,7 @@
 // Written by Petr Bena 2019
 
 #include "object.h"
+#include <QDateTime>
 
 using namespace PE;
 
@@ -78,4 +79,9 @@ void Object::Destroy()
     }
     // Clear reference to parent
     this->parent = nullptr;
+}
+
+void Object::Destroy(qint64 time)
+{
+    this->DestroyAfter = QDateTime::currentDateTime().toMSecsSinceEpoch() + time;
 }

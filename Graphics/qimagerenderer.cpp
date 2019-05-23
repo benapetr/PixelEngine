@@ -118,13 +118,16 @@ void QImageRenderer::DrawRect(int x, int y, int width, int height, int line_widt
         this->HasUpdate = true;
 }
 
-void QImageRenderer::DrawText(int x, int y, QString text, QColor color)
+void QImageRenderer::DrawText(int x, int y, QString text, QColor color, int size)
 {
     if (!this->Enabled)
         return;
 
     QPen pen(color);
+    QFont font;
+    font.setPixelSize(size);
     this->painter->setPen(pen);
+    this->painter->setFont(font);
     this->painter->drawText(x, this->worldToQtY(y), text);
 
     if (!this->ManualUpdate)
