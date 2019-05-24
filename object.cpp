@@ -69,6 +69,7 @@ void Object::UpdateRecursivelyLastMovement(qint64 time)
 
 void Object::DestroyNow()
 {
+    this->Event_Destroyed();
     this->isDestroyed = true;
     // Clear references to children objects
     if (this->children != nullptr)

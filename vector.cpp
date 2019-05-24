@@ -7,6 +7,7 @@
 // Written by Petr Bena 2019
 
 #include "vector.h"
+#include "definitions.h"
 #include <cmath>
 
 using namespace PE;
@@ -41,4 +42,11 @@ double Vector::Magnitude()
 double Vector::DistanceTo(const Vector &v)
 {
     return std::sqrt(std::pow(this->X - v.X, 2) + std::pow(this->Y - v.Y, 2));
+}
+
+double Vector::AngleTo(const Vector &v)
+{
+    double delta_x = v.X - this->X;
+    double delta_y = v.Y - this->Y;
+    return std::atan2(delta_y, delta_x) / PE_PI_RAD_CNV;
 }

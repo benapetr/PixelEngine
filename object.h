@@ -45,6 +45,7 @@ namespace PE
             //! Set position of this object and all children
             virtual void SetPosition(Vector p);
             virtual void Event_OnCollision(Collider *collider) { (void)collider; }
+            virtual void Event_Destroyed() {}
             virtual Vector GetPosition() const;
             void UpdateRecursivelyLastMovement(qint64 time);
             //! Optional optimization function - if returns false, the object will not redraw even if RedrawNeeded is true

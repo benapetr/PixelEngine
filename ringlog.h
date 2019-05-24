@@ -22,6 +22,7 @@ namespace PE
         public:
             RingLog();
             void WriteText(const QString &text);
+            QList<RingLog_Item> GetItems();
 
         private:
             int size = 2000;

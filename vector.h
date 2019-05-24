@@ -27,6 +27,7 @@ namespace PE
             int Y2int() { return static_cast<int>(this->Y); }
             double Magnitude();
             double DistanceTo(const Vector &v);
+            double AngleTo(const Vector &v);
             double X=0;
             double Y=0;
 

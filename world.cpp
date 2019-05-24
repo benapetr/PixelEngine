@@ -29,6 +29,8 @@ World::World(double width, double height)
 
 World::~World()
 {
+    foreach (Actor *a, this->actors)
+        a->DestroyNow();
     this->actors.clear();
     this->objects.clear();
     this->terrains.clear();

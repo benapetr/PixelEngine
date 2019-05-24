@@ -26,7 +26,7 @@ namespace PE
             virtual void Event_KeyPress(int key) { (void)key; }
             virtual void Event_KeyRelease(int key) { (void)key; }
             virtual void Update(qint64 time = 0) { (void)time; }
-            virtual void Event_OnImpact(Vector impact_force) { (void)impact_force; }
+            virtual void Event_OnImpact(const Vector &impact_force) { (void)impact_force; }
             QList<Collectable_SmartPtr<Collider>> GetColliders() const;
             // Only actors with rigidbody have any physics applied to them
             Rigidbody *RigidBody = nullptr;

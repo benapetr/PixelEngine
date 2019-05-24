@@ -22,3 +22,8 @@ void RingLog::WriteText(const QString& text)
     this->items.append(RingLog_Item(text));
 }
 
+QList<RingLog_Item> RingLog::GetItems()
+{
+    return this->items;
+}
+
