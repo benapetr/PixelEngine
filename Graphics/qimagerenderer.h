@@ -25,14 +25,14 @@ namespace PE
             void Render() override;
             QImage *GetImage();
             void Clear() override;
-            void Clear(QColor color) override;
+            void Clear(const QColor &color) override;
             QPixmap GetPixmap();
-            void DrawPixel(int x, int y, QColor color) override;
-            void DrawBitmap(int x, int y, int width, int height, QPixmap bitmap) override;
-            void DrawLine(Vector source, Vector target, int line_width, QColor color) override;
-            void DrawRect(int x, int y, int width, int height, int line_width, QColor color, bool fill = false) override;
-            void DrawText(int x, int y, QString text, QColor color, int size = 10) override;
-            void DrawEllipse(int x, int y, int width, int height, QColor color, int line_width=1) override;
+            void DrawPixel(int x, int y, const QColor &color) override;
+            void DrawBitmap(int x, int y, int width, int height, const QPixmap &bitmap) override;
+            void DrawLine(Vector source, Vector target, int line_width, const QColor &color) override;
+            void DrawRect(int x, int y, int width, int height, int line_width, const QColor &color, bool fill = false) override;
+            void DrawText(int x, int y, const QString &text, const QColor &color, int size = 10) override;
+            void DrawEllipse(int x, int y, int width, int height, const QColor &color, int line_width=1) override;
 
         private:
             int trimX(int x);

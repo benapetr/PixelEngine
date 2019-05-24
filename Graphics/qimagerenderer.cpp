@@ -40,7 +40,7 @@ void QImageRenderer::Clear()
     this->image->fill(Qt::white);
 }
 
-void QImageRenderer::Clear(QColor color)
+void QImageRenderer::Clear(const QColor &color)
 {
     this->image->fill(color);
 }
@@ -51,7 +51,7 @@ QPixmap QImageRenderer::GetPixmap()
     return QPixmap::fromImage(*this->image);
 }
 
-void QImageRenderer::DrawPixel(int x, int y, QColor color)
+void QImageRenderer::DrawPixel(int x, int y, const QColor &color)
 {
     if (!this->Enabled)
         return;
@@ -64,7 +64,7 @@ void QImageRenderer::DrawPixel(int x, int y, QColor color)
         this->HasUpdate = true;
 }
 
-void QImageRenderer::DrawBitmap(int x, int y, int width, int height, QPixmap bitmap)
+void QImageRenderer::DrawBitmap(int x, int y, int width, int height, const QPixmap &bitmap)
 {
     if (!this->Enabled)
         return;
@@ -74,7 +74,7 @@ void QImageRenderer::DrawBitmap(int x, int y, int width, int height, QPixmap bit
         this->HasUpdate = true;
 }
 
-void QImageRenderer::DrawLine(Vector source, Vector target, int line_width, QColor color)
+void QImageRenderer::DrawLine(Vector source, Vector target, int line_width, const QColor &color)
 {
     if (!this->Enabled)
         return;
@@ -90,7 +90,7 @@ void QImageRenderer::DrawLine(Vector source, Vector target, int line_width, QCol
         this->HasUpdate = true;
 }
 
-void QImageRenderer::DrawRect(int x, int y, int width, int height, int line_width, QColor color, bool fill)
+void QImageRenderer::DrawRect(int x, int y, int width, int height, int line_width, const QColor &color, bool fill)
 {
     if (!this->Enabled)
         return;
@@ -118,7 +118,7 @@ void QImageRenderer::DrawRect(int x, int y, int width, int height, int line_widt
         this->HasUpdate = true;
 }
 
-void QImageRenderer::DrawText(int x, int y, QString text, QColor color, int size)
+void QImageRenderer::DrawText(int x, int y, const QString &text, const QColor &color, int size)
 {
     if (!this->Enabled)
         return;
@@ -134,7 +134,7 @@ void QImageRenderer::DrawText(int x, int y, QString text, QColor color, int size
         this->HasUpdate = true;
 }
 
-void QImageRenderer::DrawEllipse(int x, int y, int width, int height, QColor color, int line_width)
+void QImageRenderer::DrawEllipse(int x, int y, int width, int height, const QColor &color, int line_width)
 {
     if (!this->Enabled)
         return;
