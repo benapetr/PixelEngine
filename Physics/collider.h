@@ -17,7 +17,9 @@ namespace PE
     {
         PE_ColliderType_Pixel,
         PE_ColliderType_Box,
-        PE_ColliderType_Bitmap
+        PE_ColliderType_Bitmap,
+        PE_ColliderType_Ellipse,
+        PE_ColliderType_Circle
     };
 
     class Collider : public Object

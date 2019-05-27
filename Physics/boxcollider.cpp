@@ -8,6 +8,7 @@
 
 #include "boxcollider.h"
 #include "bitmapcollider.h"
+#include "circlecollider.h"
 #include "collidermath.h"
 
 using namespace PE;
@@ -17,8 +18,8 @@ BoxCollider::BoxCollider(double x, double y, double w, double h, Object *parent)
     this->Position.X = x;
     this->Position.Y = y;
     this->RelativePosition = this->Position;
-    this->width = w;
-    this->height = h;
+    this->Width = w;
+    this->Height = h;
 }
 
 bool BoxCollider::PositionMatch(Vector position)
@@ -27,9 +28,9 @@ bool BoxCollider::PositionMatch(Vector position)
         return false;
     if (position.Y < this->Position.Y)
         return false;
-    if (position.X > this->Position.X + this->width)
+    if (position.X > this->Position.X + this->Width)
         return false;
-    if (position.Y > this->Position.Y + this->height)
+    if (position.Y > this->Position.Y + this->Height)
         return false;
     return true;
 }
@@ -41,6 +42,9 @@ bool BoxCollider::IntersectionMatch(Collider *collider)
 
     if (collider->GetColliderType() == PE::PE_ColliderType_Bitmap)
         return ColliderMath::IntersectionCheckBoxBitmap(this, dynamic_cast<BitmapCollider*>(collider));
+
+    if (collider->GetColliderType() == PE::PE_ColliderType_Circle)
+        return ColliderMath::IntersectionCheckBoxCircle(this, dynamic_cast<CircleCollider*>(collider));
 
     return this->PositionMatch(collider->Position);
 }

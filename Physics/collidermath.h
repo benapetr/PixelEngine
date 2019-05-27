@@ -13,11 +13,15 @@ namespace PE
 {
     class BoxCollider;
     class BitmapCollider;
+    class CircleCollider;
     class ColliderMath
     {
         public:
             static bool IntersectionCheckBoxBox(BoxCollider *a, BoxCollider *b);
             static bool IntersectionCheckBoxBitmap(BoxCollider *a, BitmapCollider *b);
+            static bool IntersectionCheckBoxCircle(BoxCollider *a, CircleCollider *b);
+            static bool IntersectionCheckCircleBitmap(BitmapCollider *a, CircleCollider *b);
+            static bool IntersectionCheckCircleCircle(CircleCollider *a, CircleCollider *b);
     };
 }
 

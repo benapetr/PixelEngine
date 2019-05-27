@@ -22,14 +22,12 @@ namespace PE
             bool IntersectionMatch(Collider *collider) override;
             double GetX() const { return this->Position.X; }
             double GetY() const { return this->Position.Y; }
-            double GetWidth() const { return this->width; };
-            double GetHeight() const { return this->height; };
             PE_ColliderType GetColliderType() override { return PE_ColliderType_Box; }
+            double Width;
+            double Height;
 
         private:
             bool boxMatch(BoxCollider *c);
-            double width;
-            double height;
 
             friend class ColliderMath;
     };

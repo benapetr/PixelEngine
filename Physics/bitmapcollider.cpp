@@ -7,6 +7,7 @@
 // Written by Petr Bena 2019
 
 #include "bitmapcollider.h"
+#include "circlecollider.h"
 #include "collidermath.h"
 #include "boxcollider.h"
 #include "../exception.h"
@@ -52,6 +53,8 @@ bool BitmapCollider::IntersectionMatch(Collider *collider)
 {
     if (collider->GetColliderType() == PE_ColliderType_Box)
         return ColliderMath::IntersectionCheckBoxBitmap(dynamic_cast<BoxCollider*>(collider), this);
+    if (collider->GetColliderType() == PE_ColliderType_Circle)
+        return ColliderMath::IntersectionCheckCircleBitmap(this, dynamic_cast<CircleCollider*>(collider));
 
     return this->PositionMatch(collider->Position);
 }
