@@ -23,6 +23,7 @@ namespace PE
             ~Actor() override;
             PE_ObjectType GetType() override;
             void AddChildren(Object *obj) override;
+            void RemoveChildren(Object *obj) override;
             virtual void Event_KeyPress(int key) { (void)key; }
             virtual void Event_KeyRelease(int key) { (void)key; }
             virtual void Update(qint64 time = 0) { (void)time; }

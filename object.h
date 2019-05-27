@@ -42,6 +42,7 @@ namespace PE
             virtual PE_ObjectType GetType();
             bool HasChildren();
             virtual void AddChildren(Object *obj);
+            virtual void RemoveChildren(Object *obj);
             //! Set position of this object and all children
             virtual void SetPosition(Vector p);
             virtual void Event_OnCollision(Collider *collider) { (void)collider; }

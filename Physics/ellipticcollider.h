@@ -16,8 +16,11 @@ namespace PE
     class EllipticCollider : public Collider
     {
         public:
-            EllipticCollider();
+            EllipticCollider(double x, double y, double rx, double ry);
             PE_ColliderType GetColliderType() override { return PE_ColliderType_Ellipse; }
+            double RadiusX;
+            double RadiusY;
+            double Angle = 0;
     };
 }
 

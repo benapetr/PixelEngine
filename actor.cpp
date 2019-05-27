@@ -37,6 +37,13 @@ void Actor::AddChildren(Object *obj)
         this->colliders.append(dynamic_cast<Collider*>(obj));
 }
 
+void Actor::RemoveChildren(Object *obj)
+{
+    Object::RemoveChildren(obj);
+    if (obj->GetType() == PE_ObjectType_Collider)
+        this->colliders.removeAll(dynamic_cast<Collider*>(obj));
+}
+
 QList<Collectable_SmartPtr<Collider>> Actor::GetColliders() const
 {
     return this->colliders;

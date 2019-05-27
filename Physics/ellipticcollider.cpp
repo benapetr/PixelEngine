@@ -10,7 +10,9 @@
 
 using namespace PE;
 
-EllipticCollider::EllipticCollider()
+EllipticCollider::EllipticCollider(double x, double y, double rx, double ry)
 {
-
+    this->RadiusX = rx;
+    this->Position = Vector(x, y);
+    this->RadiusY = ry;
 }

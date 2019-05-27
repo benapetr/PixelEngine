@@ -39,6 +39,13 @@ void Object::AddChildren(Object *obj)
     obj->parent = this;
 }
 
+void Object::RemoveChildren(Object *obj)
+{
+    if (this->children == nullptr)
+        return;
+    this->children->removeAll(obj);
+}
+
 void Object::SetPosition(Vector p)
 {
     this->Position = p;
