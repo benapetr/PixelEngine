@@ -10,6 +10,7 @@
 #include "camera.h"
 #include "Physics/bitmapcollider.h"
 #include "Graphics/renderer.h"
+#include <QDateTime>
 #include <QPainter>
 
 using namespace PE;
@@ -66,6 +67,7 @@ void Terrain::DestroyPixel(int x, int y)
 void Terrain::RefreshPixmap()
 {
     this->BitMap = QPixmap::fromImage(this->SourceImage);
+    this->LastMovementUpdate = QDateTime::currentDateTime().toMSecsSinceEpoch();
 }
 
 int Terrain::terrainToQtY(int y)
