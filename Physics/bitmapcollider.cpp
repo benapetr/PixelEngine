@@ -45,9 +45,9 @@ bool BitmapCollider::PositionMatch(Vector position)
     int position_y = position.Y2int() - this->Position.Y2int();
 
     // Check again if this position is within bitmap boundary
-    if (position_x < 0 || position_x > this->width)
+    if (position_x < 0 || position_x >= this->width)
         return false;
-    if (position_y < 0 || position_y > this->height)
+    if (position_y < 0 || position_y >= this->height)
         return false;
 
     return (this->Bitmap[position_x][position_y]);
