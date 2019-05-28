@@ -244,10 +244,10 @@ void Terrain::changePainterMode(Terrain::PainterMode mode)
     switch(mode)
     {
         case PainterMode_Destructing:
-            this->painter->setPen(this->BackgroundColor);
+            this->getPainter()->setPen(this->BackgroundColor);
             break;
         case PainterMode_Creating:
-            this->painter->setPen(this->TerrainColor);
+            this->getPainter()->setPen(this->TerrainColor);
             break;
     }
 }
