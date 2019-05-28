@@ -22,6 +22,13 @@ namespace PE
     class Terrain : public Object
     {
         public:
+            enum PainterMode
+            {
+                PainterMode_Destructing,
+                PainterMode_Creating,
+                PainterMode_CreatingSpecial
+            };
+        public:
             Terrain(double x, double y, int width, int height);
             ~Terrain() override;
             PE_ObjectType GetType() override;
@@ -32,10 +39,19 @@ namespace PE
             //! to call RefreshPixmap for graphical changes to take effect
             void DestroyPixel(Vector p);
             void DestroyPixel(int x, int y);
+            void CreatePixel(int x, int y);
+            void DestroyPixelAbsolute(int x, int y);
+            void CreatePixelAbsolute(int x, int y);
             void RefreshPixmap();
+            //! Shift all bits that are above bottom but doesn't have any other bits under down once
+            //! this is extremely CPU expensive function
+            //! Returns number of pixels shifted
+            int ShiftFloatingBitsDownByOnePixel();
+            int ShiftFloatingBitsDown();
             Collectable_SmartPtr<BitmapCollider> Collider;
             QPixmap BitMap;
             QImage SourceImage;
+            QColor TerrainColor;
             QColor BackgroundColor;
 
         protected:
@@ -43,7 +59,9 @@ namespace PE
             int t_width;
             int t_height;
             QPainter *getPainter();
+            void changePainterMode(PainterMode mode);
             QPainter *painter = nullptr;
+            PainterMode painterMode = PainterMode_Destructing;
     };
 }
 

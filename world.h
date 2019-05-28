@@ -45,6 +45,7 @@ namespace PE
             void ProcessKeyRelease(int key);
             qint64 GetTime();
             bool HasBorder = true;
+            QColor BorderColor;
             // Every object that makes it under this Y is automatically destroyed
             // this is here to handle players that fall behind terrain
             double DeathZone = -20;

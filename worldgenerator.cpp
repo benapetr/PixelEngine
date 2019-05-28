@@ -20,9 +20,10 @@ using namespace PE;
 Collectable_SmartPtr<Terrain> WorldGenerator::GenerateRandom(int w_width, int w_height)
 {
     Collectable_SmartPtr<Terrain> w = new Terrain(0, 0, w_width, w_height);
+    w->TerrainColor = Qt::black;
     w->BackgroundColor = QColor(178, 207, 255);
     QImage image(w_width, w_height, QImage::Format_RGB32);
-    image.fill(Qt::black);
+    image.fill(w->TerrainColor);
     QPainter painter(&image);
     QPen pen(w->BackgroundColor);
     painter.setPen(pen);

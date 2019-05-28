@@ -56,6 +56,14 @@ void World::Render(Renderer *r)
                 }
             }
         }
+        foreach(Terrain *t, this->terrains)
+        {
+            if (t->RedrawNeeded)
+            {
+                t->RedrawNeeded = false;
+                this->redrawNeeded = true;
+            }
+        }
     }
 
     if (!this->redrawNeeded)
@@ -102,7 +110,7 @@ void World::Render(Renderer *r)
         r->HasUpdate = true;
 
     if (this->HasBorder)
-        r->DrawRect(0, 0, static_cast<int>(this->world_width - 1), static_cast<int>(this->world_height - 1), 6, QColor("blue"));
+        r->DrawRect(0, 0, static_cast<int>(this->world_width - 1), static_cast<int>(this->world_height - 1), 6, this->BorderColor);
 }
 
 void World::Update()
