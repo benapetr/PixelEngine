@@ -43,10 +43,13 @@ namespace PE
             void DestroyPixelAbsolute(int x, int y);
             void CreatePixelAbsolute(int x, int y);
             void RefreshPixmap();
-            //! Shift all bits that are above bottom but doesn't have any other bits under down once
+            //! Shift all bits that are above bottom but doesn't have any other bits under down by one pixel
             //! this is extremely CPU expensive function
             //! Returns number of pixels shifted
             int ShiftFloatingBitsDownByOnePixel();
+            //! Shift all bits that are above bottom but doesn't have any other bits under down completely until they hit ground
+            //! this is extremely CPU expensive function
+            //! Returns number of pixels shifted
             int ShiftFloatingBitsDown();
             Collectable_SmartPtr<BitmapCollider> Collider;
             QPixmap BitMap;
