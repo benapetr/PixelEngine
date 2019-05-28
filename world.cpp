@@ -84,6 +84,20 @@ void World::Render(Renderer *r)
             x->RedrawNeeded = false;
         }
     }
+#ifdef PE_DEBUG
+    // Display colliders on camera
+    if (Collider::Debug)
+    {
+        foreach (Actor *a, this->actors)
+        {
+            foreach (Collider *c, a->GetColliders())
+            {
+                if (c->IsVisibleOnCamera(this->camera))
+                    c->Render(r, this->camera);
+            }
+        }
+    }
+#endif
     if (r->ManualUpdate)
         r->HasUpdate = true;
 

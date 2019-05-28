@@ -10,6 +10,10 @@
 #include "boxcollider.h"
 #include "bitmapcollider.h"
 #include "circlecollider.h"
+#ifdef PE_DEBUG
+#include "../camera.h"
+#include "../Graphics/renderer.h"
+#endif
 
 using namespace PE;
 
@@ -43,3 +47,14 @@ bool CircleCollider::IntersectionMatch(Collider *collider)
 
     return this->PositionMatch(collider->Position);
 }
+
+#ifdef PE_DEBUG
+void CircleCollider::Render(Renderer *r, Camera *c)
+{
+    if (!Collider::Debug)
+        return;
+    PE::Vector root = c->ProjectedPosition(this->Position) - this->Radius;
+    int w = static_cast<int>(this->Radius * 2);
+    r->DrawEllipse(root.X2int(), root.Y2int(), w, w, Qt::green);
+}
+#endif

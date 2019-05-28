@@ -25,6 +25,10 @@ namespace PE
     class Collider : public Object
     {
         public:
+#ifdef PE_DEBUG
+            static bool Debug;
+#endif
+
             Collider(Object *parent = nullptr);
             // Returns true in case that position is inside body of this collider
             virtual bool PositionMatch(Vector position)=0;

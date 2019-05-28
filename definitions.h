@@ -24,6 +24,8 @@
 // Bitmap size
 #define PE_BITSET_MAX 10000
 
+//#define PE_DEBUG
+
 // stolen from boost/current_function.hpp
 // enhanced by Petr Bena, keep the enhancement in case you wanted to update this
 

@@ -10,6 +10,10 @@
 
 using namespace PE;
 
+#ifdef PE_DEBUG
+bool Collider::Debug = false;
+#endif
+
 Collider::Collider(Object *parent) : Object(parent)
 {
 
