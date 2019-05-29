@@ -55,7 +55,10 @@ void Object::SetPosition(Vector p)
     this->Position = p;
     if (this->children == nullptr)
         return;
-    foreach (Object *c, *this->children)
+    // This is a hack due to unclear Qt bug
+    // if iteration is not done inside of a list copy, it randomly crashes
+    QList<Collectable_SmartPtr<Object>> cl(*this->children);
+    foreach (Object *c, cl)
     {
         c->SetPosition(p + c->RelativePosition);
     }
