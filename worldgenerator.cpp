@@ -35,6 +35,7 @@ Collectable_SmartPtr<Terrain> WorldGenerator::GenerateRandom(int w_width, int w_
     int STEP_MAX = 8;
     int STEP_CHANGE = 2;
     int HEIGHT_MIN = 160;
+    int mass;
 
     // starting conditions
     int height = PEMath::GetRandom(0, w_height);
@@ -71,8 +72,10 @@ Collectable_SmartPtr<Terrain> WorldGenerator::GenerateRandom(int w_width, int w_
         while (real_height > 0)
         {
             w->Collider->Bitmap[x][real_height--] = true;
+            mass++;
         }
     }
+    w->TerrainMass = mass;
     w->SourceImage = image;
     w->BitMap = QPixmap::fromImage(image);
 

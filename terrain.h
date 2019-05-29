@@ -56,6 +56,8 @@ namespace PE
             //! Returns number of pixels shifted
             int ShiftFloatingBitsDown();
             Collectable_SmartPtr<BitmapCollider> Collider;
+            //! This is not accurate unless you recalculate it after each change - number of pixels
+            int TerrainMass;
             QPixmap BitMap;
             QImage SourceImage;
             QColor TerrainColor;
