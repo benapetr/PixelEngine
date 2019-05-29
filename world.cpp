@@ -124,7 +124,7 @@ void World::Update()
     this->updatePhysics();
     foreach (Actor *a, this->actors)
     {
-        a->Update();
+        a->Update(this->lastUpdate);
     }
 }
 
