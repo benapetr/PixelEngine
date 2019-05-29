@@ -10,20 +10,21 @@
 
 // Copyright (c) Petr Bena 2019
 
-#ifndef WORLDGENERATOR_H
-#define WORLDGENERATOR_H
+#include "generic.h"
 
-#include "GC/collectable_smartptr.h"
-#include "terrain.h"
+using namespace PE;
 
-namespace PE
+
+QString Generic::Bool2String(bool value)
 {
-    class Terrain;
-    class WorldGenerator
-    {
-        public:
-            static Collectable_SmartPtr<Terrain> GenerateRandom(int w_width, int w_height, const QColor &background, const QColor &terrain_color);
-    };
+    if (value)
+        return "True";
+    return "False";
 }
 
-#endif // WORLDGENERATOR_H
+QString Generic::Bool2LString(bool value)
+{
+    if (value)
+        return "true";
+    return "false";
+}

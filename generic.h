@@ -10,20 +10,20 @@
 
 // Copyright (c) Petr Bena 2019
 
-#ifndef WORLDGENERATOR_H
-#define WORLDGENERATOR_H
+#ifndef GENERIC_H
+#define GENERIC_H
 
-#include "GC/collectable_smartptr.h"
-#include "terrain.h"
+#include <QString>
 
 namespace PE
 {
-    class Terrain;
-    class WorldGenerator
+    namespace Generic
     {
-        public:
-            static Collectable_SmartPtr<Terrain> GenerateRandom(int w_width, int w_height, const QColor &background, const QColor &terrain_color);
-    };
+        //! Return string value "True" or "False"
+        QString Bool2String(bool value);
+        //! Return string value "true" or "false"
+        QString Bool2LString(bool value);
+    }
 }
 
-#endif // WORLDGENERATOR_H
+#endif // GENERIC_H
