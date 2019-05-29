@@ -35,7 +35,7 @@ Collectable_SmartPtr<Terrain> WorldGenerator::GenerateRandom(int w_width, int w_
     int STEP_MAX = 8;
     int STEP_CHANGE = 2;
     int HEIGHT_MIN = 160;
-    int mass;
+    int mass = 0;
 
     // starting conditions
     int height = PEMath::GetRandom(0, w_height);
