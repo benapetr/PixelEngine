@@ -26,11 +26,11 @@ namespace PE
     class Engine
     {
         public:
-            static void Initialize();
+            static void Initialize(bool multithreaded_gc = true);
             static Engine *GetEngine();
             static QString GetVersion();
 
-            Engine();
+            Engine(bool multithreaded_gc = true);
             virtual ~Engine();
             RingLog *RL = nullptr;
             GC *GetGC() const;

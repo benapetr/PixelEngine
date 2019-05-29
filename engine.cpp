@@ -19,12 +19,12 @@ using namespace PE;
 
 Engine *Engine::engine = nullptr;
 
-void Engine::Initialize()
+void Engine::Initialize(bool multithreaded_gc)
 {
     if (Engine::engine)
         return;
 
-    Engine::engine = new Engine();
+    Engine::engine = new Engine(multithreaded_gc);
 }
 
 Engine *Engine::GetEngine()
@@ -40,12 +40,13 @@ QString Engine::GetVersion()
     return QString(PE_VERSION_STRING);
 }
 
-Engine::Engine()
+Engine::Engine(bool multithreaded_gc)
 {
     this->startupTime = QDateTime::currentDateTime();
     this->RL = new RingLog();
     this->gc = new GC();
-    this->gc->Start();
+    if (multithreaded_gc)
+        this->gc->Start();
     this->RL->WriteText(QString("PixelEngine v. ") + QString(PE_VERSION_STRING) + " initialized");
 }
 
