@@ -16,9 +16,13 @@
 
 using namespace PE;
 
-GC::GC()
+GC::GC(bool multithread)
 {
-    this->thread = new GC_thread();
+    this->isThreaded = multithread;
+    if (multithread)
+        this->thread = new GC_thread();
+    else
+        this->thread = nullptr;
 }
 
 GC::~GC()
@@ -28,7 +32,8 @@ GC::~GC()
 
 void GC::Start()
 {
-    this->thread->start();
+    if (this->isThreaded)
+        this->thread->start();
 }
 
 void GC::Stop()
@@ -54,4 +59,9 @@ int GC::Collect()
         }
     }
     return items;
+}
+
+bool GC::IsMultithreaded()
+{
+    return this->isThreaded;
 }

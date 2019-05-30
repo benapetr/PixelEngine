@@ -22,12 +22,14 @@ namespace PE
     class GC
     {
         public:
-            GC();
+            GC(bool multithread);
             virtual ~GC();
             void Start();
             void Stop();
             int Collect();
+            bool IsMultithreaded();
         private:
+            bool isThreaded;
             GC_thread *thread;
     };
 }

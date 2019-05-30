@@ -44,9 +44,8 @@ Engine::Engine(bool multithreaded_gc)
 {
     this->startupTime = QDateTime::currentDateTime();
     this->RL = new RingLog();
-    this->gc = new GC();
-    if (multithreaded_gc)
-        this->gc->Start();
+    this->gc = new GC(multithreaded_gc);
+    this->gc->Start();
     this->RL->WriteText(QString("PixelEngine v. ") + QString(PE_VERSION_STRING) + " initialized");
 }
 
