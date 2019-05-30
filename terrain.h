@@ -71,6 +71,10 @@ namespace PE
             void changePainterMode(PainterMode mode);
             QPainter *painter = nullptr;
             PainterMode painterMode = PainterMode_Destructing;
+            int mostLeftModPix = -1;
+            int mostRightModPix = -1;
+            int mostTopModPix = -1;
+            int mostDownModPix = -1;
     };
 }
 

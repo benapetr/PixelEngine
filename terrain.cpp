@@ -65,6 +65,15 @@ void Terrain::DestroyPixel(int x, int y)
     if (y < 0 || y >= this->t_height)
         return;
 
+    if (this->mostLeftModPix < 0 || x < this->mostLeftModPix)
+        this->mostLeftModPix = x;
+    if (x > this->mostRightModPix)
+        this->mostRightModPix = x;
+    if (this->mostDownModPix < 0 || y < this->mostDownModPix)
+        this->mostDownModPix = y;
+    if (this->mostTopModPix < y)
+        this->mostTopModPix = y;
+
     // Check painter mode
     if (this->painterMode != PainterMode_Destructing)
         this->changePainterMode(PainterMode_Destructing);
@@ -120,26 +129,53 @@ int Terrain::ShiftFloatingBitsDownByOnePixel()
 {
     int shifted_pixels = 0;
     int current_column = 0;
-    while (current_column < this->t_width)
+
+    ///////////////////////
+    // Performance hacks //
+    ///////////////////////
+
+    if (this->mostLeftModPix > -1)
+        current_column = this->mostLeftModPix;
+
+    int max_col, max_row, min_row;
+    if (this->mostRightModPix > -1)
+        max_col = this->mostRightModPix;
+    else
+        max_col = this->t_width;
+
+    if (this->mostDownModPix > -1)
+        min_row = this->mostDownModPix;
+    else
+        min_row = 0;
+
+    if (this->mostTopModPix > -1)
+        max_row = this->mostTopModPix;
+    else
+        max_row = this->t_height;
+
+    ///////////////////////
+    ///////////////////////
+
+    while (current_column < max_col)
     {
         if (!this->Collider->Bitmap[current_column][0])
             this->CreatePixelAbsolute(current_column, 0);
-        int current_pixel = 0;
-        while (++current_pixel < this->t_height)
+        int current_pixel = min_row;
+        while (++current_pixel < max_row)
         {
             if (!this->Collider->Bitmap[current_column][current_pixel])
             {
                 // This pixel is air, let's check if there is anything above it that isn't air
                 // if that's the case we need to shift floating column down
-                while (++current_pixel < this->t_height)
+                while (++current_pixel < max_row)
                 {
                     if (this->Collider->Bitmap[current_column][current_pixel])
                         break;
                 }
-                if (current_pixel < this->t_height)
+                if (current_pixel < max_row)
                 {
                     // This pixel is air, so let's shift everything in this column down one pixel
-                    while (current_pixel < this->t_height)
+                    while (current_pixel < max_row)
                     {
                         shifted_pixels++;
                         bool is_space = !this->Collider->Bitmap[current_column][current_pixel];
@@ -165,6 +201,10 @@ int Terrain::ShiftFloatingBitsDownByOnePixel()
             this->CreatePixelAbsolute(current_column, 0);
         current_column++;
     }
+    this->mostTopModPix = -1;
+    this->mostDownModPix = -1;
+    this->mostLeftModPix = -1;
+    this->mostRightModPix = -1;
     return shifted_pixels;
 }
 
@@ -172,28 +212,55 @@ int Terrain::ShiftFloatingBitsDown()
 {
     int shifted_pixels = 0;
     int current_column = 0;
-    while (current_column < this->t_width)
+
+    ///////////////////////
+    // Performance hacks //
+    ///////////////////////
+
+    if (this->mostLeftModPix > -1)
+        current_column = this->mostLeftModPix;
+
+    int max_col, max_row, min_row;
+    if (this->mostRightModPix > -1)
+        max_col = this->mostRightModPix;
+    else
+        max_col = this->t_width;
+
+    if (this->mostDownModPix > -1)
+        min_row = this->mostDownModPix;
+    else
+        min_row = 0;
+
+    if (this->mostTopModPix > -1)
+        max_row = this->mostTopModPix;
+    else
+        max_row = this->t_height;
+
+    ///////////////////////
+    ///////////////////////
+
+    while (current_column < max_col)
     {
         if (!this->Collider->Bitmap[current_column][0])
             this->CreatePixelAbsolute(current_column, 0);
         int current_pixel = 0;
-        while (++current_pixel < this->t_height)
+        while (++current_pixel < max_row)
         {
             if (!this->Collider->Bitmap[current_column][current_pixel])
             {
                 int hole_size = 0;
                 // This pixel is air, let's check if there is anything above it that isn't air
                 // if that's the case we need to shift floating column down
-                while (++current_pixel < this->t_height)
+                while (++current_pixel < max_row)
                 {
                     hole_size++;
                     if (this->Collider->Bitmap[current_column][current_pixel])
                         break;
                 }
-                if (current_pixel < this->t_height)
+                if (current_pixel < max_row)
                 {
                     // This pixel is air, so let's shift everything in this column down one pixel
-                    while (current_pixel < this->t_height)
+                    while (current_pixel < max_row)
                     {
                         shifted_pixels++;
                         bool is_space = !this->Collider->Bitmap[current_column][current_pixel];
@@ -219,6 +286,10 @@ int Terrain::ShiftFloatingBitsDown()
             this->CreatePixelAbsolute(current_column, 0);
         current_column++;
     }
+    this->mostTopModPix = -1;
+    this->mostDownModPix = -1;
+    this->mostLeftModPix = -1;
+    this->mostRightModPix = -1;
     return shifted_pixels;
 }
 
