@@ -46,6 +46,7 @@ namespace PE
     {
         public:
             Object(Object *p = nullptr);
+            Object(const Vector &position, Object *p = nullptr);
             ~Object() override;
             virtual void Render(Renderer *r, Camera *c) { (void)r; (void)c; }
             Object *GetParent() { return this->parent; }

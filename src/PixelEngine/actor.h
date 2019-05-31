@@ -33,6 +33,7 @@ namespace PE
     {
         public:
             Actor();
+            Actor(const Vector &position, Object *parent = nullptr);
             ~Actor() override;
             PE_ObjectType GetType() override;
             void AddChildren(Object *obj) override;

@@ -21,6 +21,11 @@ Actor::Actor()
 
 }
 
+Actor::Actor(const Vector &position, Object *parent) : Object(position, parent)
+{
+
+}
+
 Actor::~Actor()
 {
     delete this->RigidBody;

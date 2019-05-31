@@ -20,6 +20,12 @@ Object::Object(Object *p)
     this->parent = p;
 }
 
+Object::Object(const Vector &position, Object *p)
+{
+    this->parent = p;
+    this->Position = position;
+}
+
 Object::~Object()
 {
     delete this->children;
