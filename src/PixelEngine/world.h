@@ -28,9 +28,11 @@ namespace PE
     class Collider;
 
     /*!
-     * \brief The World class is engine base for a world - containing all actors and terrains.
+     * \brief The World class is engine base for a world - containing all world objects - actors, collisions and terrains.
      *
-     * Every component of the engine should be a part of some world, each world has its own rules of physics
+     * World implements engine physics and is also responsible for rendering of whole scene.
+     *
+     * Every component of the engine should be a part of some world, each world has its own rules of physics.
      */
     class World
     {
@@ -38,6 +40,9 @@ namespace PE
             World(double width, double height);
             virtual ~World();
             void Render(Renderer *r);
+            //! Execute a world frame - that is a basic unit that controls game speed
+            //!
+            //! This function should be periodically executed either by a timer or in a loop using separate thread
             void Update();
             void RegisterActor(Actor *a, int zindex = 1);
             void RegisterObject(Object *o, int zindex = 1);

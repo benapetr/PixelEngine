@@ -34,8 +34,14 @@ namespace PE
     class Collider;
     class Camera;
 
-    //! Objects are static transforms that can render to world. Basically every world component is inherited from this class.
-    //! Each object can also have multiple childrens and 1 parent
+    /*!
+     * Objects are static transforms that can render to world. Each object has a position relative to world.
+     *
+     * This is a lowest level component in hierarchy of PixelEngine that all world components are inherited from.
+     * Standalone objects are not affected by world physics, if you need that, look at Actor class.
+     *
+     * Each object can also have multiple childrens and 1 parent
+     */
     class Object : public Collectable
     {
         public:
@@ -54,6 +60,7 @@ namespace PE
             virtual Vector GetPosition() const;
             void UpdateRecursivelyLastMovement(qint64 time);
             //! Optional optimization function - if returns false, the object will not redraw even if RedrawNeeded is true
+            //! it's recommended to implement this for better peformance, especially for games with large world
             virtual bool IsVisibleOnCamera(Camera *c) { (void)c; return true; }
             //! Called when object is being destroyed - this will remove all references to other objects and prepare this object
             //! for deletion from operating memory

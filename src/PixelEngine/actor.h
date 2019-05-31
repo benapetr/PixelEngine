@@ -21,6 +21,14 @@ namespace PE
 {
     class Rigidbody;
     class Collider;
+
+    /*!
+     * \brief The Actor class is a base for all actors - objects that can be affected by world physics (in case they have some rigidbody)
+     *
+     * Actors are low level elements from which the world consist of. Each actor can have collisions, rigidbody (if it's supposed to be
+     * dynamically affected by physics subsystem), can render graphics and has many events. There is a virtual function Update which is called
+     * every single frame of world update (don't confuse with renderer frames - FPS).
+     */
     class Actor : public Object
     {
         public:

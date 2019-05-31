@@ -318,6 +318,7 @@ void Terrain::changePainterMode(Terrain::PainterMode mode)
             this->getPainter()->setPen(this->BackgroundColor);
             break;
         case PainterMode_Creating:
+        case PainterMode_CreatingSpecial:
             this->getPainter()->setPen(this->TerrainColor);
             break;
     }
