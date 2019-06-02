@@ -34,6 +34,7 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 # Libraries
 add_subdirectory ("../src/PixelEngine" pe)
 add_subdirectory (single_thread)
+add_subdirectory (open_gl)
 
 
 # Packaging code

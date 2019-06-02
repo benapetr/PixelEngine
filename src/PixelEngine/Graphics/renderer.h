@@ -20,6 +20,12 @@
 namespace PE
 {
     class Vector;
+
+    /*!
+     * \brief The Renderer is abstract class which defines an interface to currently selected platform for rendering
+     *
+     * It contains interface functions that are using underlying rendering subsystem to draw various shapes and images
+     */
     class Renderer
     {
         public:
