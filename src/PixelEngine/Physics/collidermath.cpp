@@ -20,14 +20,72 @@ using namespace PE;
 
 bool ColliderMath::IntersectionCheckLineCircle(Vector a, Vector b, CircleCollider *c)
 {
+    // Doesn't work:
+    /*
+
     Vector d;
     // https://stackoverflow.com/questions/23772990/find-point-with-vector-projection
-    double CF = ((b.X-a.X)*(c->Position.X-a.X)+(b.Y-a.Y)*(c->Position.Y-a.Y))/(std::pow(b.X-a.X, 2)+std::pow(b.Y-a.Y, 2));
-    d.X = a.X+(b.X-a.X) * CF;
-    d.Y = a.Y+(b.Y-a.Y) * CF;
+    double CF = ((b.X-a.X) * (c->Position.X-a.X)+(b.Y-a.Y) * (c->Position.Y-a.Y)) / (std::pow(b.X-a.X, 2) + std::pow(b.Y-a.Y, 2));
+    d.X = a.X + ((b.X-a.X) * CF);
+    d.Y = a.Y + ((b.Y-a.Y) * CF);
 
     // Now just check if this point is inside
     return c->PositionMatch(d);
+    */
+
+    //https://stackoverflow.com/a/1084899/1514983
+
+    Vector direction = b - a;
+    Vector sphere_centre_to_ray = a - c->Position;
+
+    double dot_a = direction.Dot();
+    double dot_b = 2 * sphere_centre_to_ray.Dot(direction);
+    double dot_c = sphere_centre_to_ray.Dot() - (c->Radius * c->Radius);
+    double discriminant = (dot_b * dot_b) - (4 * dot_a * dot_c);
+    if( discriminant < 0 )
+    {
+        // no intersection
+        return false;
+    }
+    else
+    {
+        // ray didn't totally miss sphere,
+        // so there is a solution to
+        // the equation.
+        discriminant = std::sqrt(discriminant);
+        // either solution may be on or off the ray so need to test both
+        // t1 is always the smaller value, because BOTH discriminant and
+        // a are nonnegative.
+        double t1 = (-dot_b - discriminant)/(2*dot_a);
+        double t2 = (-dot_b + discriminant)/(2*dot_a);
+
+        // 3x HIT cases:
+        //          -o->             --|-->  |            |  --|->
+        // Impale(t1 hit,t2 hit), Poke(t1 hit,t2>1), ExitWound(t1<0, t2 hit),
+
+        // 3x MISS cases:
+        //       ->  o                     o ->              | -> |
+        // FallShort (t1>1,t2>1), Past (t1<0,t2<0), CompletelyInside(t1<0, t2>1)
+
+        if( t1 >= 0 && t1 <= 1 )
+        {
+            // t1 is the intersection, and it's closer than t2
+            // (since t1 uses -b - discriminant)
+            // Impale, Poke
+            return true;
+        }
+
+        // here t1 didn't intersect so we are either started
+        // inside the sphere or completely past it
+        if( t2 >= 0 && t2 <= 1 )
+        {
+            // ExitWound
+            return true;
+        }
+
+        // no intn: FallShort, Past, CompletelyInside
+        return false;
+    }
 }
 
 bool ColliderMath::IntersectionCheckBoxBox(BoxCollider *a, BoxCollider *b)
@@ -74,6 +132,7 @@ bool ColliderMath::IntersectionCheckBoxCircle(BoxCollider *a, CircleCollider *b)
     double cdist = std::pow(cdist_x - a->Width / 2, 2) + std::pow(cdist_y - a->Height / 2, 2);
     return (cdist <= std::pow(b->Radius, 2));
     */
+
 
     // Our own idiot-proof implementation - let's check intersection of individual points
     // Circle centre in box

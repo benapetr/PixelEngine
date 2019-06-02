@@ -58,9 +58,10 @@
    </widget>
    <widget class="QMenu" name="menuGame">
     <property name="title">
-     <string>Game</string>
+     <string>Unit test</string>
     </property>
     <addaction name="actionNew_game"/>
+    <addaction name="actionTest_2"/>
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
@@ -87,7 +88,7 @@
   </action>
   <action name="actionNew_game">
    <property name="text">
-    <string>New game</string>
+    <string>1</string>
    </property>
   </action>
   <action name="actionFast_game">
@@ -117,6 +118,11 @@
    </property>
    <property name="text">
     <string>Low FPS</string>
+   </property>
+  </action>
+  <action name="actionTest_2">
+   <property name="text">
+    <string>2</string>
    </property>
   </action>
  </widget>

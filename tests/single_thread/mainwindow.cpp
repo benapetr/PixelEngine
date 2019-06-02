@@ -130,3 +130,8 @@ void MainWindow::on_actionLow_FPS_triggered(bool checked)
     else
         this->renderTimer->start(40);
 }
+
+void MainWindow::on_actionTest_2_triggered()
+{
+    Game::CurrentGame->test2();
+}

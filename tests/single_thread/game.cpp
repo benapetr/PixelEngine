@@ -13,6 +13,7 @@
 #include "game.h"
 #include "objects/c1.h"
 #include "objects/r1.h"
+#include "objects/p1.h"
 #include <PixelEngine/engine.h>
 #include <PixelEngine/GC/gc.h>
 #include <PixelEngine/Graphics/renderer.h>
@@ -68,22 +69,49 @@ void Game::startGame()
     this->world->RegisterCollider(new PE::BoxCollider(this->MapWidth, -100, 100, 2000));
     this->world->RegisterCollider(new PE::BoxCollider(-1000, this->MapHeight + 800, 4000, 100));
 
-    this->world->RegisterActor(new C1(PE::Vector(80, this->MapHeight)));
-    this->world->RegisterActor(new C1(PE::Vector(85, this->MapHeight + 20)));
-    this->world->RegisterActor(new C1(PE::Vector(86, this->MapHeight + 50)));
-    this->world->RegisterActor(new C1(PE::Vector(96, this->MapHeight + 80)));
-    this->world->RegisterActor(new C1(PE::Vector(92, this->MapHeight + 120)));
-    this->world->RegisterActor(new C1(PE::Vector(94, this->MapHeight + 150)));
-    this->world->RegisterActor(new R1(PE::Vector(96, this->MapHeight + 180)));
+    this->world->RegisterActor(new C1(PE::Vector(80, this->MapHeight - 100)));
+    this->world->RegisterActor(new C1(PE::Vector(85, this->MapHeight - 100 + 20)));
+    this->world->RegisterActor(new C1(PE::Vector(86, this->MapHeight - 100 + 50)));
+    this->world->RegisterActor(new C1(PE::Vector(96, this->MapHeight - 100 + 80)));
+    this->world->RegisterActor(new C1(PE::Vector(92, this->MapHeight - 100 + 120)));
+    this->world->RegisterActor(new C1(PE::Vector(94, this->MapHeight - 100 + 150)));
+    this->world->RegisterActor(new R1(PE::Vector(96, this->MapHeight - 300 + 180)));
 
     int x = 120;
 
     while (x < this->MapWidth)
     {
         x += 32;
-        this->world->RegisterActor(new C1(PE::Vector(x, this->MapHeight)));
-        this->world->RegisterActor(new R1(PE::Vector(x, this->MapHeight + 80)));
+        this->world->RegisterActor(new C1(PE::Vector(x, this->MapHeight - 100)));
+        this->world->RegisterActor(new R1(PE::Vector(x, this->MapHeight - 100 + 80)));
     }
+}
+
+void Game::test1()
+{
+
+}
+
+void Game::test2()
+{
+    this->resetWorld();
+    this->world->BorderColor = QColor(Qt::magenta);
+
+    // Create floor
+    this->world->RegisterCollider(new PE::BoxCollider(-1000, -100, 4000, 180));
+    this->world->RegisterCollider(new PE::BoxCollider(-100, -100, 100, 2000));
+    this->world->RegisterCollider(new PE::BoxCollider(this->MapWidth, -100, 100, 2000));
+    this->world->RegisterCollider(new PE::BoxCollider(-1000, this->MapHeight + 800, 4000, 100));
+
+    this->world->RegisterActor(new C1(PE::Vector(80, this->MapHeight - 20)));
+    this->world->RegisterActor(new P1(PE::Vector(80, this->MapHeight)));
+    //this->world->RegisterActor(new P1(PE::Vector(72, this->MapHeight - 60)));
+    //this->world->RegisterActor(new P1(PE::Vector(90, this->MapHeight - 60)));
+
+    this->world->RegisterActor(new C1(PE::Vector(120, this->MapHeight - 80)));
+    this->world->RegisterActor(new P1(PE::Vector(118, this->MapHeight - 60)));
+    this->world->RegisterActor(new P1(PE::Vector(120, this->MapHeight - 60)));
+    this->world->RegisterActor(new P1(PE::Vector(122, this->MapHeight - 60)));
 }
 
 void Game::OnUpdate()

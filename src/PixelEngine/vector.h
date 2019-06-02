@@ -32,6 +32,8 @@ namespace PE
             double Magnitude();
             double DistanceTo(const Vector &v);
             double AngleTo(const Vector &v);
+            double Dot();
+            double Dot(const Vector &v);
             double X=0;
             double Y=0;
 

@@ -53,3 +53,13 @@ double Vector::AngleTo(const Vector &v)
     double delta_y = v.Y - this->Y;
     return std::atan2(delta_y, delta_x) / PE_PI_RAD_CNV;
 }
+
+double Vector::Dot()
+{
+    return (X * X) + (Y * Y);
+}
+
+double Vector::Dot(const Vector &v)
+{
+    return (this->X * v.X) + (this->Y + v.Y);
+}

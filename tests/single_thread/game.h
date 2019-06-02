@@ -40,6 +40,8 @@ class Game : public QObject
 
         PE::World *GetWorld() { return this->world; }
         void startGame();
+        void test1();
+        void test2();
         PE::Collectable_SmartPtr<PE::Terrain> Terrain;
         double MapWidth;
         double MapHeight;

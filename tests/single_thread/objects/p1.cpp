@@ -10,22 +10,22 @@
 
 // Copyright (c) Petr Bena 2019
 
-#include "r1.h"
+#include "p1.h"
 #include <PixelEngine/camera.h>
 #include <PixelEngine/world.h>
 #include <PixelEngine/pemath.h>
-#include <PixelEngine/Physics/boxcollider.h>
+#include <PixelEngine/Physics/pixelcollider.h>
 #include <PixelEngine/Physics/rigidbody.h>
 #include <PixelEngine/Graphics/renderer.h>
 
-R1::R1(const PE::Vector &position) : PE::Actor(position)
+P1::P1(const PE::Vector &position) : PE::Actor(position)
 {
     this->RigidBody = new PE::Rigidbody();
-    this->AddChildren(new PE::BoxCollider(0, 0, 20, 10));
+    this->AddChildren(new PE::PixelCollider(0, 0));
 }
 
-void R1::Render(PE::Renderer *r, PE::Camera *c)
+void P1::Render(PE::Renderer *r, PE::Camera *c)
 {
     PE::Vector position = c->ProjectedPosition(this->Position);
-    r->DrawRect(position.X2int(), position.Y2int(), 20, 10, 2, Qt::blue);
+    r->DrawEllipse(position.X2int() - 1, position.Y2int() - 1, 2, 2, Qt::black, 2);
 }

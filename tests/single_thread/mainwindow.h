@@ -54,6 +54,8 @@ class MainWindow : public QMainWindow
         void on_actionFluid_terrain_triggered();
         void on_actionLow_FPS_triggered(bool checked);
 
+        void on_actionTest_2_triggered();
+
     private:
         QTimer *renderTimer;
         Game *game;
