@@ -32,8 +32,12 @@ namespace PE
 #ifdef PE_DEBUG
             static bool Debug;
 #endif
+#ifdef PE_METRICS
+            static int Count;
+#endif
 
             Collider(Object *parent = nullptr);
+            ~Collider() override;
             // Returns true in case that position is inside body of this collider
             virtual bool PositionMatch(Vector position)=0;
             virtual bool IntersectionMatch(Collider *collider)=0;

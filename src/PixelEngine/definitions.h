@@ -28,7 +28,12 @@
 // Bitmap size
 #define PE_BITSET_MAX 10000
 
+// Overview of define switches that can be defined (but are not enabled by default)
+// Enable complete debugging (big performance hit)
 //#define PE_DEBUG
+
+// Enable performance metrics
+//#define PE_METRICS
 
 // stolen from boost/current_function.hpp
 // enhanced by Petr Bena, keep the enhancement in case you wanted to update this

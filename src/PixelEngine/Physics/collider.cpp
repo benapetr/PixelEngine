@@ -17,10 +17,22 @@ using namespace PE;
 #ifdef PE_DEBUG
 bool Collider::Debug = false;
 #endif
+#ifdef PE_METRICS
+int Collider::Count = 0;
+#endif
 
 Collider::Collider(Object *parent) : Object(parent)
 {
+#ifdef PE_METRICS
+    Count++;
+#endif
+}
 
+Collider::~Collider()
+{
+#ifdef PE_METRICS
+    Count--;
+#endif
 }
 
 PE_ObjectType Collider::GetType()
