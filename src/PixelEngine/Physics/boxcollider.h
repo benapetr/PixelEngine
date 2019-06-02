@@ -27,6 +27,19 @@ namespace PE
             double GetX() const { return this->Position.X; }
             double GetY() const { return this->Position.Y; }
             PE_ColliderType GetColliderType() override { return PE_ColliderType_Box; }
+#ifdef PE_DEBUG
+            void Render(PE::Renderer *r, PE::Camera *c) override;
+#endif
+            /*
+             * D +--------+ C
+             *   |        |
+             *   |        |
+             * A +--------+ B
+             * */
+            inline Vector A();
+            inline Vector B();
+            inline Vector C();
+            inline Vector D();
             double Width;
             double Height;
 
@@ -35,6 +48,33 @@ namespace PE
 
             friend class ColliderMath;
     };
+
+    inline Vector BoxCollider::A()
+    {
+        return this->Position;
+    }
+
+    inline Vector BoxCollider::B()
+    {
+        Vector b(this->Position);
+        b.X += this->Width;
+        return b;
+    }
+
+    inline Vector BoxCollider::C()
+    {
+        Vector c(this->Position);
+        c.X += this->Width;
+        c.Y += this->Height;
+        return c;
+    }
+
+    inline Vector BoxCollider::D()
+    {
+        Vector d(this->Position);
+        d.Y += this->Height;
+        return d;
+    }
 }
 
 #endif // BOXCOLLIDER_H

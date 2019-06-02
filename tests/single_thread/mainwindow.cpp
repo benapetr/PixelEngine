@@ -39,7 +39,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // WASM is significantly worse than native, so let's decrease FPS to put less strain on CPU
     this->renderTimer->start(40);
 #else
-    this->renderTimer->start(20);
+    this->renderTimer->start(10);
 #endif
 
     // Init console

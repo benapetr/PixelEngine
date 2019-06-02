@@ -100,13 +100,10 @@ void World::Render(Renderer *r)
     // Display colliders on camera
     if (Collider::Debug)
     {
-        foreach (Actor *a, this->actors)
+        foreach (Collider *c, this->GetAllWorldColliders())
         {
-            foreach (Collider *c, a->GetColliders())
-            {
-                if (c->IsVisibleOnCamera(this->camera))
-                    c->Render(r, this->camera);
-            }
+            if (c->IsVisibleOnCamera(this->camera))
+                c->Render(r, this->camera);
         }
     }
 #endif
@@ -188,6 +185,16 @@ void World::ProcessKeyRelease(int key)
 {
     foreach (Actor *a, this->actors)
         a->Event_KeyRelease(key);
+}
+
+QList<Collectable_SmartPtr<Collider> > World::GetAllWorldColliders()
+{
+    QList<Collectable_SmartPtr<Collider>> all_colliders = this->colliders;
+    foreach (Actor *foreign_actor, this->actors)
+    {
+        all_colliders.append(foreign_actor->GetColliders());
+    }
+    return all_colliders;
 }
 
 qint64 World::GetTime()

@@ -37,7 +37,7 @@ Game::Game(double w_width, double w_height, PE::Renderer *r)
 
     this->timer = new QTimer(this);
     connect(this->timer, SIGNAL(timeout()), this, SLOT(OnUpdate()));
-    this->timer->start(10);
+    this->timer->start(20);
     this->startGame();
 
     PE::Collider::Debug = true;
@@ -63,13 +63,27 @@ void Game::startGame()
     this->world->BorderColor = QColor("blue");
 
     // Create floor
-    this->world->RegisterCollider(new PE::BoxCollider(-1000, -100, 4000, 120));
+    this->world->RegisterCollider(new PE::BoxCollider(-1000, -100, 4000, 180));
     this->world->RegisterCollider(new PE::BoxCollider(-100, -100, 100, 2000));
     this->world->RegisterCollider(new PE::BoxCollider(this->MapWidth, -100, 100, 2000));
     this->world->RegisterCollider(new PE::BoxCollider(-1000, this->MapHeight + 800, 4000, 100));
 
     this->world->RegisterActor(new C1(PE::Vector(80, this->MapHeight)));
-    this->world->RegisterActor(new R1(PE::Vector(50, this->MapHeight)));
+    this->world->RegisterActor(new C1(PE::Vector(85, this->MapHeight + 20)));
+    this->world->RegisterActor(new C1(PE::Vector(86, this->MapHeight + 50)));
+    this->world->RegisterActor(new C1(PE::Vector(96, this->MapHeight + 80)));
+    this->world->RegisterActor(new C1(PE::Vector(92, this->MapHeight + 120)));
+    this->world->RegisterActor(new C1(PE::Vector(94, this->MapHeight + 150)));
+    this->world->RegisterActor(new R1(PE::Vector(96, this->MapHeight + 180)));
+
+    int x = 120;
+
+    while (x < this->MapWidth)
+    {
+        x += 32;
+        this->world->RegisterActor(new C1(PE::Vector(x, this->MapHeight)));
+        this->world->RegisterActor(new R1(PE::Vector(x, this->MapHeight + 80)));
+    }
 }
 
 void Game::OnUpdate()

@@ -154,19 +154,19 @@ void QImageRenderer::DrawEllipse(int x, int y, int width, int height, const QCol
 
 int QImageRenderer::trimX(int x)
 {
-    if (x < 0)
+    /*if (x < 0)
         return 0;
     if (x > this->r_width)
-        return this->r_width;
+        return this->r_width;*/
     return x;
 }
 
 int QImageRenderer::trimY(int y)
 {
-    if (y < 0)
+    /*if (y < 0)
         return 0;
     if (y > this->r_height)
-        return this->r_height;
+        return this->r_height;*/
     return y;
 }
 

@@ -18,6 +18,18 @@
 
 using namespace PE;
 
+bool ColliderMath::IntersectionCheckLineCircle(Vector a, Vector b, CircleCollider *c)
+{
+    Vector d;
+    // https://stackoverflow.com/questions/23772990/find-point-with-vector-projection
+    double CF = ((b.X-a.X)*(c->Position.X-a.X)+(b.Y-a.Y)*(c->Position.Y-a.Y))/(std::pow(b.X-a.X, 2)+std::pow(b.Y-a.Y, 2));
+    d.X = a.X+(b.X-a.X) * CF;
+    d.Y = a.Y+(b.Y-a.Y) * CF;
+
+    // Now just check if this point is inside
+    return c->PositionMatch(d);
+}
+
 bool ColliderMath::IntersectionCheckBoxBox(BoxCollider *a, BoxCollider *b)
 {
     if (a->Position.X < b->Position.X + b->Width &&
@@ -51,6 +63,8 @@ bool ColliderMath::IntersectionCheckBoxBitmap(BoxCollider *a, BitmapCollider *b)
 
 bool ColliderMath::IntersectionCheckBoxCircle(BoxCollider *a, CircleCollider *b)
 {
+    // This doesn't seem to work - taken from https://stackoverflow.com/questions/401847/circle-rectangle-collision-detection-intersection
+    /*
     double cdist_x = std::abs(b->Position.X - a->Position.X);
     double cdist_y = std::abs(b->Position.Y - a->Position.Y);
     if (cdist_x > (a->Width / 2 + b->Radius))
@@ -59,6 +73,28 @@ bool ColliderMath::IntersectionCheckBoxCircle(BoxCollider *a, CircleCollider *b)
         return false;
     double cdist = std::pow(cdist_x - a->Width / 2, 2) + std::pow(cdist_y - a->Height / 2, 2);
     return (cdist <= std::pow(b->Radius, 2));
+    */
+
+    // Our own idiot-proof implementation - let's check intersection of individual points
+    // Circle centre in box
+    if (a->PositionMatch(b->Position))
+        return true;
+
+    // Line checks
+    // AB
+    if (IntersectionCheckLineCircle(a->A(), a->B(), b))
+        return true;
+    // BC
+    if (IntersectionCheckLineCircle(a->B(), a->C(), b))
+        return true;
+    // CD
+    if (IntersectionCheckLineCircle(a->C(), a->D(), b))
+        return true;
+    // DA
+    if (IntersectionCheckLineCircle(a->D(), a->A(), b))
+        return true;
+
+    return false;
 }
 
 bool ColliderMath::IntersectionCheckCircleBitmap(BitmapCollider *a, CircleCollider *b)

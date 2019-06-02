@@ -13,6 +13,8 @@
 #ifndef COLLIDERMATH_H
 #define COLLIDERMATH_H
 
+#include "../vector.h"
+
 namespace PE
 {
     class BoxCollider;
@@ -21,6 +23,8 @@ namespace PE
     class ColliderMath
     {
         public:
+            //! Check if line is going through circle
+            static bool IntersectionCheckLineCircle(Vector a, Vector b, CircleCollider *c);
             static bool IntersectionCheckBoxBox(BoxCollider *a, BoxCollider *b);
             static bool IntersectionCheckBoxBitmap(BoxCollider *a, BitmapCollider *b);
             static bool IntersectionCheckBoxCircle(BoxCollider *a, CircleCollider *b);

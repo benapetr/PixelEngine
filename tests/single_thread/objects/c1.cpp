@@ -14,18 +14,18 @@
 #include <PixelEngine/camera.h>
 #include <PixelEngine/world.h>
 #include <PixelEngine/pemath.h>
-#include <PixelEngine/Physics/pixelcollider.h>
+#include <PixelEngine/Physics/circlecollider.h>
 #include <PixelEngine/Physics/rigidbody.h>
 #include <PixelEngine/Graphics/renderer.h>
 
 C1::C1(const PE::Vector &position) : PE::Actor(position)
 {
     this->RigidBody = new PE::Rigidbody();
-    this->AddChildren(new PE::PixelCollider(0, 0));
+    this->AddChildren(new PE::CircleCollider(0, 0, 10));
 }
 
 void C1::Render(PE::Renderer *r, PE::Camera *c)
 {
     PE::Vector position = c->ProjectedPosition(this->Position);
-    r->DrawEllipse(position.X2int(), position.Y2int(), 20, 20, Qt::red, 2);
+    r->DrawEllipse(position.X2int() - 10, position.Y2int() - 10, 20, 20, Qt::red, 2);
 }

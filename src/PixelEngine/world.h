@@ -52,6 +52,8 @@ namespace PE
             void DestroyObject(Collectable_SmartPtr<Object> o);
             void ProcessKeyPress(int key);
             void ProcessKeyRelease(int key);
+            //! Return all colliders registered withing the world, including colliders belonging to actors and terrain
+            QList<Collectable_SmartPtr<Collider>> GetAllWorldColliders();
             qint64 GetTime();
             bool HasBorder = true;
             QColor BorderColor;
