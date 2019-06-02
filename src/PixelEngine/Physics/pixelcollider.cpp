@@ -11,6 +11,10 @@
 // Copyright (c) Petr Bena 2019
 
 #include "pixelcollider.h"
+#ifdef PE_DEBUG
+#include "../camera.h"
+#include "../Graphics/renderer.h"
+#endif
 
 using namespace PE;
 
@@ -33,3 +37,13 @@ PE_ColliderType PixelCollider::GetColliderType()
 {
     return PE_ColliderType_Pixel;
 }
+
+#ifdef PE_DEBUG
+void PixelCollider::Render(Renderer *r, Camera *c)
+{
+    if (!Collider::Debug)
+        return;
+    PE::Vector root = c->ProjectedPosition(this->Position);
+    r->DrawEllipse(root.X2int() - 1, root.Y2int() - 1, 2, 2, Qt::green);
+}
+#endif

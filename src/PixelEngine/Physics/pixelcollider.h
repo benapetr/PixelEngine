@@ -24,6 +24,9 @@ namespace PE
             bool PositionMatch(Vector position) override;
             bool IntersectionMatch(Collider *collider) override;
             PE_ColliderType GetColliderType() override;
+#ifdef PE_DEBUG
+            void Render(PE::Renderer *r, PE::Camera *c) override;
+#endif
     };
 }
 
