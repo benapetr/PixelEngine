@@ -14,6 +14,7 @@
 #include "ui_mainwindow.h"
 #include "game.h"
 #include "console.h"
+#include <PixelEngine/Graphics/peglwidget.h>
 #include <QKeyEvent>
 #include <QImage>
 #include <QDesktopWidget>
@@ -23,14 +24,19 @@
 #include <PixelEngine/ringlog_item.h>
 #include <PixelEngine/Graphics/qglrenderer.h>
 
+MainWindow *MainWindow::Main = nullptr;
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
+    Main = this;
     PE::Engine::Initialize(false);
-    ui->setupUi(this);
+    this->ui->setupUi(this);
     this->showMaximized();
-    this->se_renderer = new PE::QGLRenderer(this->GetWidth(), this->GetHeight(), this->ui->viewPort);
+    this->viewPort = new PE::PEGLWidget(this, nullptr);
+    this->layout()->addWidget(this->viewPort);
+    this->se_renderer = new PE::QGLRenderer(this->GetWidth(), this->GetHeight(), this->viewPort);
     this->game = new Game(this->GetWidth(), this->GetHeight(), this->se_renderer);
-    this->Render();
+    this->viewPort->SetWorld(this->game->GetWorld());
     this->renderTimer = new QTimer(this);
     connect(this->renderTimer, SIGNAL(timeout()), this, SLOT(OnRender()));
     // this timer speed defines FPS, smaller means higher FPS, but also more CPU usage
@@ -68,24 +74,23 @@ void MainWindow::Render()
     this->game->GetWorld()->Render(this->se_renderer);
     this->se_renderer->End();
     this->se_renderer->HasUpdate = false;
-    //if (this->se_renderer->HasUpdate)
 }
 
 int MainWindow::GetWidth()
 {
-    return this->ui->viewPort->width();
+    return this->viewPort->width();
 }
 
 int MainWindow::GetHeight()
 {
-    return this->ui->viewPort->height();
+    return this->viewPort->height();
 }
 
 void MainWindow::OnRender()
 {
     if (!this->ui->actionRendering->isChecked())
         return;
-    this->Render();
+    this->viewPort->update();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *e)

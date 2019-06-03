@@ -25,6 +25,7 @@ class QImage;
 
 namespace PE
 {
+    class PEGLWidget;
     class QGLRenderer;
 }
 
@@ -35,6 +36,7 @@ class MainWindow : public QMainWindow
         Q_OBJECT
 
     public:
+        static MainWindow *Main;
         explicit MainWindow(QWidget *parent = nullptr);
         ~MainWindow() override;
         void Render();
@@ -56,6 +58,7 @@ class MainWindow : public QMainWindow
         void on_actionTest_2_triggered();
 
     private:
+        PE::PEGLWidget *viewPort;
         QTimer *renderTimer;
         Game *game;
         PE::QGLRenderer *se_renderer;
