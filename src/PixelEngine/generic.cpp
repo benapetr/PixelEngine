@@ -14,7 +14,6 @@
 
 using namespace PE;
 
-
 QString Generic::Bool2String(bool value)
 {
     if (value)

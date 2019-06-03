@@ -140,7 +140,7 @@ void QGLRenderer::DrawEllipse(int x, int y, int width, int height, const QColor 
 void QGLRenderer::Begin()
 {
     if (!this->painter)
-        this->painter = new QPainter(this->owner);
+        this->painter = new QPainter();
     this->painter->begin(this->owner);
 }
 
