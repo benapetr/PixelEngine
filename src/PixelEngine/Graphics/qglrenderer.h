@@ -40,7 +40,7 @@ namespace PE
             //! Qt has Y other way this function maps the world Y to Qt Y
             int worldToQtY(int y);
             QOpenGLWidget *owner;
-            QPainter *painter;
+            QPainter *painter = nullptr;
     };
 }
 

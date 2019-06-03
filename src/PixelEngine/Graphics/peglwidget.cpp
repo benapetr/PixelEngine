@@ -19,6 +19,7 @@ using namespace PE;
 
 PEGLWidget::PEGLWidget(QWidget *parent, World *w) : QOpenGLWidget (parent)
 {
+    this->fps_start = QDateTime::currentDateTime().toMSecsSinceEpoch();
     setFixedSize(parent->width(), parent->height());
     this->renderer = new QGLRenderer(parent->width(), parent->height(), this);
     this->world = w;

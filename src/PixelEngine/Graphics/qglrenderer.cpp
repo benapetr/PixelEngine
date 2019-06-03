@@ -139,15 +139,14 @@ void QGLRenderer::DrawEllipse(int x, int y, int width, int height, const QColor 
 
 void QGLRenderer::Begin()
 {
-    this->painter = new QPainter();
+    if (!this->painter)
+        this->painter = new QPainter(this->owner);
     this->painter->begin(this->owner);
 }
 
 void QGLRenderer::End()
 {
     this->painter->end();
-    delete this->painter;
-    this->painter = nullptr;
 }
 
 int QGLRenderer::worldToQtY(int y)
