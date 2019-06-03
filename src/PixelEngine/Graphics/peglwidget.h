@@ -25,14 +25,14 @@ namespace PE
             PEGLWidget(QWidget *parent, World *w);
             World *GetWorld();
             void SetWorld(World *w);
-            int GetFPS();
+            double GetFPS();
 
         protected:
             void paintEvent(QPaintEvent *event) override;
-            int fps_sampling_rate = 2000;
+            double fps_sampling_rate = 2000;
             qint64 fps_start = 0;
             int currentFPS = 0;
-            int lastFPS = 0;
+            double lastFPS = 0;
             QGLRenderer *renderer;
             World *world;
     };

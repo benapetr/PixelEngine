@@ -20,8 +20,6 @@ using namespace PE;
 QGLRenderer::QGLRenderer(int width, int height, QOpenGLWidget *widget) : Renderer(width, height)
 {
     this->owner = widget;
-    //this->painter = new QPainter(this->owner);
-    //this->Clear();
 }
 
 QGLRenderer::~QGLRenderer()
@@ -29,9 +27,9 @@ QGLRenderer::~QGLRenderer()
     delete this->painter;
 }
 
-void QGLRenderer::Render()
+RendererType QGLRenderer::GetType()
 {
-
+    return RendererType_OpenGL;
 }
 
 void QGLRenderer::Clear()
@@ -52,7 +50,9 @@ void QGLRenderer::DrawPixel(int x, int y, const QColor &color)
         return;
     if (y < 0 || y > this->r_height)
         return;
-    //this->image->setPixel(x, this->worldToQtY(y), color.rgb());
+    QPen pen(color);
+    this->painter->setPen(pen);
+    this->painter->drawPoint(x, y);
     if (!this->ManualUpdate)
         this->HasUpdate = true;
 }
@@ -77,7 +77,7 @@ void QGLRenderer::DrawLine(Vector source, Vector target, int line_width, const Q
     pen.setCapStyle(Qt::RoundCap);
     pen.setJoinStyle(Qt::MiterJoin);
     this->painter->setPen(pen);
-    this->painter->drawLine(this->trimX(source.X2int()), this->worldToQtY(source.Y2int()), this->trimX(target.X2int()), this->worldToQtY(target.Y2int()));
+    this->painter->drawLine(source.X2int(), this->worldToQtY(source.Y2int()), target.X2int(), this->worldToQtY(target.Y2int()));
 
     if (!this->ManualUpdate)
         this->HasUpdate = true;
@@ -91,7 +91,7 @@ void QGLRenderer::DrawRect(int x, int y, int width, int height, int line_width, 
     if (fill)
     {
         QBrush brush(color, Qt::SolidPattern);
-        this->painter->fillRect(this->trimX(x), this->worldToQtY(y + height), width, height, brush);
+        this->painter->fillRect(x, this->worldToQtY(y + height), width, height, brush);
     }
     else
     {
@@ -100,12 +100,8 @@ void QGLRenderer::DrawRect(int x, int y, int width, int height, int line_width, 
         pen.setCapStyle(Qt::SquareCap);
         pen.setJoinStyle(Qt::MiterJoin);
         this->painter->setPen(pen);
-        this->painter->drawRect(this->trimX(x), this->worldToQtY(y + height), width, height);
+        this->painter->drawRect(x, this->worldToQtY(y + height), width, height);
     }
-
-    // recursive evil :)
-    //if (line_width > 1)
-    //    this->DrawRect(x + 1, y + 1, width - 2, height - 2, line_width - 1, color);
 
     if (!this->ManualUpdate)
         this->HasUpdate = true;
@@ -152,24 +148,6 @@ void QGLRenderer::End()
     this->painter->end();
     delete this->painter;
     this->painter = nullptr;
-}
-
-int QGLRenderer::trimX(int x)
-{
-    /*if (x < 0)
-        return 0;
-    if (x > this->r_width)
-        return this->r_width;*/
-    return x;
-}
-
-int QGLRenderer::trimY(int y)
-{
-    /*if (y < 0)
-        return 0;
-    if (y > this->r_height)
-        return this->r_height;*/
-    return y;
 }
 
 int QGLRenderer::worldToQtY(int y)

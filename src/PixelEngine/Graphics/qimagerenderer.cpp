@@ -29,14 +29,14 @@ QImageRenderer::~QImageRenderer()
     delete this->image;
 }
 
-void QImageRenderer::Render()
-{
-    //delete this->image;
-}
-
 QImage *QImageRenderer::GetImage()
 {
     return this->image;
+}
+
+RendererType QImageRenderer::GetType()
+{
+    return RendererType_QImage;
 }
 
 void QImageRenderer::Clear()
@@ -88,7 +88,7 @@ void QImageRenderer::DrawLine(Vector source, Vector target, int line_width, cons
     pen.setCapStyle(Qt::RoundCap);
     pen.setJoinStyle(Qt::MiterJoin);
     this->painter->setPen(pen);
-    this->painter->drawLine(this->trimX(source.X2int()), this->worldToQtY(source.Y2int()), this->trimX(target.X2int()), this->worldToQtY(target.Y2int()));
+    this->painter->drawLine(source.X2int(), this->worldToQtY(source.Y2int()), target.X2int(), this->worldToQtY(target.Y2int()));
 
     if (!this->ManualUpdate)
         this->HasUpdate = true;
@@ -102,7 +102,7 @@ void QImageRenderer::DrawRect(int x, int y, int width, int height, int line_widt
     if (fill)
     {
         QBrush brush(color, Qt::SolidPattern);
-        this->painter->fillRect(this->trimX(x), this->worldToQtY(y + height), width, height, brush);
+        this->painter->fillRect(x, this->worldToQtY(y + height), width, height, brush);
     }
     else
     {
@@ -111,12 +111,8 @@ void QImageRenderer::DrawRect(int x, int y, int width, int height, int line_widt
         pen.setCapStyle(Qt::SquareCap);
         pen.setJoinStyle(Qt::MiterJoin);
         this->painter->setPen(pen);
-        this->painter->drawRect(this->trimX(x), this->worldToQtY(y + height), width, height);
+        this->painter->drawRect(x, this->worldToQtY(y + height), width, height);
     }
-
-    // recursive evil :)
-    //if (line_width > 1)
-    //    this->DrawRect(x + 1, y + 1, width - 2, height - 2, line_width - 1, color);
 
     if (!this->ManualUpdate)
         this->HasUpdate = true;
@@ -150,24 +146,6 @@ void QImageRenderer::DrawEllipse(int x, int y, int width, int height, const QCol
 
     if (!this->ManualUpdate)
         this->HasUpdate = true;
-}
-
-int QImageRenderer::trimX(int x)
-{
-    /*if (x < 0)
-        return 0;
-    if (x > this->r_width)
-        return this->r_width;*/
-    return x;
-}
-
-int QImageRenderer::trimY(int y)
-{
-    /*if (y < 0)
-        return 0;
-    if (y > this->r_height)
-        return this->r_height;*/
-    return y;
 }
 
 int QImageRenderer::worldToQtY(int y)

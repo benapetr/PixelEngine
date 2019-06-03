@@ -35,13 +35,15 @@ void PEGLWidget::SetWorld(World *w)
     this->world = w;
 }
 
-int PEGLWidget::GetFPS()
+double PEGLWidget::GetFPS()
 {
     return this->lastFPS;
 }
 
 void PEGLWidget::paintEvent(QPaintEvent *event)
 {
+    (void)event;
+
     if (this->world == nullptr)
         return;
 

@@ -24,7 +24,7 @@ namespace PE
         public:
             QGLRenderer(int width, int height, QOpenGLWidget *widget);
             ~QGLRenderer() override;
-            void Render() override;
+            RendererType GetType() override;
             void Clear() override;
             void Clear(const QColor &color) override;
             void DrawPixel(int x, int y, const QColor &color) override;
@@ -37,8 +37,6 @@ namespace PE
             void End();
 
         private:
-            inline int trimX(int x);
-            inline int trimY(int y);
             //! Qt has Y other way this function maps the world Y to Qt Y
             int worldToQtY(int y);
             QOpenGLWidget *owner;

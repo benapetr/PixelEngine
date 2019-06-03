@@ -19,6 +19,12 @@
 
 namespace PE
 {
+    enum RendererType
+    {
+        RendererType_QImage,
+        RendererType_OpenGL
+    };
+
     class Vector;
 
     /*!
@@ -31,7 +37,7 @@ namespace PE
         public:
             Renderer(int width, int height);
             virtual ~Renderer();
-            virtual void Render()=0;
+            virtual RendererType GetType()=0;
             virtual void Clear()=0;
             virtual void Clear(const QColor &color)=0;
             virtual void DrawPixel(int x, int y, const QColor &color)=0;

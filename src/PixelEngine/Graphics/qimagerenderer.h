@@ -26,8 +26,8 @@ namespace PE
         public:
             QImageRenderer(int width, int height);
             ~QImageRenderer() override;
-            void Render() override;
             QImage *GetImage();
+            RendererType GetType() override;
             void Clear() override;
             void Clear(const QColor &color) override;
             QPixmap GetPixmap();
@@ -39,8 +39,6 @@ namespace PE
             void DrawEllipse(int x, int y, int width, int height, const QColor &color, int line_width=1) override;
 
         private:
-            inline int trimX(int x);
-            inline int trimY(int y);
             //! Qt has Y other way this function maps the world Y to Qt Y
             int worldToQtY(int y);
             QPainter *painter;
