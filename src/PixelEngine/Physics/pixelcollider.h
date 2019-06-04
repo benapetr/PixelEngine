@@ -17,6 +17,9 @@
 
 namespace PE
 {
+    /*!
+     * \brief The PixelCollider class collides on point level - doesn't scale
+     */
     class PixelCollider : public Collider
     {
         public:

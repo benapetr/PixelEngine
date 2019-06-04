@@ -57,22 +57,22 @@ namespace PE
     inline Vector BoxCollider::B()
     {
         Vector b(this->Position);
-        b.X += this->Width;
+        b.X += this->Width * this->Scale;
         return b;
     }
 
     inline Vector BoxCollider::C()
     {
         Vector c(this->Position);
-        c.X += this->Width;
-        c.Y += this->Height;
+        c.X += this->Width * this->Scale;
+        c.Y += this->Height * this->Scale;
         return c;
     }
 
     inline Vector BoxCollider::D()
     {
         Vector d(this->Position);
-        d.Y += this->Height;
+        d.Y += this->Height * this->Scale;
         return d;
     }
 }

@@ -25,6 +25,7 @@ namespace PE
 
     //! Bitmap collision - for obvious reasons (memory) works with integers only
     //! smallest collision unit is one integer (one pixel)
+    //! This collider doesn't scale
     class BitmapCollider : public Collider
     {
         public:

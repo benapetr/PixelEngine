@@ -34,13 +34,14 @@ bool ColliderMath::IntersectionCheckLineCircle(Vector a, Vector b, CircleCollide
     */
 
     //https://stackoverflow.com/a/1084899/1514983
+    double radius = c->Radius * c->Scale;
 
     Vector direction = b - a;
     Vector sphere_centre_to_ray = a - c->Position;
 
     double dot_a = direction.Dot();
     double dot_b = 2 * sphere_centre_to_ray.Dot(direction);
-    double dot_c = sphere_centre_to_ray.Dot() - (c->Radius * c->Radius);
+    double dot_c = sphere_centre_to_ray.Dot() - (radius * radius);
     double discriminant = (dot_b * dot_b) - (4 * dot_a * dot_c);
     if( discriminant < 0 )
     {
@@ -90,10 +91,10 @@ bool ColliderMath::IntersectionCheckLineCircle(Vector a, Vector b, CircleCollide
 
 bool ColliderMath::IntersectionCheckBoxBox(BoxCollider *a, BoxCollider *b)
 {
-    if (a->Position.X < b->Position.X + b->Width &&
-        a->Position.X + a->Width > b->Position.X &&
-        a->Position.Y < b->Position.Y + b->Height &&
-        a->Position.Y + a->Height > b->Position.Y)
+    if (a->Position.X < b->Position.X + (b->Width * b->Scale) &&
+        a->Position.X + (a->Width * a->Scale) > b->Position.X &&
+        a->Position.Y < b->Position.Y + (b->Height * b->Scale) &&
+        a->Position.Y + (a->Height * a->Scale) > b->Position.Y)
     {
         // there is collision
         return true;
@@ -109,10 +110,10 @@ bool ColliderMath::IntersectionCheckBoxBitmap(BoxCollider *a, BitmapCollider *b)
         return true;
 
     Vector p = a->Position;
-    p.X += a->Width / 2;
+    p.X += (a->Width * a->Scale) / 2;
     if (b->PositionMatch(p))
         return true;
-    p.X += a->Width;
+    p.X += (a->Width * a->Scale);
     if (b->PositionMatch(p))
         return true;
 
@@ -163,10 +164,12 @@ bool ColliderMath::IntersectionCheckCircleBitmap(BitmapCollider *a, CircleCollid
     // Calculate 4 points of circle and check each of them
     Vector v1(b->Position), v2(b->Position), v3(b->Position), v4(b->Position);
 
-    v1.X -= b->Radius;
-    v2.X += b->Radius;
-    v3.Y -= b->Radius;
-    v3.Y += b->Radius;
+    double radius = b->Scale * b->Radius;
+
+    v1.X -= radius;
+    v2.X += radius;
+    v3.Y -= radius;
+    v3.Y += radius;
 
     if (a->PositionMatch(v1))
         return true;
@@ -182,5 +185,5 @@ bool ColliderMath::IntersectionCheckCircleBitmap(BitmapCollider *a, CircleCollid
 
 bool ColliderMath::IntersectionCheckCircleCircle(CircleCollider *a, CircleCollider *b)
 {
-    return (b->Position.DistanceTo(a->Position) <= a->Radius + b->Radius);
+    return (b->Position.DistanceTo(a->Position) <= (a->Radius * a->Scale) + (b->Radius + b->Scale));
 }

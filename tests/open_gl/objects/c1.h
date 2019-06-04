@@ -20,6 +20,9 @@ class C1 : public PE::Actor
     public:
         C1(const PE::Vector &position);
         void Render(PE::Renderer *r, PE::Camera *c) override;
+        void Event_OnImpact(const PE::Vector &impact_force) override;
+        bool Bounce = false;
+        bool Scaling = false;
 };
 
 #endif // C1_H

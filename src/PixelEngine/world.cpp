@@ -18,6 +18,7 @@
 #include "Physics/rigidbody.h"
 #include "terrain.h"
 #include "Physics/bitmapcollider.h"
+#include <cmath>
 #include <QDateTime>
 
 using namespace PE;
@@ -316,13 +317,16 @@ void World::updateMovement()
                 // We can't move this object, let's move it back
                 a->SetPosition(old_position);
 
-                a->Event_OnImpact(a->RigidBody->Velocity);
-
-                // Now let's try to find a position between the source and target colider, to prevent any space gaps in between them
+                PE::Vector impact_force = a->RigidBody->Velocity;
                 a->RigidBody->ResetForceAfterImpact();
 
-                // Spawn the event
+                // Events
+                a->Event_OnImpact(impact_force);
                 a->Event_OnCollision(collision_target);
+
+                // If object bounces, let's bounce it
+                if (a->RigidBody->Bounciness > 0 && std::abs(impact_force.Magnitude()) > 1)
+                    a->RigidBody->AddForce(impact_force * -1 * a->RigidBody->Bounciness);
             } else
             {
                 // The object has moved, let's update the physics cache so that all objects that are related to this one will know it

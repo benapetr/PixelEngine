@@ -22,10 +22,16 @@ C1::C1(const PE::Vector &position) : PE::Actor(position)
 {
     this->RigidBody = new PE::Rigidbody();
     this->AddChildren(new PE::CircleCollider(0, 0, 10));
+    this->RigidBody->Bounciness = 0.5;
 }
 
 void C1::Render(PE::Renderer *r, PE::Camera *c)
 {
     PE::Vector position = c->ProjectedPosition(this->Position);
     r->DrawEllipse(position.X2int() - 10, position.Y2int() - 10, 20, 20, Qt::red, 2);
+}
+
+void C1::Event_OnImpact(const PE::Vector &impact_force)
+{
+
 }

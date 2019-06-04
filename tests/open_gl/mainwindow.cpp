@@ -86,6 +86,11 @@ int MainWindow::GetHeight()
     return this->viewPort->height();
 }
 
+void MainWindow::InstallWorld(PE::World *w)
+{
+    this->viewPort->SetWorld(w);
+}
+
 void MainWindow::OnRender()
 {
     if (!this->ui->actionRendering->isChecked())

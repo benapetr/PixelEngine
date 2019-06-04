@@ -36,9 +36,9 @@ bool BoxCollider::PositionMatch(Vector position)
         return false;
     if (position.Y < this->Position.Y)
         return false;
-    if (position.X > this->Position.X + this->Width)
+    if (position.X > this->Position.X + (this->Width * this->Scale))
         return false;
-    if (position.Y > this->Position.Y + this->Height)
+    if (position.Y > this->Position.Y + (this->Height * this->Scale))
         return false;
     return true;
 }
@@ -64,7 +64,7 @@ void BoxCollider::Render(Renderer *r, Camera *c)
         return;
 
     PE::Vector root = c->ProjectedPosition(this->Position);
-    r->DrawRect(root.X2int(), root.Y2int(), this->Width, this->Height, 1, Qt::green);
+    r->DrawRect(root.X2int(), root.Y2int(), (this->Width * this->Scale), (this->Height * this->Scale), 1, Qt::green);
 }
 #endif
 

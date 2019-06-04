@@ -14,6 +14,7 @@
 #include "objects/c1.h"
 #include "objects/r1.h"
 #include "objects/p1.h"
+#include "mainwindow.h"
 #include <PixelEngine/engine.h>
 #include <PixelEngine/GC/gc.h>
 #include <PixelEngine/Graphics/renderer.h>
@@ -112,6 +113,12 @@ void Game::test2()
     this->world->RegisterActor(new P1(PE::Vector(118, this->MapHeight - 60)));
     this->world->RegisterActor(new P1(PE::Vector(120, this->MapHeight - 60)));
     this->world->RegisterActor(new P1(PE::Vector(122, this->MapHeight - 60)));
+
+    C1 *tx = new C1(PE::Vector(220, this->MapHeight - 80));
+    tx->Bounce = true;
+    tx->Scaling = true;
+    tx->SetScale(2);
+    this->world->RegisterActor(tx);
 }
 
 void Game::OnUpdate()
@@ -208,5 +215,6 @@ void Game::resetWorld()
     this->IsFinished = false;
     delete this->world;
     this->world = new PE::World(this->MapWidth, this->MapHeight);
+    MainWindow::Main->InstallWorld(this->world);
     this->world->BackgroundColor = QColor(204, 221, 255);
 }

@@ -30,6 +30,7 @@ namespace PE
             Collider *GroundCollider = nullptr;
             //! Movement
             Vector Velocity;
+            double Bounciness = 0;
             double Weight = 1;
     };
 }

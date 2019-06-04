@@ -27,6 +27,7 @@ namespace PE
 {
     class PEGLWidget;
     class QGLRenderer;
+    class World;
 }
 
 class Game;
@@ -42,6 +43,7 @@ class MainWindow : public QMainWindow
         void Render();
         int GetWidth();
         int GetHeight();
+        void InstallWorld(PE::World *w);
 
     public slots:
         void OnRender();

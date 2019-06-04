@@ -62,14 +62,6 @@ void Object::SetPosition(Vector p)
     if (this->children == nullptr)
         return;
 
-    // This is a hack due to unclear Qt bug
-    // if iteration is not done inside of a list copy, it randomly crashes
-    // UPDATE: this bug is probably triggered by multithreaded GC
-    // so commenting the fix out, if this crash is happening without
-    // multithreaded GC, it may need to be reinstated
-    //QList<Collectable_SmartPtr<Object>> cl(*this->children);
-    //foreach (Object *c, cl)
-
     foreach (Object *c, *this->children)
     {
         c->SetPosition(p + c->RelativePosition);
@@ -90,6 +82,18 @@ void Object::UpdateRecursivelyLastMovement(qint64 time)
     foreach (Object *c, *this->children)
     {
         c->UpdateRecursivelyLastMovement(time);
+    }
+}
+
+void Object::SetScale(double scale)
+{
+    this->Scale = scale;
+    if (this->children == nullptr)
+        return;
+
+    foreach (Object *c, *this->children)
+    {
+        c->SetScale(scale);
     }
 }
 

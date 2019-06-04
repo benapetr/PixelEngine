@@ -29,7 +29,7 @@ CircleCollider::CircleCollider(double x, double y, double radius)
 
 bool PE::CircleCollider::PositionMatch(PE::Vector position)
 {
-    return (this->Position.DistanceTo(position) <= this->Radius);
+    return (this->Position.DistanceTo(position) <= (this->Radius * this->Scale));
 }
 
 bool CircleCollider::IntersectionMatch(Collider *collider)
@@ -57,8 +57,8 @@ void CircleCollider::Render(Renderer *r, Camera *c)
 {
     if (!Collider::Debug)
         return;
-    PE::Vector root = c->ProjectedPosition(this->Position) - this->Radius;
-    int w = static_cast<int>(this->Radius * 2);
+    PE::Vector root = c->ProjectedPosition(this->Position) - (this->Radius * this->Scale);
+    int w = static_cast<int>((this->Radius * 2 * this->Scale));
     r->DrawEllipse(root.X2int(), root.Y2int(), w, w, Qt::green);
 }
 #endif
