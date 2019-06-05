@@ -19,7 +19,7 @@ namespace PE
     class CircleCollider : public Collider
     {
         public:
-            CircleCollider(double x, double y, double radius);
+            CircleCollider(double x, double y, double radius, unsigned int layer = 0);
             bool PositionMatch(Vector position) override;
             bool IntersectionMatch(Collider *collider) override;
             PE_ColliderType GetColliderType() override { return PE_ColliderType_Circle; }

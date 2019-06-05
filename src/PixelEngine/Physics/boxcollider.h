@@ -21,7 +21,7 @@ namespace PE
     class BoxCollider : public Collider
     {
         public:
-            BoxCollider(double x, double y, double w, double h, Object *parent = nullptr);
+            BoxCollider(double x, double y, double w, double h, Object *parent = nullptr, unsigned int layer = 0);
             bool PositionMatch(Vector position) override;
             bool IntersectionMatch(Collider *collider) override;
             double GetX() const { return this->Position.X; }

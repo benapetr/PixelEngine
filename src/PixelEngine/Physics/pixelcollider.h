@@ -23,7 +23,7 @@ namespace PE
     class PixelCollider : public Collider
     {
         public:
-            PixelCollider(double x, double y);
+            PixelCollider(double x, double y, unsigned int layer = 0);
             bool PositionMatch(Vector position) override;
             bool IntersectionMatch(Collider *collider) override;
             PE_ColliderType GetColliderType() override;

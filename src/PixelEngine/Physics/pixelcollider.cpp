@@ -18,8 +18,9 @@
 
 using namespace PE;
 
-PixelCollider::PixelCollider(double x, double y)
+PixelCollider::PixelCollider(double x, double y, unsigned int layer)
 {
+    this->Layer = layer;
     this->Position = Vector(x, y);
 }
 

@@ -167,16 +167,15 @@ bool ColliderMath::IntersectionCheckCircleBitmap(BitmapCollider *a, CircleCollid
     double radius = b->Scale * b->Radius;
 
     v1.X -= radius;
-    v2.X += radius;
-    v3.Y -= radius;
-    v3.Y += radius;
-
     if (a->PositionMatch(v1))
         return true;
+    v2.X += radius;
     if (a->PositionMatch(v2))
         return true;
+    v3.Y -= radius;
     if (a->PositionMatch(v3))
         return true;
+    v4.Y += radius;
     if (a->PositionMatch(v4))
         return true;
 

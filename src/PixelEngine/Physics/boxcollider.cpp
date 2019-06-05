@@ -21,13 +21,14 @@
 
 using namespace PE;
 
-BoxCollider::BoxCollider(double x, double y, double w, double h, Object *parent) : Collider(parent)
+BoxCollider::BoxCollider(double x, double y, double w, double h, Object *parent, unsigned int layer) : Collider(parent)
 {
     this->Position.X = x;
     this->Position.Y = y;
     this->RelativePosition = this->Position;
     this->Width = w;
     this->Height = h;
+    this->Layer = layer;
 }
 
 bool BoxCollider::PositionMatch(Vector position)
