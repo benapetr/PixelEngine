@@ -23,6 +23,7 @@ namespace PE
     class Renderer;
     class Actor;
     class Camera;
+    class CollisionIgnoreMatrix;
     class Object;
     class Terrain;
     class Collider;
@@ -55,6 +56,8 @@ namespace PE
             //! Return all colliders registered withing the world, including colliders belonging to actors and terrain
             QList<Collectable_SmartPtr<Collider>> GetAllWorldColliders();
             qint64 GetTime();
+            bool HasCollisionIgnoreMatrix();
+            CollisionIgnoreMatrix *GetCollisionIgnoreMatrix();
             bool HasBorder = true;
             QColor BorderColor;
             // Every object that makes it under this Y is automatically destroyed
@@ -71,6 +74,7 @@ namespace PE
             void deleteOld();
 
         private:
+            CollisionIgnoreMatrix *CIM = nullptr;
             Camera *camera;
             QList<Collectable_SmartPtr<Actor>> actors;
             QList<Collectable_SmartPtr<Collider>> colliders;

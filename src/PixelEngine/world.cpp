@@ -14,6 +14,7 @@
 #include "actor.h"
 #include "camera.h"
 #include "Physics/collider.h"
+#include "Physics/collisionignorematrix.h"
 #include "Graphics/renderer.h"
 #include "Physics/rigidbody.h"
 #include "terrain.h"
@@ -41,6 +42,7 @@ World::~World()
     this->terrains.clear();
     this->colliders.clear();
     delete this->camera;
+    delete this->CIM;
 }
 
 void World::Render(Renderer *r)
@@ -203,6 +205,18 @@ qint64 World::GetTime()
     return QDateTime::currentDateTime().toMSecsSinceEpoch();
 }
 
+bool World::HasCollisionIgnoreMatrix()
+{
+    return (nullptr == this->CIM);
+}
+
+CollisionIgnoreMatrix *World::GetCollisionIgnoreMatrix()
+{
+    if (!this->CIM)
+        this->CIM = new CollisionIgnoreMatrix();
+    return this->CIM;
+}
+
 void World::updateGravity()
 {
     // Calculate gravitional forces for every object with rigidbody
@@ -260,6 +274,8 @@ void World::updateMovement()
                     if (collider_actor == collider_other)
                         continue;
                     if (collider_actor->GetParent() == collider_other->GetParent())
+                        continue;
+                    if (this->CIM && this->CIM->Matrix[collider_actor->Layer][collider_other->Layer])
                         continue;
 
                     // Ray tracing hack for pixel colliders - should be improved

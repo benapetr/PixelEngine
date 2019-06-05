@@ -14,6 +14,9 @@
 #define DEFINITIONS_H
 
 #define PE_VERSION_STRING "1.0.0.0"
+
+// Collision matrix
+#define PE_MAX_CM_SIZE 64
 #define PE_RING_LOG_SIZE  600
 
 // Math

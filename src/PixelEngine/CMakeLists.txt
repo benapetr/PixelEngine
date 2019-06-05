@@ -30,9 +30,9 @@ else()
   find_package(Qt4 REQUIRED)
 endif()
 
-file (GLOB src "*.cpp" "Physics/*.cpp" "Graphics/*.cpp" "GC/*.cpp")
+file (GLOB src "*.cpp" "*/*.cpp")
 file (GLOB resources "*.qrc")
-file (GLOB hx "*.h" "GC/*.h" "Graphics/*.h" "Physics/*.h")
+file (GLOB hx "*.h" "*/*.h")
 
 if(QT5_BUILD)
     QT5_WRAP_CPP(pixelengine_HEADERS_MOC ${pixelengine_HEADERS})

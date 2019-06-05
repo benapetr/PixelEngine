@@ -43,6 +43,7 @@ namespace PE
             virtual bool IntersectionMatch(Collider *collider)=0;
             virtual PE_ColliderType GetColliderType()=0;
             PE_ObjectType GetType() override;
+            unsigned int Layer = 0;
     };
 }
 
