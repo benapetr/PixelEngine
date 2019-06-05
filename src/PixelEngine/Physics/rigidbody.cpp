@@ -32,6 +32,8 @@ Vector Rigidbody::GetMovement()
 void Rigidbody::AddForce(const Vector &force)
 {
     this->Velocity += force;
+    // Drop info about ground collider
+    this->GroundCollider = nullptr;
 }
 
 void Rigidbody::ResetForceAfterImpact()

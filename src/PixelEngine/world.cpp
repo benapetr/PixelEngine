@@ -265,7 +265,7 @@ void World::updateMovement()
             }
 
             Collider *collision_target = nullptr;
-            Object *collision_source = nullptr;
+            Collider *collision_source = nullptr;
 
             foreach (Collider *collider_actor, ac)
             {
@@ -342,7 +342,31 @@ void World::updateMovement()
 
                 // If object bounces, let's bounce it
                 if (a->RigidBody->Bounciness > 0 && std::abs(impact_force.Magnitude()) > 1)
-                    a->RigidBody->AddForce(impact_force * -1 * a->RigidBody->Bounciness);
+                {
+                    bool hit_y;
+                    bool hit_x;
+                    // But first check in which direction it did impact - because that's the direction we want to negate
+                    Vector original_position_of_collider = collision_source->Position;
+
+                    // Now shift it in both direction and check if there is collision caused by either shift
+                    collision_source->Position.Y += impact_force.Y;
+                    hit_y = collision_target->IntersectionMatch(collision_source);
+
+                    collision_source->Position = original_position_of_collider;
+                    collision_source->Position.X += impact_force.X;
+                    hit_x = collision_target->IntersectionMatch(collision_source);
+
+                    collision_source->Position = original_position_of_collider;
+                    if (hit_x || hit_y)
+                    {
+                        Vector bounce_force = impact_force;
+                        if (hit_x)
+                            bounce_force.X = impact_force.X * -1 * a->RigidBody->Bounciness;
+                        if (hit_y)
+                            bounce_force.Y = impact_force.Y * -1 * a->RigidBody->Bounciness;
+                        a->RigidBody->AddForce(bounce_force);
+                    }
+                }
             } else
             {
                 // The object has moved, let's update the physics cache so that all objects that are related to this one will know it

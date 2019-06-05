@@ -21,6 +21,7 @@ class C1 : public PE::Actor
         C1(const PE::Vector &position);
         void Render(PE::Renderer *r, PE::Camera *c) override;
         void Event_OnImpact(const PE::Vector &impact_force) override;
+        void Event_KeyPress(int key);
         bool Bounce = false;
         bool Scaling = false;
 };

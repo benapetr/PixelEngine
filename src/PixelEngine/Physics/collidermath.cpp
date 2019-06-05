@@ -106,15 +106,16 @@ bool ColliderMath::IntersectionCheckBoxBox(BoxCollider *a, BoxCollider *b)
 bool ColliderMath::IntersectionCheckBoxBitmap(BoxCollider *a, BitmapCollider *b)
 {
     // Check collision vs corners (4 points)
-    if (b->PositionMatch(a->Position))
+    if (b->PositionMatch(a->A()))
         return true;
 
-    Vector p = a->Position;
-    p.X += (a->Width * a->Scale) / 2;
-    if (b->PositionMatch(p))
+    if (b->PositionMatch(a->B()))
         return true;
-    p.X += (a->Width * a->Scale);
-    if (b->PositionMatch(p))
+
+    if (b->PositionMatch(a->C()))
+        return true;
+
+    if (b->PositionMatch(a->D()))
         return true;
 
     return false;

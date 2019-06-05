@@ -35,3 +35,11 @@ void C1::Event_OnImpact(const PE::Vector &impact_force)
 {
 
 }
+
+void C1::Event_KeyPress(int key)
+{
+    if (!this->Bounce || key != Qt::Key_X)
+        return;
+
+    this->RigidBody->AddForce(PE::Vector(PE::PEMath::GetRandom(-10, 10), PE::PEMath::GetRandom(10, 60)));
+}
