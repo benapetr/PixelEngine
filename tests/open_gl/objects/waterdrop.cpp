@@ -10,28 +10,26 @@
 
 // Copyright (c) Petr Bena 2019
 
+#include "waterdrop.h"
 #include <PixelEngine/camera.h>
-#include <cmath>
-#include "radian1.h"
+#include <PixelEngine/Physics/rigidbody.h>
+#include <PixelEngine/Physics/pixelcollider.h>
 #include <PixelEngine/Graphics/renderer.h>
 
-Radian1::Radian1(const PE::Vector &position)
+WaterDrop::WaterDrop(const PE::Vector& position) : PE::Actor(position)
 {
-    v1 = position;
-    v2 = position;
+    this->RigidBody = new PE::Rigidbody();
+    this->AddChildren(new PE::PixelCollider(0, 0));
+    this->Destroy(2000);
 }
 
-void Radian1::Update(qint64 time)
-{
-    v2 = v1;
-    v2.X = v2.X + (std::cos(this->radian) * 100);
-    v2.Y = v2.Y + (std::sin(this->radian) * 100);
-    this->radian += 0.01;
-    this->RedrawNeeded = true;
-}
-
-void Radian1::Render(PE::Renderer *r, PE::Camera *c)
+void WaterDrop::Render(PE::Renderer *r, PE::Camera *c)
 {
     PE::Vector position = c->ProjectedPosition(this->Position);
-    r->DrawLine(v1, v2, 1, Qt::blue);
+    r->DrawEllipse(position.X2int() - 1, position.Y2int() - 1, 2, 2, Qt::darkBlue, 4);
+}
+
+void WaterDrop::Event_OnImpact(const PE::Vector &impact_force)
+{
+    this->Destroy();
 }

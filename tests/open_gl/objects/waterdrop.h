@@ -10,20 +10,17 @@
 
 // Copyright (c) Petr Bena 2019
 
-#ifndef C1_H
-#define C1_H
+#ifndef WATERDROP_H
+#define WATERDROP_H
 
 #include <PixelEngine/actor.h>
 
-class C1 : public PE::Actor
+class WaterDrop : public PE::Actor
 {
     public:
-        C1(const PE::Vector &position);
+        WaterDrop(const PE::Vector& position);
         void Render(PE::Renderer *r, PE::Camera *c) override;
         void Event_OnImpact(const PE::Vector &impact_force) override;
-        void Event_KeyPress(int key);
-        bool Bounce = true;
-        bool Scaling = false;
 };
 
-#endif // C1_H
+#endif // WATERDROP_H

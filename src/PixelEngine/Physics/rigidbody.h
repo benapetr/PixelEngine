@@ -14,6 +14,8 @@
 #define RIGIDBODY_H
 
 #include "../vector.h"
+#include "collider.h"
+#include "../GC/collectable_smartptr.h"
 
 namespace PE
 {
@@ -27,7 +29,7 @@ namespace PE
             Vector GetMovement();
             void AddForce(const Vector &force);
             void ResetForceAfterImpact();
-            Collider *GroundCollider = nullptr;
+            Collectable_SmartPtr<Collider> GroundCollider;
             //! Movement
             Vector Velocity;
             double Bounciness = 0;

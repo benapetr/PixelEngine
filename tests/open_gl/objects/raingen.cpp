@@ -10,20 +10,21 @@
 
 // Copyright (c) Petr Bena 2019
 
-#ifndef C1_H
-#define C1_H
+#include "raingen.h"
+#include "../game.h"
+#include "waterdrop.h"
+#include <PixelEngine/world.h>
+#include <PixelEngine/pemath.h>
 
-#include <PixelEngine/actor.h>
-
-class C1 : public PE::Actor
+RainGen::RainGen()
 {
-    public:
-        C1(const PE::Vector &position);
-        void Render(PE::Renderer *r, PE::Camera *c) override;
-        void Event_OnImpact(const PE::Vector &impact_force) override;
-        void Event_KeyPress(int key);
-        bool Bounce = true;
-        bool Scaling = false;
-};
 
-#endif // C1_H
+}
+
+void RainGen::Update(qint64 time)
+{
+    if (time - this->last_time < 20)
+        return;
+    this->last_time = time;
+    Game::CurrentGame->GetWorld()->RegisterActor(new WaterDrop(PE::Vector(PE::PEMath::GetRandom(0, 1600), 1000)));
+}

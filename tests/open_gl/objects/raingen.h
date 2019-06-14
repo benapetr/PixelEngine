@@ -10,20 +10,18 @@
 
 // Copyright (c) Petr Bena 2019
 
-#ifndef C1_H
-#define C1_H
+#ifndef RAINGEN_H
+#define RAINGEN_H
 
 #include <PixelEngine/actor.h>
 
-class C1 : public PE::Actor
+class RainGen : public PE::Actor
 {
     public:
-        C1(const PE::Vector &position);
-        void Render(PE::Renderer *r, PE::Camera *c) override;
-        void Event_OnImpact(const PE::Vector &impact_force) override;
-        void Event_KeyPress(int key);
-        bool Bounce = true;
-        bool Scaling = false;
+        RainGen();
+        void Update(qint64 time = 0) override;
+    private:
+        qint64 last_time = 0;
 };
 
-#endif // C1_H
+#endif // RAINGEN_H

@@ -11,6 +11,7 @@
 // Copyright (c) Petr Bena 2019
 
 #include "game.h"
+#include "objects/raingen.h"
 #include "objects/c1.h"
 #include "objects/r1.h"
 #include "objects/p1.h"
@@ -114,7 +115,8 @@ void Game::test2()
     this->world->RegisterActor(new P1(PE::Vector(118, this->MapHeight - 60)));
     this->world->RegisterActor(new P1(PE::Vector(120, this->MapHeight - 60)));
     this->world->RegisterActor(new P1(PE::Vector(122, this->MapHeight - 60)));
-    this->world->RegisterActor(new Radian1(PE::Vector(122, this->MapHeight - 60)));
+    this->world->RegisterActor(new Radian1(PE::Vector(522, this->MapHeight - 260)));
+    this->world->RegisterActor(new RainGen());
 
     C1 *tx = new C1(PE::Vector(220, this->MapHeight - 80));
     tx->Bounce = true;
