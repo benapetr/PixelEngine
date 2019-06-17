@@ -76,7 +76,7 @@ Collectable_SmartPtr<Terrain> WorldGenerator::GenerateRandom(int w_width, int w_
         }
     }
     w->TerrainMass = mass;
-    w->SourceImage = image;
+    w->SetSourceImage(image);
     w->BitMap = QPixmap::fromImage(image);
 
     return w;

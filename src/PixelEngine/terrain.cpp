@@ -78,7 +78,7 @@ void Terrain::DestroyPixel(int x, int y)
     if (this->painterMode != PainterMode_Destructing)
         this->changePainterMode(PainterMode_Destructing);
 
-    this->getPainter()->drawPoint(x, this->terrainToQtY(y));
+    this->GetPainter()->drawPoint(x, this->terrainToQtY(y));
     this->Collider->Bitmap[x][y] = false;
 }
 
@@ -95,7 +95,7 @@ void Terrain::CreatePixel(int x, int y)
     if (this->painterMode != PainterMode_Creating)
         this->changePainterMode(PainterMode_Creating);
 
-    this->getPainter()->drawPoint(x, this->terrainToQtY(y));
+    this->GetPainter()->drawPoint(x, this->terrainToQtY(y));
     this->Collider->Bitmap[x][y] = true;
 }
 
@@ -105,7 +105,7 @@ void Terrain::DestroyPixelAbsolute(int x, int y)
     if (this->painterMode != PainterMode_Destructing)
         this->changePainterMode(PainterMode_Destructing);
 
-    this->getPainter()->drawPoint(x, this->terrainToQtY(y));
+    this->GetPainter()->drawPoint(x, this->terrainToQtY(y));
     this->Collider->Bitmap[x][y] = false;
 }
 
@@ -115,13 +115,44 @@ void Terrain::CreatePixelAbsolute(int x, int y)
     if (this->painterMode != PainterMode_Creating)
         this->changePainterMode(PainterMode_Creating);
 
-    this->getPainter()->drawPoint(x, this->terrainToQtY(y));
+    this->GetPainter()->drawPoint(x, this->terrainToQtY(y));
     this->Collider->Bitmap[x][y] = true;
+}
+
+void Terrain::DrawLine(int x1, int y1, int x2, int y2, const QColor& color)
+{
+    x1 -= this->Position.X2int();
+    y1 -= this->Position.Y2int();
+    if (x1 < 0 || x1 >= this->t_width)
+        return;
+    if (y1 < 0 || y1 >= this->t_height)
+        return;
+    x2 -= this->Position.X2int();
+    y2 -= this->Position.Y2int();
+    if (x2 < 0 || x2 >= this->t_width)
+        return;
+    if (y2 < 0 || y2 >= this->t_height)
+        return;
+    this->GetPainter()->setPen(color);
+    this->GetPainter()->drawLine(x1, this->terrainToQtY(y1), x2, this->terrainToQtY(y2));
+}
+
+void Terrain::DrawPixel(int x, int y, const QColor& color)
+{
+    x -= this->Position.X2int();
+    y -= this->Position.Y2int();
+    if (x < 0 || x >= this->t_width)
+        return;
+    if (y < 0 || y >= this->t_height)
+        return;
+
+    this->GetPainter()->setPen(color);
+    this->GetPainter()->drawPoint(x, this->terrainToQtY(y));
 }
 
 void Terrain::RefreshPixmap()
 {
-    this->BitMap = QPixmap::fromImage(this->SourceImage);
+    this->BitMap = QPixmap::fromImage(this->sourceImage);
     this->LastMovementUpdate = QDateTime::currentDateTime().toMSecsSinceEpoch();
 }
 
@@ -293,16 +324,28 @@ int Terrain::ShiftFloatingBitsDown()
     return shifted_pixels;
 }
 
+QImage Terrain::GetSourceImage()
+{
+    return this->sourceImage;
+}
+
+void Terrain::SetSourceImage(const QImage &image)
+{
+    delete this->painter;
+    this->painter = nullptr;
+    this->sourceImage = image;
+}
+
 int Terrain::terrainToQtY(int y)
 {
     return (this->t_height) - y;
 }
 
-QPainter *Terrain::getPainter()
+QPainter *Terrain::GetPainter()
 {
     if (!this->painter)
     {
-        this->painter = new QPainter(&this->SourceImage);
+        this->painter = new QPainter(&this->sourceImage);
         this->painter->setPen(this->BackgroundColor);
         //this->painter->setPen(QColor("orange"));
     }
@@ -315,11 +358,11 @@ void Terrain::changePainterMode(Terrain::PainterMode mode)
     switch(mode)
     {
         case PainterMode_Destructing:
-            this->getPainter()->setPen(this->BackgroundColor);
+            this->GetPainter()->setPen(this->BackgroundColor);
             break;
         case PainterMode_Creating:
         case PainterMode_CreatingSpecial:
-            this->getPainter()->setPen(this->TerrainColor);
+            this->GetPainter()->setPen(this->TerrainColor);
             break;
     }
 }

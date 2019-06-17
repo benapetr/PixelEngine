@@ -46,6 +46,9 @@ namespace PE
             void CreatePixel(int x, int y);
             void DestroyPixelAbsolute(int x, int y);
             void CreatePixelAbsolute(int x, int y);
+            void DrawLine(int x1, int y1, int x2, int y2, const QColor& color);
+            void DrawPixel(int x, int y, const QColor& color);
+            QPainter *GetPainter();
             void RefreshPixmap();
             //! Shift all bits that are above bottom but doesn't have any other bits under down by one pixel
             //! this is extremely CPU expensive function
@@ -55,20 +58,22 @@ namespace PE
             //! this is extremely CPU expensive function
             //! Returns number of pixels shifted
             int ShiftFloatingBitsDown();
+            QImage GetSourceImage();
+            void SetSourceImage(const QImage &image);
             Collectable_SmartPtr<BitmapCollider> Collider;
             //! This is not accurate unless you recalculate it after each change - number of pixels
             int TerrainMass;
             QPixmap BitMap;
-            QImage SourceImage;
+
             QColor TerrainColor;
             QColor BackgroundColor;
 
         protected:
             int terrainToQtY(int y);
+            void changePainterMode(PainterMode mode);
             int t_width;
             int t_height;
-            QPainter *getPainter();
-            void changePainterMode(PainterMode mode);
+            QImage sourceImage;
             QPainter *painter = nullptr;
             PainterMode painterMode = PainterMode_Destructing;
             int mostLeftModPix = -1;
