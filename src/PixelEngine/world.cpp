@@ -45,7 +45,7 @@ World::~World()
     delete this->CIM;
 }
 
-void World::Render(Renderer *r)
+bool World::Render(Renderer *r)
 {
     if (!this->redrawNeeded)
     {
@@ -74,7 +74,7 @@ void World::Render(Renderer *r)
     }
 
     if (!this->redrawNeeded)
-        return;
+        return false;
 
     this->redrawNeeded = false;
 
@@ -115,6 +115,14 @@ void World::Render(Renderer *r)
 
     if (this->HasBorder)
         r->DrawRect(0, 0, static_cast<int>(this->world_width - 1), static_cast<int>(this->world_height - 1), 6, this->BorderColor);
+
+    return true;
+}
+
+void World::ForceRender(Renderer *r)
+{
+    this->redrawNeeded = true;
+    this->Render(r);
 }
 
 void World::Update()

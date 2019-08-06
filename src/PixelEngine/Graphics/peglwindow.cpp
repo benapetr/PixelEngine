@@ -65,7 +65,7 @@ void PEGLWindow::paintGL()
     this->currentFPS++;
 
     this->renderer->Begin();
-    this->world->Render(this->renderer);
+    this->world->ForceRender(this->renderer);
     this->renderer->End();
     this->renderer->HasUpdate = false;
     this->requestUpdate();

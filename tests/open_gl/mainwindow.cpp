@@ -36,11 +36,6 @@ MainWindow::MainWindow()
     this->initializeRenderer();
     this->game = new Game(this->GetWidth(), this->GetHeight(), this->renderer);
     this->SetWorld(this->game->GetWorld());
-    this->renderTimer = new QTimer(this);
-    connect(this->renderTimer, SIGNAL(timeout()), this, SLOT(OnRender()));
-    // this timer speed defines FPS, smaller means higher FPS, but also more CPU usage
-    this->renderTimer->start(10);
-
     // Init console
     foreach (PE::RingLog_Item item, PE::Engine::GetEngine()->RL->GetItems())
     {
@@ -79,14 +74,6 @@ int MainWindow::GetHeight()
 void MainWindow::InstallWorld(PE::World *w)
 {
     this->SetWorld(w);
-}
-
-void MainWindow::OnRender()
-{
-    //if (!this->ui->actionRendering->isChecked())
-    //    return;
-    //this->viewPort->update();
-    this->update();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *e)

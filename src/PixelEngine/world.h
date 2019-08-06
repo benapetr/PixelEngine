@@ -40,7 +40,10 @@ namespace PE
         public:
             World(double width, double height);
             virtual ~World();
-            void Render(Renderer *r);
+            //! Check if redraw is needed and if yes, it will draw a whole world using provided renderer, if redraw is not needed (no change)
+            //! function returns false
+            bool Render(Renderer *r);
+            void ForceRender(Renderer *r);
             //! Execute a world frame - that is a basic unit that controls game speed
             //!
             //! This function should be periodically executed either by a timer or in a loop using separate thread

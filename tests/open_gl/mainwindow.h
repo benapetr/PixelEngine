@@ -42,7 +42,6 @@ class MainWindow : public PE::PEGLWindow
         void InstallWorld(PE::World *w);
 
     public slots:
-        void OnRender();
         void keyPressEvent(QKeyEvent* e) override;
         void keyReleaseEvent(QKeyEvent* e) override;
 
