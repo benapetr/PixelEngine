@@ -17,9 +17,9 @@
 
 using namespace PE;
 
-QGLRenderer::QGLRenderer(int width, int height, QOpenGLWidget *widget) : Renderer(width, height)
+QGLRenderer::QGLRenderer(int width, int height, QPaintDevice *widget) : Renderer(width, height)
 {
-    this->owner = widget;
+    this->paintDevice = widget;
 }
 
 QGLRenderer::~QGLRenderer()
@@ -141,7 +141,7 @@ void QGLRenderer::Begin()
 {
     if (!this->painter)
         this->painter = new QPainter();
-    this->painter->begin(this->owner);
+    this->painter->begin(this->paintDevice);
 }
 
 void QGLRenderer::End()

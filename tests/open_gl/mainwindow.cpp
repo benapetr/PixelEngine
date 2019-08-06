@@ -26,26 +26,20 @@
 
 MainWindow *MainWindow::Main = nullptr;
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow()
 {
     Main = this;
+    this->setWidth(1200);
+    this->setHeight(800);
+    this->setTitle("OpenGL");
     PE::Engine::Initialize(false);
-    this->ui->setupUi(this);
-    this->showMaximized();
-    this->viewPort = new PE::PEGLWidget(this, nullptr);
-    this->layout()->addWidget(this->viewPort);
-    this->se_renderer = new PE::QGLRenderer(this->GetWidth(), this->GetHeight(), this->viewPort);
-    this->game = new Game(this->GetWidth(), this->GetHeight(), this->se_renderer);
-    this->viewPort->SetWorld(this->game->GetWorld());
+    this->initializeRenderer();
+    this->game = new Game(this->GetWidth(), this->GetHeight(), this->renderer);
+    this->SetWorld(this->game->GetWorld());
     this->renderTimer = new QTimer(this);
     connect(this->renderTimer, SIGNAL(timeout()), this, SLOT(OnRender()));
     // this timer speed defines FPS, smaller means higher FPS, but also more CPU usage
-#ifdef __EMSCRIPTEN__
-    // WASM is significantly worse than native, so let's decrease FPS to put less strain on CPU
-    this->renderTimer->start(40);
-#else
     this->renderTimer->start(10);
-#endif
 
     // Init console
     foreach (PE::RingLog_Item item, PE::Engine::GetEngine()->RL->GetItems())
@@ -53,9 +47,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         Console::Append(item.GetText());
     }
 
-    this->ui->actionFast_game->setChecked(Game::SuperFast);
-
-    new Console(this);
+    new Console(nullptr);
 #ifdef __EMSCRIPTEN__
     setWindowFlags(Qt::FramelessWindowHint| Qt::WindowSystemMenuHint);
 #endif
@@ -64,38 +56,37 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 MainWindow::~MainWindow()
 {
     delete this->game;
-    delete this->se_renderer;
-    delete ui;
 }
 
 void MainWindow::Render()
 {
-    this->se_renderer->Begin();
+    /*this->se_renderer->Begin();
     this->game->GetWorld()->Render(this->se_renderer);
     this->se_renderer->End();
-    this->se_renderer->HasUpdate = false;
+    this->se_renderer->HasUpdate = false;*/
 }
 
 int MainWindow::GetWidth()
 {
-    return this->viewPort->width();
+    return this->width();
 }
 
 int MainWindow::GetHeight()
 {
-    return this->viewPort->height();
+    return this->height();
 }
 
 void MainWindow::InstallWorld(PE::World *w)
 {
-    this->viewPort->SetWorld(w);
+    this->SetWorld(w);
 }
 
 void MainWindow::OnRender()
 {
-    if (!this->ui->actionRendering->isChecked())
-        return;
-    this->viewPort->update();
+    //if (!this->ui->actionRendering->isChecked())
+    //    return;
+    //this->viewPort->update();
+    this->update();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *e)
@@ -106,11 +97,6 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 void MainWindow::keyReleaseEvent(QKeyEvent *e)
 {
     this->game->GetWorld()->ProcessKeyRelease(e->key());
-}
-
-void MainWindow::on_actionRendering_triggered()
-{
-    this->se_renderer->Enabled = !this->se_renderer->Enabled;
 }
 
 void MainWindow::on_actionNew_game_triggered()

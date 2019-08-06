@@ -19,7 +19,7 @@ class Radian1 : public PE::Actor
 {
     public:
         Radian1(const PE::Vector &position);
-        void Update(qint64 time = 0);
+        void Update(qint64 time = 0) override;
         void Render(PE::Renderer *r, PE::Camera *c) override;
         double radian = 0;
         double distance = 10;

@@ -10,32 +10,32 @@
 
 // Copyright (c) Petr Bena 2019
 
-#ifndef PEGLWIDGET_H
-#define PEGLWIDGET_H
+#ifndef PEGLWINDOW_H
+#define PEGLWINDOW_H
 
-#include <QOpenGLWidget>
+#include <QOpenGLWindow>
 
 namespace PE
 {
     class QGLRenderer;
     class World;
-
     /*!
-     * \brief The PEGLWidget class is a helper class for QGLRenderer - it automatically instantiates renderer for you
+     * \brief The PEGLWindow class is a helper class for QGLRenderer - it automatically instantiates renderer for you
      *
-     * You can use this widget anywhere in your Qt application to render PixelEngine view port
+     * You can use this widget anywhere in your Qt application to create a window that is PixelEngine view port
      */
-    class PEGLWidget : public QOpenGLWidget
+    class PEGLWindow : public QOpenGLWindow
     {
         public:
-            PEGLWidget(QWidget *parent, World *w);
-            ~PEGLWidget();
+            PEGLWindow();
+            ~PEGLWindow();
             World *GetWorld();
             void SetWorld(World *w);
             double GetFPS();
 
         protected:
-            void paintEvent(QPaintEvent *event) override;
+            void initializeRenderer();
+            void paintGL() override;
             double fps_sampling_rate = 2000;
             qint64 fps_start;
             int currentFPS = 0;
@@ -45,4 +45,4 @@ namespace PE
     };
 }
 
-#endif // PEGLWIDGET_H
+#endif // PEGLWINDOW_H

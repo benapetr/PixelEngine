@@ -10,46 +10,47 @@
 
 // Copyright (c) Petr Bena 2019
 
-#include "peglwidget.h"
 #include "qglrenderer.h"
 #include "../world.h"
 #include <QDateTime>
+#include "peglwindow.h"
 
 using namespace PE;
 
-PEGLWidget::PEGLWidget(QWidget *parent, World *w) : QOpenGLWidget (parent)
+PEGLWindow::PEGLWindow() : QOpenGLWindow(QOpenGLWindow::NoPartialUpdate)
 {
     this->fps_start = QDateTime::currentDateTime().toMSecsSinceEpoch();
-    setFixedSize(parent->width(), parent->height());
-    this->renderer = new QGLRenderer(parent->width(), parent->height(), this);
-    this->world = w;
-    this->setAutoFillBackground(false);
+    this->renderer = nullptr;
+    this->world = nullptr;
 }
 
-PEGLWidget::~PEGLWidget()
+PEGLWindow::~PEGLWindow()
 {
     delete this->renderer;
 }
 
-World *PEGLWidget::GetWorld()
+World *PEGLWindow::GetWorld()
 {
     return this->world;
 }
 
-void PEGLWidget::SetWorld(World *w)
+void PEGLWindow::SetWorld(World *w)
 {
     this->world = w;
 }
 
-double PEGLWidget::GetFPS()
+double PEGLWindow::GetFPS()
 {
     return this->lastFPS;
 }
 
-void PEGLWidget::paintEvent(QPaintEvent *event)
+void PEGLWindow::initializeRenderer()
 {
-    (void)event;
+    this->renderer = new QGLRenderer(this->width(), this->height(), this);
+}
 
+void PEGLWindow::paintGL()
+{
     if (this->world == nullptr)
         return;
 
@@ -67,4 +68,6 @@ void PEGLWidget::paintEvent(QPaintEvent *event)
     this->world->Render(this->renderer);
     this->renderer->End();
     this->renderer->HasUpdate = false;
+    this->requestUpdate();
 }
+

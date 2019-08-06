@@ -22,7 +22,7 @@ namespace PE
     class QGLRenderer : public Renderer
     {
         public:
-            QGLRenderer(int width, int height, QOpenGLWidget *widget);
+            QGLRenderer(int width, int height, QPaintDevice *widget);
             ~QGLRenderer() override;
             RendererType GetType() override;
             void Clear() override;
@@ -39,7 +39,7 @@ namespace PE
         private:
             //! Qt has Y other way this function maps the world Y to Qt Y
             int worldToQtY(int y);
-            QOpenGLWidget *owner;
+            QPaintDevice *paintDevice;
             QPainter *painter = nullptr;
     };
 }

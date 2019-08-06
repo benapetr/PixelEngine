@@ -13,13 +13,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
+#include <QOpenGLWindow>
 #include <QTimer>
-
-namespace Ui
-{
-    class MainWindow;
-}
+#include <PixelEngine/Graphics/peglwindow.h>
 
 class QImage;
 
@@ -32,13 +28,13 @@ namespace PE
 
 class Game;
 
-class MainWindow : public QMainWindow
+class MainWindow : public PE::PEGLWindow
 {
         Q_OBJECT
 
     public:
         static MainWindow *Main;
-        explicit MainWindow(QWidget *parent = nullptr);
+        MainWindow();
         ~MainWindow() override;
         void Render();
         int GetWidth();
@@ -51,7 +47,6 @@ class MainWindow : public QMainWindow
         void keyReleaseEvent(QKeyEvent* e) override;
 
     private slots:
-        void on_actionRendering_triggered();
         void on_actionNew_game_triggered();
         void on_actionFast_game_triggered();
         void on_actionShow_console_triggered();
@@ -63,8 +58,6 @@ class MainWindow : public QMainWindow
         PE::PEGLWidget *viewPort;
         QTimer *renderTimer;
         Game *game;
-        PE::QGLRenderer *se_renderer;
-        Ui::MainWindow *ui;
 };
 
 #endif // MAINWINDOW_H

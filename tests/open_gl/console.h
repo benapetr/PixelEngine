@@ -16,7 +16,8 @@
 #include <QDialog>
 #include <QList>
 
-namespace Ui {
+namespace Ui
+{
     class Console;
 }
 
