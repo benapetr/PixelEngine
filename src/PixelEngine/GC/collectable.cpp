@@ -16,7 +16,11 @@
 
 using namespace PE;
 
+#ifdef QT6_BUILD
+QRecursiveMutex *Collectable::CollectablesLock = new QRecursiveMutex();
+#else
 QMutex *Collectable::CollectablesLock = new QMutex(QMutex::Recursive);
+#endif
 QList<Collectable*> Collectable::Collectables;
 
 int Collectable::GetCollectablesCount()

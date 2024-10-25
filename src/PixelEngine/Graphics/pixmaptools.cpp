@@ -16,6 +16,19 @@
 
 QPixmap PE::PixmapTools::Rotate(const QPixmap &pm, qreal angle)
 {
+#ifdef QT6_BUILD
+    QPixmap result(pm);
+    QTransform transform;
+    transform.rotate(angle);
+    
+    int pxw = result.width();
+    int pxh = result.height();
+    
+    result = result.transformed(transform, Qt::SmoothTransformation);
+    result = result.copy((result.width() - pxw) / 2, (result.height() - pxh) / 2, pxw, pxh);
+    
+    return result;
+#else
     QPixmap result(pm);
     QMatrix rm;
     rm.rotate(angle);
@@ -23,4 +36,5 @@ QPixmap PE::PixmapTools::Rotate(const QPixmap &pm, qreal angle)
     result = result.transformed(rm);
     result = result.copy((result.width() - pxw)/2, (result.height() - pxh)/2, pxw, pxh);
     return result;
+#endif
 }

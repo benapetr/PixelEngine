@@ -88,7 +88,7 @@ bool World::Render(Renderer *r)
 
     // layers
     QList<int> indexes = this->objects.keys();
-    qSort(indexes);
+    std::sort(indexes.begin(), indexes.end());
 
     foreach (int i, indexes)
     {

@@ -27,7 +27,11 @@ namespace PE
         public:
             static int GetCollectablesCount();
             static QList<Collectable*> Collectables;
+#ifdef QT6_BUILD
+            static QRecursiveMutex *CollectablesLock;
+#else
             static QMutex *CollectablesLock;
+#endif
             Collectable();
             virtual ~Collectable();
             void IncRef();
