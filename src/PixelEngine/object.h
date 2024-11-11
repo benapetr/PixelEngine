@@ -13,6 +13,7 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
+#include "definitions.h"
 #include "vector.h"
 #include "GC/collectable.h"
 #include "GC/collectable_smartptr.h"
@@ -63,7 +64,7 @@ namespace PE
             //! Optional optimization function - if returns false, the object will not redraw even if RedrawNeeded is true
             //! it's recommended to implement this for better peformance, especially for games with large world
             virtual bool IsVisibleOnCamera(Camera *c) { (void)c; return true; }
-            virtual void SetScale(double scale);
+            virtual void SetScale(pe_float_t scale);
             //! Called when object is being destroyed - this will remove all references to other objects and prepare this object
             //! for deletion from operating memory
             //! This will not remove object from any underlying worlds, this function is typically called by world itself.
@@ -80,7 +81,7 @@ namespace PE
             //! This is relative position to parent object, if it has no parent, then there is no point in using this
             Vector RelativePosition;
             //! Scale of this object, if you want to change scale of whole object including children use ChangeScale
-            double Scale = 1;
+            pe_float_t Scale = 1;
             //! This value is used by physics cache
             qint64 LastMovementUpdate = 0;
             //! If this object explicitly needs to redraw, this is necessary for rendering optimizations

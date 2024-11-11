@@ -13,6 +13,8 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
+#include "definitions.h"
+
 namespace PE
 {
     class Vector
@@ -25,17 +27,17 @@ namespace PE
             static const Vector Down;
 
             Vector();
-            Vector(double x, double y);
+            Vector(pe_float_t x, pe_float_t y);
             virtual ~Vector();
             int X2int() { return static_cast<int>(this->X); }
             int Y2int() { return static_cast<int>(this->Y); }
-            double Magnitude();
-            double DistanceTo(const Vector &v);
-            double AngleTo(const Vector &v);
-            double Dot();
-            double Dot(const Vector &v);
-            double X=0;
-            double Y=0;
+            pe_float_t Magnitude();
+            pe_float_t DistanceTo(const Vector &v);
+            pe_float_t AngleTo(const Vector &v);
+            pe_float_t Dot();
+            pe_float_t Dot(const Vector &v);
+            pe_float_t X=0;
+            pe_float_t Y=0;
 
             // operators
             Vector operator+(const Vector &v)
@@ -55,13 +57,13 @@ namespace PE
                 this->Y -= v.Y;
             }
 
-            void operator+=(const double scalar)
+            void operator+=(const pe_float_t scalar)
             {
                 this->X += scalar;
                 this->Y += scalar;
             }
 
-            void operator-=(const double scalar)
+            void operator-=(const pe_float_t scalar)
             {
                 this->X -= scalar;
                 this->Y -= scalar;
@@ -72,22 +74,22 @@ namespace PE
                 return {this->X - v.X, this->Y - v.Y};
             }
 
-            Vector operator*(const double scalar)
+            Vector operator*(const pe_float_t scalar)
             {
                 return {this->X * scalar, this->Y * scalar};
             }
 
-            Vector operator/(const double scalar)
+            Vector operator/(const pe_float_t scalar)
             {
                 return {this->X / scalar, this->Y / scalar};
             }
 
-            Vector operator+(const double scalar)
+            Vector operator+(const pe_float_t scalar)
             {
                 return {this->X + scalar, this->Y + scalar};
             }
 
-            Vector operator-(const double scalar)
+            Vector operator-(const pe_float_t scalar)
             {
                 return {this->X - scalar, this->Y - scalar};
             }

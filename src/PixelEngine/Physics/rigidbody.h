@@ -13,6 +13,7 @@
 #ifndef RIGIDBODY_H
 #define RIGIDBODY_H
 
+#include "../definitions.h"
 #include "../vector.h"
 #include "collider.h"
 #include "../GC/collectable_smartptr.h"
@@ -32,8 +33,8 @@ namespace PE
             Collectable_SmartPtr<Collider> GroundCollider;
             //! Movement
             Vector Velocity;
-            double Bounciness = 0;
-            double Weight = 1;
+            pe_float_t Bounciness = 0;
+            pe_float_t Weight = 1;
     };
 }
 

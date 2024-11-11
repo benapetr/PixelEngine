@@ -13,6 +13,7 @@
 #ifndef BOXCOLLIDER_H
 #define BOXCOLLIDER_H
 
+#include "../definitions.h"
 #include "collider.h"
 
 namespace PE
@@ -21,11 +22,11 @@ namespace PE
     class BoxCollider : public Collider
     {
         public:
-            BoxCollider(double x, double y, double w, double h, Object *parent = nullptr, unsigned int layer = 0);
+            BoxCollider(pe_float_t x, pe_float_t y, pe_float_t w, pe_float_t h, Object *parent = nullptr, unsigned int layer = 0);
             bool PositionMatch(Vector position) override;
             bool IntersectionMatch(Collider *collider) override;
-            double GetX() const { return this->Position.X; }
-            double GetY() const { return this->Position.Y; }
+            pe_float_t GetX() const { return this->Position.X; }
+            pe_float_t GetY() const { return this->Position.Y; }
             PE_ColliderType GetColliderType() override { return PE_ColliderType_Box; }
 #ifdef PE_DEBUG
             void Render(PE::Renderer *r, PE::Camera *c) override;
@@ -40,8 +41,8 @@ namespace PE
             inline Vector B();
             inline Vector C();
             inline Vector D();
-            double Width;
-            double Height;
+            pe_float_t Width;
+            pe_float_t Height;
 
         private:
             bool boxMatch(BoxCollider *c);

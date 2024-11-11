@@ -19,7 +19,7 @@
 
 using namespace PE;
 
-Terrain::Terrain(double x, double y, int width, int height)
+Terrain::Terrain(pe_float_t x, pe_float_t y, int width, int height)
 {
     this->Position = Vector(x, y);
     this->Collider = new BitmapCollider(static_cast<int>(x), static_cast<int>(y), width, height, this);

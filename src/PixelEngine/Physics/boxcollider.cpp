@@ -21,7 +21,7 @@
 
 using namespace PE;
 
-BoxCollider::BoxCollider(double x, double y, double w, double h, Object *parent, unsigned int layer) : Collider(parent)
+BoxCollider::BoxCollider(pe_float_t x, pe_float_t y, pe_float_t w, pe_float_t h, Object *parent, unsigned int layer) : Collider(parent)
 {
     this->Position.X = x;
     this->Position.Y = y;

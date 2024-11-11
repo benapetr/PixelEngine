@@ -38,7 +38,7 @@ namespace PE
     class World
     {
         public:
-            World(double width, double height);
+            World(pe_float_t width, pe_float_t height);
             virtual ~World();
             //! Check if redraw is needed and if yes, it will draw a whole world using provided renderer, if redraw is not needed (no change)
             //! function returns false

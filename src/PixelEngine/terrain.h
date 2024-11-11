@@ -13,6 +13,7 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
+#include "definitions.h"
 #include "object.h"
 #include <QPixmap>
 #include <QImage>
@@ -33,7 +34,7 @@ namespace PE
                 PainterMode_CreatingSpecial
             };
         public:
-            Terrain(double x, double y, int width, int height);
+            Terrain(pe_float_t x, pe_float_t y, int width, int height);
             ~Terrain() override;
             PE_ObjectType GetType() override;
             void Render(Renderer *r, Camera *c) override;

@@ -31,6 +31,12 @@
 // Bitmap size
 #define PE_BITSET_MAX 10000
 
+#ifdef DOUBLE_FLOAT
+typedef double pe_float_t;
+#else
+typedef float pe_float_t;
+#endif
+
 // Overview of define switches that can be defined (but are not enabled by default)
 // Enable complete debugging (big performance hit)
 //#define PE_DEBUG

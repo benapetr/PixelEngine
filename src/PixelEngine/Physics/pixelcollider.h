@@ -13,6 +13,7 @@
 #ifndef PIXELCOLLIDER_H
 #define PIXELCOLLIDER_H
 
+#include "../definitions.h"
 #include "collider.h"
 
 namespace PE
@@ -23,7 +24,7 @@ namespace PE
     class PixelCollider : public Collider
     {
         public:
-            PixelCollider(double x, double y, unsigned int layer = 0);
+            PixelCollider(pe_float_t x, pe_float_t y, unsigned int layer = 0);
             bool PositionMatch(Vector position) override;
             bool IntersectionMatch(Collider *collider) override;
             PE_ColliderType GetColliderType() override;

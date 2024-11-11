@@ -21,7 +21,7 @@
 
 using namespace PE;
 
-CircleCollider::CircleCollider(double x, double y, double radius, unsigned int layer)
+CircleCollider::CircleCollider(pe_float_t x, pe_float_t y, pe_float_t radius, unsigned int layer)
 {
     this->Radius = radius;
     this->Layer = layer;

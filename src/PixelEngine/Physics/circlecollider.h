@@ -12,6 +12,7 @@
 #ifndef CIRCLECOLLIDER_H
 #define CIRCLECOLLIDER_H
 
+#include "../definitions.h"
 #include "collider.h"
 
 namespace PE
@@ -19,14 +20,14 @@ namespace PE
     class CircleCollider : public Collider
     {
         public:
-            CircleCollider(double x, double y, double radius, unsigned int layer = 0);
+            CircleCollider(pe_float_t x, pe_float_t y, pe_float_t radius, unsigned int layer = 0);
             bool PositionMatch(Vector position) override;
             bool IntersectionMatch(Collider *collider) override;
             PE_ColliderType GetColliderType() override { return PE_ColliderType_Circle; }
 #ifdef PE_DEBUG
             void Render(PE::Renderer *r, PE::Camera *c) override;
 #endif
-            double Radius;
+            pe_float_t Radius;
     };
 }
 

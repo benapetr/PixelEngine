@@ -13,7 +13,7 @@
 
 using namespace PE;
 
-EllipticCollider::EllipticCollider(double x, double y, double rx, double ry)
+EllipticCollider::EllipticCollider(pe_float_t x, pe_float_t y, pe_float_t rx, pe_float_t ry)
 {
     this->RadiusX = rx;
     this->Position = Vector(x, y);

@@ -41,7 +41,7 @@ void PEGLWidget::SetWorld(World *w)
     this->world = w;
 }
 
-double PEGLWidget::GetFPS()
+float PEGLWidget::GetFPS()
 {
     return this->lastFPS;
 }
@@ -57,7 +57,7 @@ void PEGLWidget::paintEvent(QPaintEvent *event)
     qint64 current_time = QDateTime::currentDateTime().toMSecsSinceEpoch();
     if (current_time - this->fps_start > this->fps_sampling_rate)
     {
-        this->lastFPS = static_cast<double>(this->currentFPS) / (this->fps_sampling_rate / 1000);
+        this->lastFPS = static_cast<float>(this->currentFPS) / (this->fps_sampling_rate / 1000);
         this->currentFPS = 0;
         this->fps_start = current_time;
     }

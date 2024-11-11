@@ -31,15 +31,15 @@ namespace PE
             ~PEGLWindow();
             World *GetWorld();
             void SetWorld(World *w);
-            double GetFPS();
+            float GetFPS();
 
         protected:
             void initializeRenderer();
             void paintGL() override;
-            double fps_sampling_rate = 2000;
+            float fps_sampling_rate = 2000;
             qint64 fps_start;
             int currentFPS = 0;
-            double lastFPS = 0;
+            float lastFPS = 0;
             QGLRenderer *renderer;
             World *world;
     };

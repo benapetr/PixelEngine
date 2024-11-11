@@ -85,7 +85,7 @@ void Object::UpdateRecursivelyLastMovement(qint64 time)
     }
 }
 
-void Object::SetScale(double scale)
+void Object::SetScale(pe_float_t scale)
 {
     this->Scale = scale;
     if (this->children == nullptr)

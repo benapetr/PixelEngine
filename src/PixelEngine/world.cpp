@@ -24,7 +24,7 @@
 
 using namespace PE;
 
-World::World(double width, double height)
+World::World(pe_float_t width, pe_float_t height)
 {
     this->BackgroundColor = Qt::white;
     this->world_width = width;
