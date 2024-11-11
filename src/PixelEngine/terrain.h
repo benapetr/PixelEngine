@@ -48,6 +48,7 @@ namespace PE
             void CreatePixelAbsolute(int x, int y);
             void DrawLine(int x1, int y1, int x2, int y2, const QColor& color);
             void DrawPixel(int x, int y, const QColor& color);
+            void DrawBitmap(int x, int y, int width, int height, QPixmap bitmap);
             QPainter *GetPainter();
             void RefreshPixmap();
             //! Shift all bits that are above bottom but doesn't have any other bits under down by one pixel

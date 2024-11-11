@@ -150,6 +150,11 @@ void Terrain::DrawPixel(int x, int y, const QColor& color)
     this->GetPainter()->drawPoint(x, this->terrainToQtY(y));
 }
 
+void Terrain::DrawBitmap(int x, int y, int width, int height, QPixmap bitmap)
+{
+    this->GetPainter()->drawPixmap(x, this->terrainToQtY(y + height), width, height, bitmap);
+}
+
 void Terrain::RefreshPixmap()
 {
     this->BitMap = QPixmap::fromImage(this->sourceImage);
