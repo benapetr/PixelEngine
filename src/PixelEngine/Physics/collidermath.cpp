@@ -34,15 +34,15 @@ bool ColliderMath::IntersectionCheckLineCircle(Vector a, Vector b, CircleCollide
     */
 
     //https://stackoverflow.com/a/1084899/1514983
-    double radius = c->Radius * c->Scale;
+    pe_float_t radius = c->Radius * c->Scale;
 
     Vector direction = b - a;
     Vector sphere_centre_to_ray = a - c->Position;
 
-    double dot_a = direction.Dot();
-    double dot_b = 2 * sphere_centre_to_ray.Dot(direction);
-    double dot_c = sphere_centre_to_ray.Dot() - (radius * radius);
-    double discriminant = (dot_b * dot_b) - (4 * dot_a * dot_c);
+    pe_float_t dot_a = direction.Dot();
+    pe_float_t dot_b = 2 * sphere_centre_to_ray.Dot(direction);
+    pe_float_t dot_c = sphere_centre_to_ray.Dot() - (radius * radius);
+    pe_float_t discriminant = (dot_b * dot_b) - (4 * dot_a * dot_c);
     if( discriminant < 0 )
     {
         // no intersection
@@ -57,8 +57,8 @@ bool ColliderMath::IntersectionCheckLineCircle(Vector a, Vector b, CircleCollide
         // either solution may be on or off the ray so need to test both
         // t1 is always the smaller value, because BOTH discriminant and
         // a are nonnegative.
-        double t1 = (-dot_b - discriminant)/(2*dot_a);
-        double t2 = (-dot_b + discriminant)/(2*dot_a);
+        pe_float_t t1 = (-dot_b - discriminant)/(2*dot_a);
+        pe_float_t t2 = (-dot_b + discriminant)/(2*dot_a);
 
         // 3x HIT cases:
         //          -o->             --|-->  |            |  --|->
@@ -165,7 +165,7 @@ bool ColliderMath::IntersectionCheckCircleBitmap(BitmapCollider *a, CircleCollid
     // Calculate 4 points of circle and check each of them
     Vector v1(b->Position), v2(b->Position), v3(b->Position), v4(b->Position);
 
-    double radius = b->Scale * b->Radius;
+    pe_float_t radius = b->Scale * b->Radius;
 
     v1.X -= radius;
     if (a->PositionMatch(v1))

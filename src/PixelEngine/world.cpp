@@ -292,7 +292,7 @@ void World::updateMovement()
                         // Only ray trace if speed is worth it
                         if (a->RigidBody->Velocity.X > 2 || a->RigidBody->Velocity.Y > 2)
                         {
-                            double distance = old_position.DistanceTo(a->Position);
+                            pe_float_t distance = old_position.DistanceTo(a->Position);
                             Vector step = a->RigidBody->Velocity / distance;
                             int current_step = 0;
                             while (++current_step < static_cast<int>(distance))

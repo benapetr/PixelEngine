@@ -65,9 +65,9 @@ namespace PE
             QColor BorderColor;
             // Every object that makes it under this Y is automatically destroyed
             // this is here to handle players that fall behind terrain
-            double DeathZone = -20;
-            double Gravity = 1;
-            //double GravityMax = 10;
+            pe_float_t DeathZone = -20;
+            pe_float_t Gravity = 1;
+            //pe_float_t GravityMax = 10;
             QColor BackgroundColor;
 
         protected:
@@ -83,8 +83,8 @@ namespace PE
             QList<Collectable_SmartPtr<Collider>> colliders;
             QHash<int, QList<Collectable_SmartPtr<Object>>> objects;
             QList<Collectable_SmartPtr<Terrain>> terrains;
-            double world_width;
-            double world_height;
+            pe_float_t world_width;
+            pe_float_t world_height;
             bool redrawNeeded;
             qint64 lastUpdate = 0;
     };
