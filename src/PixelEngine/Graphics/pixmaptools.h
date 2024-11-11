@@ -14,6 +14,7 @@
 #define PIXMAPTOOLS_H
 
 #include <QPixmap>
+#include <QVector>
 
 namespace PE
 {
@@ -22,6 +23,10 @@ namespace PE
         public:
             //! This is slow - do cache results
             static QPixmap Rotate(const QPixmap &pm, qreal angle);
+            // In case there is a grid / border dividing sprites you can use separator_width to ignore this grid, it must be around each sprite
+            static QVector<QPixmap> LoadTransparentSpritesFromTexture(const QPixmap &texture, int sprite_width, int sprite_height, QColor transparent, int separator_width = 0);
+            static QVector<QPixmap> LoadSpritesFromTexture(const QPixmap &texture, int sprite_width, int sprite_height, int separator_width = 0);
+
     };
 }
 
