@@ -42,8 +42,8 @@ QPixmap PE::PixmapTools::Rotate(const QPixmap &pm, qreal angle)
 QVector<QPixmap> PE::PixmapTools::LoadTransparentSpritesFromTexture(const QPixmap &texture, int sprite_width, int sprite_height, QColor transparent, int separator_width)
 {
     QVector<QPixmap> sprites;
-    int columns = texture.width() / sprite_width;
-    int rows = texture.height() / sprite_height;
+    int columns = texture.width() / (sprite_width + separator_width);
+    int rows = texture.height() / (sprite_height + separator_width);
     QImage sprite_sheet = texture.toImage();
 
     // Loop through each sprite in the grid
@@ -82,8 +82,8 @@ QVector<QPixmap> PE::PixmapTools::LoadTransparentSpritesFromTexture(const QPixma
 QVector<QPixmap> PE::PixmapTools::LoadSpritesFromTexture(const QPixmap &texture, int sprite_width, int sprite_height, int separator_width)
 {
     QVector<QPixmap> sprites;
-    int columns = texture.width() / (sprite_width + (separator_width * 2));
-    int rows = texture.height() / (sprite_height + (separator_width * 2));
+    int columns = texture.width() / (sprite_width + separator_width);
+    int rows = texture.height() / (sprite_height + separator_width);
     QImage sprite_sheet = texture.toImage();
 
     // Loop through each sprite in the grid
