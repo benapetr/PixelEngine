@@ -8,7 +8,7 @@
 //MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //GNU Lesser General Public License for more details.
 
-// Copyright (c) Petr Bena 2019
+// Copyright (c) Petr Bena 2019 - 2024
 
 #ifndef RESOURCES_H
 #define RESOURCES_H
@@ -22,6 +22,7 @@ namespace PE
     {
         public:
             static const QPixmap &GetPixmap(const QString &name);
+            static const QString GetText(const QString &name);
             static void ClearCache();
             static qint64 GetSize();
         private:

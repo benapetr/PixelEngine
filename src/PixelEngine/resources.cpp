@@ -8,8 +8,13 @@
 //MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //GNU Lesser General Public License for more details.
 
-// Copyright (c) Petr Bena 2019
+// Copyright (c) Petr Bena 2019 - 2024
 
+#include <QFile>
+#include <QDebug>
+#include <QTextStream>
+#include "engine.h"
+#include "ringlog.h"
 #include "resources.h"
 
 using namespace PE;
@@ -27,6 +32,23 @@ const QPixmap &Resources::GetPixmap(const QString &name)
     }
 
     return Resources::pixmaps[name];
+}
+
+const QString Resources::GetText(const QString &name)
+{
+    QFile file(name);
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        Engine::GetEngine()->RL->WriteText("WARNING: Could not open resource text file: " + name);
+        return QString();
+    }
+
+    QTextStream in(&file);
+    QString fileContent = in.readAll();
+    file.close();
+
+    return fileContent;
 }
 
 void Resources::ClearCache()
