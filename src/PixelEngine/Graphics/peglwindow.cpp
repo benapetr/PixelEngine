@@ -8,7 +8,7 @@
 //MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //GNU Lesser General Public License for more details.
 
-// Copyright (c) Petr Bena 2019
+// Copyright (c) Petr Bena 2019 - 2024
 
 #include "qglrenderer.h"
 #include "../world.h"
@@ -46,7 +46,7 @@ float PEGLWindow::GetFPS()
 
 void PEGLWindow::initializeRenderer()
 {
-    this->renderer = new QGLRenderer(this->width(), this->height(), this);
+    this->renderer = new QGLRenderer(this->width(), this->height(), this, this->context());
 }
 
 void PEGLWindow::paintGL()
@@ -64,6 +64,7 @@ void PEGLWindow::paintGL()
     }
     this->currentFPS++;
 
+    this->renderer->SetContext(this->context());
     this->renderer->Begin();
     this->world->ForceRender(this->renderer);
     this->renderer->End();

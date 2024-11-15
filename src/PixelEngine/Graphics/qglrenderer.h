@@ -8,12 +8,16 @@
 //MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //GNU Lesser General Public License for more details.
 
-// Copyright (c) Petr Bena 2019
+// Copyright (c) Petr Bena 2019 - 2024
 
 #ifndef QGLRENDERER_H
 #define QGLRENDERER_H
 
 #include "renderer.h"
+#include <QOpenGLFunctions>
+#include <QOpenGLTextureBlitter>
+#include <QOpenGLTexture>
+#include <QImage>
 
 class QOpenGLWidget;
 
@@ -22,7 +26,7 @@ namespace PE
     class QGLRenderer : public Renderer
     {
         public:
-            QGLRenderer(int width, int height, QPaintDevice *widget);
+            QGLRenderer(int width, int height, QPaintDevice *widget, QOpenGLContext *gl_context);
             ~QGLRenderer() override;
             RendererType GetType() override;
             void Clear() override;
@@ -35,10 +39,19 @@ namespace PE
             void DrawEllipse(int x, int y, int width, int height, const QColor &color, int line_width=1) override;
             void Begin();
             void End();
+            //! This is experimental and doesn't seem to work
+            //! Low level OpenGL API that loads image into GPU memory and returns its ID for further use
+            GLuint LoadTexture(const QImage &image);
+            //! This is much faster than regular Draw Bitmap utilizing power of the GPU
+            void DrawBitmap(int x, int y, int width, int height, GLuint textureID);
+            void DrawTexture(int x, int y, int width, int height, QOpenGLTexture *texture);
+            void SetContext(QOpenGLContext *gc) { this->context = gc; }
 
         private:
             //! Qt has Y other way this function maps the world Y to Qt Y
             int worldToQtY(int y);
+            QOpenGLTextureBlitter blitter;
+            QOpenGLContext *context;
             QPaintDevice *paintDevice;
             QPainter *painter = nullptr;
     };

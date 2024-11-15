@@ -8,7 +8,7 @@
 //MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //GNU Lesser General Public License for more details.
 
-// Copyright (c) Petr Bena 2019
+// Copyright (c) Petr Bena 2019 - 2024
 
 #ifndef PEGLWINDOW_H
 #define PEGLWINDOW_H
@@ -32,6 +32,7 @@ namespace PE
             World *GetWorld();
             void SetWorld(World *w);
             float GetFPS();
+            QGLRenderer *GetRenderer() { return this->renderer; }
 
         protected:
             void initializeRenderer();

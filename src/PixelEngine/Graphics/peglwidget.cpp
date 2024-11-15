@@ -8,7 +8,7 @@
 //MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //GNU Lesser General Public License for more details.
 
-// Copyright (c) Petr Bena 2019
+// Copyright (c) Petr Bena 2019 - 2024
 
 #include "peglwidget.h"
 #include "qglrenderer.h"
@@ -21,7 +21,7 @@ PEGLWidget::PEGLWidget(QWidget *parent, World *w) : QOpenGLWidget (parent)
 {
     this->fps_start = QDateTime::currentDateTime().toMSecsSinceEpoch();
     setFixedSize(parent->width(), parent->height());
-    this->renderer = new QGLRenderer(parent->width(), parent->height(), this);
+    this->renderer = new QGLRenderer(parent->width(), parent->height(), this, this->context());
     this->world = w;
     this->setAutoFillBackground(false);
 }

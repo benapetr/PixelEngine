@@ -8,18 +8,23 @@
 //MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //GNU Lesser General Public License for more details.
 
-// Copyright (c) Petr Bena 2019
+// Copyright (c) Petr Bena 2019 - 2024
 
 #include "qglrenderer.h"
+#include <QOpenGLFunctions>
 #include <QPainter>
 #include <QOpenGLWidget>
 #include <QImage>
 
 using namespace PE;
 
-QGLRenderer::QGLRenderer(int width, int height, QPaintDevice *widget) : Renderer(width, height)
+QGLRenderer::QGLRenderer(int width, int height, QPaintDevice *widget, QOpenGLContext *gl_context) : Renderer(width, height)
 {
+    this->context = gl_context;
     this->paintDevice = widget;
+
+    if (!this->blitter.isCreated())
+        this->blitter.create();
 }
 
 QGLRenderer::~QGLRenderer()
@@ -147,6 +152,80 @@ void QGLRenderer::Begin()
 void QGLRenderer::End()
 {
     this->painter->end();
+}
+
+GLuint QGLRenderer::LoadTexture(const QImage &image)
+{
+    // Get the current OpenGL context functions
+    QOpenGLFunctions *f = this->context->functions();
+
+    // Generate and bind texture
+    GLuint textureID;
+    f->glGenTextures(1, &textureID);
+    f->glBindTexture(GL_TEXTURE_2D, textureID);
+
+    // Convert QImage to OpenGL-compatible format
+    QImage glImage = image.convertToFormat(QImage::Format_RGBA8888);
+    f->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, glImage.width(), glImage.height(),
+                    0, GL_RGBA, GL_UNSIGNED_BYTE, glImage.bits());
+
+    // Set texture parameters
+    f->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    f->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Unbind texture
+    f->glBindTexture(GL_TEXTURE_2D, 0);
+
+    return textureID;
+}
+
+void QGLRenderer::DrawBitmap(int x, int y, int width, int height, GLuint textureID)
+{
+    QOpenGLFunctions *f = this->context->functions();
+
+    f->glBindTexture(GL_TEXTURE_2D, textureID);
+
+    /*
+    // Set up transformation to position the bitmap
+    f->glMatrixMode(GL_MODELVIEW);
+    f->glPushMatrix();
+    f->glTranslatef(x, y, 0.0f);  // Translate to desired x, y position
+    f->glScalef(width, height, 1.0f);  // Scale to desired width and height
+
+    // Draw the textured quad (or setup VBOs, depending on your implementation)
+    f->glBegin(GL_QUADS);
+    f->glTexCoord2f(0.0f, 0.0f); f->glVertex2f(0.0f, 0.0f);
+    f->glTexCoord2f(1.0f, 0.0f); f->glVertex2f(1.0f, 0.0f);
+    f->glTexCoord2f(1.0f, 1.0f); f->glVertex2f(1.0f, 1.0f);
+    f->glTexCoord2f(0.0f, 1.0f); f->glVertex2f(0.0f, 1.0f);
+    f->glEnd();
+
+    f->glPopMatrix();
+    f->glBindTexture(GL_TEXTURE_2D, 0);*/
+}
+
+void QGLRenderer::DrawTexture(int x, int y, int width, int height, QOpenGLTexture *texture)
+{
+    if (!texture)
+        return;
+
+    if (!texture->isCreated() && !texture->create())
+        return;
+
+    // Set up orthographic projection matrix
+    QMatrix4x4 transform;
+    transform.ortho(0, this->r_width, this->r_height, 0, -1, 1); // Bottom-left origin
+
+    // Translate to the desired position (x, y)
+    transform.translate(x, y);
+
+    // Scale to the desired width and height
+    transform.scale(width, height);
+
+    // Bind and use the blitter to draw the texture
+    this->blitter.bind();
+    this->blitter.blit(texture->textureId(), transform, QOpenGLTextureBlitter::OriginBottomLeft);
+    this->blitter.release();
 }
 
 int QGLRenderer::worldToQtY(int y)
