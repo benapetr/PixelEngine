@@ -1,3 +1,6 @@
+//! \file definitions.h
+//! \brief Header file containing global definitions, constants, and macros for the Pixel Engine.
+
 //This program is free software: you can redistribute it and/or modify
 //it under the terms of the GNU Lesser General Public License as published by
 //the Free Software Foundation, either version 3 of the License, or
@@ -13,27 +16,41 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
+//! \def PE_VERSION_STRING
+//! Defines the version string of the Pixel Engine.
 #define PE_VERSION_STRING "1.0.0.0"
 
-// Collision matrix
+//! \def PE_MAX_CM_SIZE
+//! Maximum size of the collision matrix.
 #define PE_MAX_CM_SIZE 64
+
+//! \def PE_RING_LOG_SIZE
+//! Size of the ring log buffer.
 #define PE_RING_LOG_SIZE  600
 
-// Math
+//! \def PE_PI
+//! Mathematical constant Pi.
 #define PE_PI 3.14159265
 
-// PI / 180 for radian
+//! \def PE_PI_RAD_CNV
+//! Conversion factor from degrees to radians (Pi / 180).
 #define PE_PI_RAD_CNV 1.74532925
 
-// Radians to degree
+//! \def PE_RAD_DEG_CNV
+//! Conversion factor from radians to degrees.
 #define PE_RAD_DEG_CNV 57.2958
 
-// Bitmap size
+//! \def PE_BITSET_MAX
+//! Maximum size of a bitmap.
 #define PE_BITSET_MAX 10000
 
 #ifdef DOUBLE_FLOAT
+//! \typedef pe_float_t
+//! Floating-point type used in the engine (double if DOUBLE_FLOAT is defined).
 typedef double pe_float_t;
 #else
+//! \typedef pe_float_t
+//! Floating-point type used in the engine (float by default).
 typedef float pe_float_t;
 #endif
 
@@ -55,8 +72,12 @@ typedef float pe_float_t;
     #define __FILE__ "{unknown}"
 #endif
 
+//! \def PE_FILE_LINE
+//! Macro to generate a string containing the file and line number.
 #define PE_FILE_LINE QString("@") + QString(__FILE__) + QString(":") + QString::number(__LINE__)
 
+//! \def BOOST_CURRENT_FUNCTION
+//! Macro to generate a string containing the current function name and file/line information.
 #ifndef BOOST_CURRENT_FUNCTION
     #if defined(__GNUC__) || (defined(__MWERKS__) && (__MWERKS__ >= 0x3000)) || (defined(__ICC) && (__ICC >= 600))
         #define BOOST_CURRENT_FUNCTION QString(__PRETTY_FUNCTION__) + PE_FILE_LINE

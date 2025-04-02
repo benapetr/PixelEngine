@@ -10,6 +10,9 @@
 
 // Copyright (c) Petr Bena 2019
 
+//! \file exception.h
+//! \brief Header file for the Exception class, representing errors in the Pixel Engine.
+
 #ifndef EXCEPTION_H
 #define EXCEPTION_H
 
@@ -17,14 +20,21 @@
 
 namespace PE
 {
+    //! \class Exception
+    //! \brief Represents an exception in the Pixel Engine.
     class Exception
     {
         public:
+            //! \brief Constructor for the Exception class.
+            //! \param what A description of what caused the exception.
+            //! \param where The location where the exception occurred.
             Exception(const QString &what, const QString &where);
+
+            //! \brief Destructor for the Exception class.
             virtual ~Exception();
-            // What happened
-            QString What;
-            QString Where;
+
+            QString What; //!< A description of what caused the exception.
+            QString Where; //!< The location where the exception occurred.
     };
 }
 

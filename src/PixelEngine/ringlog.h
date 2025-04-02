@@ -9,6 +9,9 @@
 //GNU Lesser General Public License for more details.
 
 // Copyright (c) Petr Bena 2019
+//! \file ringlog.h
+//! \brief Header file for the RingLog class, managing a circular log of messages.
+
 #ifndef RINGLOG_H
 #define RINGLOG_H
 
@@ -19,17 +22,26 @@
 
 namespace PE
 {
+    //! \class RingLog
+    //! \brief Manages a circular log of messages for the Pixel Engine.
     class RingLog : public QObject
     {
             Q_OBJECT
         public:
+            //! \brief Constructor for the RingLog class.
             RingLog();
+
+            //! \brief Write a text message to the log.
+            //! \param text The text message to write.
             void WriteText(const QString &text);
+
+            //! \brief Retrieve all log items.
+            //! \return A QList of RingLog_Item objects.
             QList<RingLog_Item> GetItems();
 
         private:
-            int size = 2000;
-            QList<RingLog_Item> items;
+            int size = 2000; //!< The maximum size of the log.
+            QList<RingLog_Item> items; //!< The list of log items.
     };
 }
 

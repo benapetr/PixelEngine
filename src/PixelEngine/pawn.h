@@ -10,6 +10,9 @@
 
 // Copyright (c) Petr Bena 2019
 
+//! \file pawn.h
+//! \brief Header file for the Pawn class, a specialized type of Actor in Pixel Engine.
+
 #ifndef PAWN_H
 #define PAWN_H
 
@@ -17,9 +20,14 @@
 
 namespace PE
 {
+    //! \class Pawn
+    //! \brief A specialized type of Actor in the Pixel Engine.
+    //! 
+    //! Pawns are dynamic objects in the game world that can be controlled or influenced by external factors.
     class Pawn : public Actor
     {
         public:
+            //! \brief Default constructor for the Pawn class.
             Pawn();
     };
 }
