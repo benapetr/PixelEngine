@@ -16,7 +16,7 @@
 
 using namespace PE;
 
-#ifdef QT6_BUILD
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 QRecursiveMutex *Collectable::CollectablesLock = new QRecursiveMutex();
 #else
 QMutex *Collectable::CollectablesLock = new QMutex(QMutex::Recursive);

@@ -16,6 +16,10 @@
 #include "../definitions.h"
 #include <QList>
 #include <QMutex>
+#include <QtGlobal>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QRecursiveMutex>
+#endif
 
 namespace PE
 {
@@ -27,7 +31,7 @@ namespace PE
         public:
             static int GetCollectablesCount();
             static QList<Collectable*> Collectables;
-#ifdef QT6_BUILD
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             static QRecursiveMutex *CollectablesLock;
 #else
             static QMutex *CollectablesLock;
