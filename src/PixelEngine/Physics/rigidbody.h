@@ -17,14 +17,18 @@
 #include "../vector.h"
 #include "collider.h"
 #include "../GC/collectable_smartptr.h"
+#include "../Serialization/serializable.h"
 
 namespace PE
 {
     class Collider;
-    class Rigidbody
+    class Rigidbody : public Serializable
     {
         public:
             Rigidbody();
+            QString GetClassName() const override;
+            void Serialize(Serializer *serializer) const override;
+            void Deserialize(Deserializer *deserializer) override;
             // If object is not grounded, gravity will apply to it, as long as its Weight is higher than 0
             bool IsGrounded();
             Vector GetMovement();

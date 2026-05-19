@@ -14,6 +14,8 @@
 #include "boxcollider.h"
 #include "bitmapcollider.h"
 #include "circlecollider.h"
+#include "../Serialization/deserializer.h"
+#include "../Serialization/serializer.h"
 #ifdef PE_DEBUG
 #include "../camera.h"
 #include "../Graphics/renderer.h"
@@ -26,6 +28,23 @@ CircleCollider::CircleCollider(pe_float_t x, pe_float_t y, pe_float_t radius, un
     this->Radius = radius;
     this->Layer = layer;
     this->Position = Vector(x, y);
+}
+
+QString CircleCollider::GetClassName() const
+{
+    return "PE::CircleCollider";
+}
+
+void CircleCollider::Serialize(Serializer *serializer) const
+{
+    Collider::Serialize(serializer);
+    serializer->WriteFloat("radius", this->Radius);
+}
+
+void CircleCollider::Deserialize(Deserializer *deserializer)
+{
+    Collider::Deserialize(deserializer);
+    this->Radius = deserializer->ReadFloat("radius", this->Radius);
 }
 
 bool PE::CircleCollider::PositionMatch(PE::Vector position)

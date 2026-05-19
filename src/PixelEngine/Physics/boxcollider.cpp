@@ -14,6 +14,8 @@
 #include "bitmapcollider.h"
 #include "circlecollider.h"
 #include "collidermath.h"
+#include "../Serialization/deserializer.h"
+#include "../Serialization/serializer.h"
 #ifdef PE_DEBUG
 #include "../camera.h"
 #include "../Graphics/renderer.h"
@@ -29,6 +31,25 @@ BoxCollider::BoxCollider(pe_float_t x, pe_float_t y, pe_float_t w, pe_float_t h,
     this->Width = w;
     this->Height = h;
     this->Layer = layer;
+}
+
+QString BoxCollider::GetClassName() const
+{
+    return "PE::BoxCollider";
+}
+
+void BoxCollider::Serialize(Serializer *serializer) const
+{
+    Collider::Serialize(serializer);
+    serializer->WriteFloat("width", this->Width);
+    serializer->WriteFloat("height", this->Height);
+}
+
+void BoxCollider::Deserialize(Deserializer *deserializer)
+{
+    Collider::Deserialize(deserializer);
+    this->Width = deserializer->ReadFloat("width", this->Width);
+    this->Height = deserializer->ReadFloat("height", this->Height);
 }
 
 bool BoxCollider::PositionMatch(Vector position)
@@ -68,6 +89,5 @@ void BoxCollider::Render(Renderer *r, Camera *c)
     r->DrawRect(root.X2int(), root.Y2int(), (this->Width * this->Scale), (this->Height * this->Scale), 1, Qt::green);
 }
 #endif
-
 
 

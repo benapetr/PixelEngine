@@ -14,6 +14,14 @@
 #include "pemath.h"
 #include "nullpointerexception.h"
 #include "ringlog.h"
+#include "object.h"
+#include "actor.h"
+#include "Physics/boxcollider.h"
+#include "Physics/circlecollider.h"
+#include "Physics/pixelcollider.h"
+#include "Physics/rigidbody.h"
+#include "Resources/assetcontainer.h"
+#include "Serialization/classregistry.h"
 
 using namespace PE;
 
@@ -44,6 +52,13 @@ Engine::Engine(bool multithreaded_gc)
 {
     this->startupTime = QDateTime::currentDateTime();
     this->RL = new RingLog();
+    ClassRegistry::GetRegistry()->RegisterClass("PE::Object", []() { return new Object(); });
+    ClassRegistry::GetRegistry()->RegisterClass("PE::Actor", []() { return new Actor(); });
+    ClassRegistry::GetRegistry()->RegisterClass("PE::Rigidbody", []() { return new Rigidbody(); });
+    ClassRegistry::GetRegistry()->RegisterClass("PE::BoxCollider", []() { return new BoxCollider(0, 0, 0, 0); });
+    ClassRegistry::GetRegistry()->RegisterClass("PE::CircleCollider", []() { return new CircleCollider(0, 0, 0); });
+    ClassRegistry::GetRegistry()->RegisterClass("PE::PixelCollider", []() { return new PixelCollider(0, 0); });
+    ClassRegistry::GetRegistry()->RegisterClass("PE::AssetContainer", []() { return new AssetContainer(); });
     this->gc = new GC(multithreaded_gc);
     this->gc->Start();
     this->RL->WriteText(QString("PixelEngine v. ") + QString(PE_VERSION_STRING) + " initialized");

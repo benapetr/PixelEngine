@@ -43,6 +43,9 @@ namespace PE
             virtual bool IntersectionMatch(Collider *collider)=0;
             virtual PE_ColliderType GetColliderType()=0;
             PE_ObjectType GetType() override;
+            QString GetClassName() const override;
+            void Serialize(Serializer *serializer) const override;
+            void Deserialize(Deserializer *deserializer) override;
             unsigned int Layer = 0;
     };
 }

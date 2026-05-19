@@ -24,6 +24,11 @@ PixelCollider::PixelCollider(pe_float_t x, pe_float_t y, unsigned int layer)
     this->Position = Vector(x, y);
 }
 
+QString PixelCollider::GetClassName() const
+{
+    return "PE::PixelCollider";
+}
+
 bool PixelCollider::PositionMatch(Vector position)
 {
     return position == this->Position;

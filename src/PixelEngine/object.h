@@ -20,6 +20,7 @@
 #include "vector.h"
 #include "GC/collectable.h"
 #include "GC/collectable_smartptr.h"
+#include "Serialization/serializable.h"
 #include <QList>
 
 namespace PE
@@ -46,7 +47,7 @@ namespace PE
     //! Objects are static transforms that can render to the world. Each object has a position relative to the world.
     //! Standalone objects are not affected by world physics. For physics-enabled objects, see the Actor class.
     //! Each object can have multiple children and one parent.
-    class Object : public Collectable
+    class Object : public Collectable, public Serializable
     {
         public:
             //! \brief Constructor for the Object class.
@@ -73,6 +74,9 @@ namespace PE
             //! \brief Get the type of this object.
             //! \return The type of the object as a PE_ObjectType.
             virtual PE_ObjectType GetType();
+            QString GetClassName() const override;
+            void Serialize(Serializer *serializer) const override;
+            void Deserialize(Deserializer *deserializer) override;
 
             //! \brief Check if the object has children.
             //! \return True if the object has children, false otherwise.

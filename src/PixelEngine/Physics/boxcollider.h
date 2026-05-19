@@ -27,6 +27,9 @@ namespace PE
             bool IntersectionMatch(Collider *collider) override;
             pe_float_t GetX() const { return this->Position.X; }
             pe_float_t GetY() const { return this->Position.Y; }
+            QString GetClassName() const override;
+            void Serialize(Serializer *serializer) const override;
+            void Deserialize(Deserializer *deserializer) override;
             PE_ColliderType GetColliderType() override { return PE_ColliderType_Box; }
 #ifdef PE_DEBUG
             void Render(PE::Renderer *r, PE::Camera *c) override;

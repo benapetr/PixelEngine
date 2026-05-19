@@ -13,6 +13,13 @@
 #include "actor.h"
 #include "Physics/collider.h"
 #include "Physics/rigidbody.h"
+#include "Serialization/classregistry.h"
+#include "Serialization/deserializer.h"
+#include "Serialization/jsondeserializer.h"
+#include "Serialization/jsonserializer.h"
+#include "Serialization/serializer.h"
+#include <QJsonObject>
+#include <QVariantList>
 
 using namespace PE;
 
@@ -37,6 +44,69 @@ Actor::~Actor()
 PE_ObjectType Actor::GetType()
 {
     return PE_ObjectType_Actor;
+}
+
+QString Actor::GetClassName() const
+{
+    return "PE::Actor";
+}
+
+void Actor::Serialize(Serializer *serializer) const
+{
+    Object::Serialize(serializer);
+
+    if (this->RigidBody)
+    {
+        JsonSerializer rigidBodySerializer;
+        this->RigidBody->Serialize(&rigidBodySerializer);
+        serializer->WriteValue("rigidBody", rigidBodySerializer.ToJsonObject().toVariantMap());
+    }
+
+    QVariantList colliderList;
+    foreach (Collider *collider, this->colliders)
+    {
+        JsonSerializer colliderSerializer;
+        collider->Serialize(&colliderSerializer);
+        colliderList.append(colliderSerializer.ToJsonObject().toVariantMap());
+    }
+    serializer->WriteValue("colliders", colliderList);
+}
+
+void Actor::Deserialize(Deserializer *deserializer)
+{
+    Object::Deserialize(deserializer);
+
+    QVariantMap rigidBodyMap = deserializer->ReadValue("rigidBody").toMap();
+    if (!rigidBodyMap.isEmpty())
+    {
+        Serializable *rigidBody = ClassRegistry::GetRegistry()->Create(rigidBodyMap.value("class").toString());
+        if (rigidBody)
+        {
+            JsonDeserializer rigidBodyDeserializer(QJsonObject::fromVariantMap(rigidBodyMap));
+            rigidBody->Deserialize(&rigidBodyDeserializer);
+            delete this->RigidBody;
+            this->RigidBody = dynamic_cast<Rigidbody*>(rigidBody);
+            if (!this->RigidBody)
+                delete rigidBody;
+        }
+    }
+
+    QVariantList colliderList = deserializer->ReadValue("colliders").toList();
+    foreach (const QVariant &colliderValue, colliderList)
+    {
+        QVariantMap colliderMap = colliderValue.toMap();
+        Serializable *serializable = ClassRegistry::GetRegistry()->Create(colliderMap.value("class").toString());
+        if (!serializable)
+            continue;
+
+        JsonDeserializer colliderDeserializer(QJsonObject::fromVariantMap(colliderMap));
+        serializable->Deserialize(&colliderDeserializer);
+        Object *object = dynamic_cast<Object*>(serializable);
+        if (object)
+            this->AddChildren(object);
+        else
+            delete serializable;
+    }
 }
 
 void Actor::AddChildren(Object *obj)

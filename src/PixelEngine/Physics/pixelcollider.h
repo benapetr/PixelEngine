@@ -27,6 +27,7 @@ namespace PE
             PixelCollider(pe_float_t x, pe_float_t y, unsigned int layer = 0);
             bool PositionMatch(Vector position) override;
             bool IntersectionMatch(Collider *collider) override;
+            QString GetClassName() const override;
             PE_ColliderType GetColliderType() override;
 #ifdef PE_DEBUG
             void Render(PE::Renderer *r, PE::Camera *c) override;

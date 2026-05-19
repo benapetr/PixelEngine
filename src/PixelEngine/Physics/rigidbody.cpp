@@ -11,12 +11,35 @@
 // Copyright (c) Petr Bena 2019
 
 #include "rigidbody.h"
+#include "../Serialization/deserializer.h"
+#include "../Serialization/serializer.h"
 
 using namespace PE;
 
 Rigidbody::Rigidbody()
 {
 
+}
+
+QString Rigidbody::GetClassName() const
+{
+    return "PE::Rigidbody";
+}
+
+void Rigidbody::Serialize(Serializer *serializer) const
+{
+    serializer->WriteString("class", this->GetClassName());
+    serializer->WriteVector("velocity", this->Velocity);
+    serializer->WriteFloat("bounciness", this->Bounciness);
+    serializer->WriteFloat("weight", this->Weight);
+}
+
+void Rigidbody::Deserialize(Deserializer *deserializer)
+{
+    this->Velocity = deserializer->ReadVector("velocity", this->Velocity);
+    this->Bounciness = deserializer->ReadFloat("bounciness", this->Bounciness);
+    this->Weight = deserializer->ReadFloat("weight", this->Weight);
+    this->GroundCollider = nullptr;
 }
 
 bool Rigidbody::IsGrounded()

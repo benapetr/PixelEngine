@@ -11,6 +11,8 @@
 // Copyright (c) Petr Bena 2019
 
 #include "collider.h"
+#include "../Serialization/deserializer.h"
+#include "../Serialization/serializer.h"
 
 using namespace PE;
 
@@ -38,4 +40,21 @@ Collider::~Collider()
 PE_ObjectType Collider::GetType()
 {
     return PE_ObjectType_Collider;
+}
+
+QString Collider::GetClassName() const
+{
+    return "PE::Collider";
+}
+
+void Collider::Serialize(Serializer *serializer) const
+{
+    Object::Serialize(serializer);
+    serializer->WriteInteger("layer", static_cast<int>(this->Layer));
+}
+
+void Collider::Deserialize(Deserializer *deserializer)
+{
+    Object::Deserialize(deserializer);
+    this->Layer = static_cast<unsigned int>(deserializer->ReadInteger("layer", static_cast<int>(this->Layer)));
 }

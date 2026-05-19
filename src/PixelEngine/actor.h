@@ -36,6 +36,9 @@ namespace PE
             Actor(const Vector &position, Object *parent = nullptr);
             ~Actor() override;
             PE_ObjectType GetType() override;
+            QString GetClassName() const override;
+            void Serialize(Serializer *serializer) const override;
+            void Deserialize(Deserializer *deserializer) override;
             void AddChildren(Object *obj) override;
             void RemoveChildren(Object *obj) override;
             virtual void Event_KeyPress(int key) { (void)key; }

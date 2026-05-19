@@ -11,6 +11,8 @@
 // Copyright (c) Petr Bena 2019
 
 #include "object.h"
+#include "Serialization/deserializer.h"
+#include "Serialization/serializer.h"
 #include <QDateTime>
 
 using namespace PE;
@@ -34,6 +36,26 @@ Object::~Object()
 PE_ObjectType Object::GetType()
 {
     return PE_ObjectType_Object;
+}
+
+QString Object::GetClassName() const
+{
+    return "PE::Object";
+}
+
+void Object::Serialize(Serializer *serializer) const
+{
+    serializer->WriteString("class", this->GetClassName());
+    serializer->WriteVector("position", this->Position);
+    serializer->WriteVector("relativePosition", this->RelativePosition);
+    serializer->WriteFloat("scale", this->Scale);
+}
+
+void Object::Deserialize(Deserializer *deserializer)
+{
+    this->Position = deserializer->ReadVector("position", this->Position);
+    this->RelativePosition = deserializer->ReadVector("relativePosition", this->RelativePosition);
+    this->Scale = deserializer->ReadFloat("scale", this->Scale);
 }
 
 bool Object::HasChildren()
