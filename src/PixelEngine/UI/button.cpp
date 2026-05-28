@@ -50,8 +50,8 @@ void Button::Render(Renderer *r, Camera *c)
     else if (this->Hovered)
         fill = this->HoverColor;
 
-    r->DrawRect(position.X2int(), position.Y2int(), static_cast<int>(this->Width), static_cast<int>(this->Height), 1, fill, true);
-    r->DrawRect(position.X2int(), position.Y2int(), static_cast<int>(this->Width), static_cast<int>(this->Height), 1, this->BorderColor);
+    this->DrawBox(r, position.X2int(), position.Y2int(), static_cast<int>(this->Width), static_cast<int>(this->Height), 1, fill, true);
+    this->DrawBox(r, position.X2int(), position.Y2int(), static_cast<int>(this->Width), static_cast<int>(this->Height), 1, this->BorderColor);
     r->DrawText(position.X2int() + 8, position.Y2int() + this->FontSize + 6, this->Text, this->TextColor, this->FontSize);
 }
 

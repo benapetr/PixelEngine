@@ -14,6 +14,7 @@
 // Copyright (c) Petr Bena 2026
 
 #include "uielement.h"
+#include "../Graphics/renderer.h"
 #include "../Serialization/deserializer.h"
 #include "../Serialization/serializer.h"
 
@@ -40,6 +41,7 @@ void UIElement::Serialize(Serializer *serializer) const
     Object::Serialize(serializer);
     serializer->WriteFloat("width", this->Width);
     serializer->WriteFloat("height", this->Height);
+    serializer->WriteInteger("cornerRadius", this->CornerRadius);
     serializer->WriteBool("enabled", this->Enabled);
     serializer->WriteBool("visible", this->Visible);
 }
@@ -49,6 +51,7 @@ void UIElement::Deserialize(Deserializer *deserializer)
     Object::Deserialize(deserializer);
     this->Width = deserializer->ReadFloat("width", this->Width);
     this->Height = deserializer->ReadFloat("height", this->Height);
+    this->CornerRadius = deserializer->ReadInteger("cornerRadius", this->CornerRadius);
     this->Enabled = deserializer->ReadBool("enabled", this->Enabled);
     this->Visible = deserializer->ReadBool("visible", this->Visible);
 }
@@ -80,4 +83,12 @@ void UIElement::KeyPress(int key, const QString &text)
 {
     (void)key;
     (void)text;
+}
+
+void UIElement::DrawBox(Renderer *renderer, int x, int y, int width, int height, int lineWidth, const QColor &color, bool fill) const
+{
+    if (this->CornerRadius > 0)
+        renderer->DrawRoundedRect(x, y, width, height, this->CornerRadius, lineWidth, color, fill);
+    else
+        renderer->DrawRect(x, y, width, height, lineWidth, color, fill);
 }

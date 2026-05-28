@@ -19,6 +19,7 @@
 #include "uielement.h"
 #include "../GC/collectable_smartptr.h"
 #include <QList>
+#include <functional>
 
 namespace PE
 {
@@ -32,6 +33,8 @@ namespace PE
             void AddControl(UIElement *control);
             void RemoveControl(UIElement *control);
             UIElement *GetFocusedControl() const;
+            bool IsCloseButtonVisible() const;
+            bool IsPointOnCloseButton(const Vector &point) const;
             void MousePress(const Vector &point) override;
             void MouseRelease(const Vector &point) override;
             void MouseMove(const Vector &point) override;
@@ -41,8 +44,17 @@ namespace PE
 
             QString Title;
             int TitleBarHeight = 26;
+            int CloseButtonSize = 18;
             int FontSize = 13;
+            bool ShowTitleBar = true;
+            bool ShowCloseButton = false;
             QColor TitleBarColor = QColor(35, 38, 46);
+            QColor CloseButtonColor = QColor(150, 78, 78);
+            QColor CloseButtonHoverColor = QColor(190, 82, 82);
+            QColor CloseButtonTextColor = QColor(250, 240, 240);
+            bool CloseButtonHovered = false;
+            bool CloseButtonPressed = false;
+            std::function<void()> OnClose;
 
         private:
             QList<Collectable_SmartPtr<UIElement>> controls;

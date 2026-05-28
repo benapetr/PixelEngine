@@ -112,6 +112,37 @@ void QGLRenderer::DrawRect(int x, int y, int width, int height, int line_width, 
         this->HasUpdate = true;
 }
 
+void QGLRenderer::DrawRoundedRect(int x, int y, int width, int height, int radius, int line_width, const QColor &color, bool fill)
+{
+    if (!this->Enabled)
+        return;
+
+    QRectF rect(x, this->worldToQtY(y + height), width, height);
+    this->painter->save();
+    this->painter->setRenderHint(QPainter::Antialiasing, true);
+    if (fill)
+    {
+        QBrush brush(color, Qt::SolidPattern);
+        this->painter->setPen(Qt::NoPen);
+        this->painter->setBrush(brush);
+        this->painter->drawRoundedRect(rect, radius, radius, Qt::AbsoluteSize);
+    }
+    else
+    {
+        QPen pen(color);
+        pen.setWidth(line_width);
+        pen.setCapStyle(Qt::RoundCap);
+        pen.setJoinStyle(Qt::RoundJoin);
+        this->painter->setPen(pen);
+        this->painter->setBrush(Qt::NoBrush);
+        this->painter->drawRoundedRect(rect, radius, radius, Qt::AbsoluteSize);
+    }
+    this->painter->restore();
+
+    if (!this->ManualUpdate)
+        this->HasUpdate = true;
+}
+
 void QGLRenderer::DrawText(int x, int y, const QString &text, const QColor &color, int size)
 {
     if (!this->Enabled)
@@ -232,4 +263,3 @@ int QGLRenderer::worldToQtY(int y)
 {
     return (this->r_height) - y;
 }
-

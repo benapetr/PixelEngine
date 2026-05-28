@@ -43,8 +43,8 @@ void ComboBox::Render(Renderer *r, Camera *c)
         return;
 
     Vector position = c->ProjectedPosition(this->Position);
-    r->DrawRect(position.X2int(), position.Y2int(), static_cast<int>(this->Width), static_cast<int>(this->Height), 1, this->BackgroundColor, true);
-    r->DrawRect(position.X2int(), position.Y2int(), static_cast<int>(this->Width), static_cast<int>(this->Height), 1, this->BorderColor);
+    this->DrawBox(r, position.X2int(), position.Y2int(), static_cast<int>(this->Width), static_cast<int>(this->Height), 1, this->BackgroundColor, true);
+    this->DrawBox(r, position.X2int(), position.Y2int(), static_cast<int>(this->Width), static_cast<int>(this->Height), 1, this->BorderColor);
     r->DrawText(position.X2int() + 7, position.Y2int() + this->FontSize + 6, this->GetSelectedText(), this->TextColor, this->FontSize);
     r->DrawText(position.X2int() + static_cast<int>(this->Width) - 18, position.Y2int() + this->FontSize + 6, this->Expanded ? "^" : "v", this->TextColor, this->FontSize);
 
@@ -55,8 +55,8 @@ void ComboBox::Render(Renderer *r, Camera *c)
     {
         int y = position.Y2int() - static_cast<int>(this->Height) * (i + 1);
         QColor fill = (i == this->SelectedIndex) ? QColor(58, 74, 104) : QColor(30, 32, 38);
-        r->DrawRect(position.X2int(), y, static_cast<int>(this->Width), static_cast<int>(this->Height), 1, fill, true);
-        r->DrawRect(position.X2int(), y, static_cast<int>(this->Width), static_cast<int>(this->Height), 1, this->BorderColor);
+        this->DrawBox(r, position.X2int(), y, static_cast<int>(this->Width), static_cast<int>(this->Height), 1, fill, true);
+        this->DrawBox(r, position.X2int(), y, static_cast<int>(this->Width), static_cast<int>(this->Height), 1, this->BorderColor);
         r->DrawText(position.X2int() + 7, y + this->FontSize + 6, this->Items[i], this->TextColor, this->FontSize);
     }
 }
@@ -144,4 +144,9 @@ QString ComboBox::GetSelectedText() const
     if (this->SelectedIndex < 0 || this->SelectedIndex >= this->Items.size())
         return QString();
     return this->Items[this->SelectedIndex];
+}
+
+bool ComboBox::IsPopupExpanded() const
+{
+    return this->Expanded;
 }

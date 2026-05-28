@@ -42,6 +42,7 @@ namespace PE
             virtual void Clear(const QColor &color)=0;
             virtual void DrawPixel(int x, int y, const QColor &color)=0;
             virtual void DrawRect(int x, int y, int width, int height, int line_width, const QColor &color, bool fill = false)=0;
+            virtual void DrawRoundedRect(int x, int y, int width, int height, int radius, int line_width, const QColor &color, bool fill = false)=0;
             virtual void DrawLine(Vector source, Vector target, int line_width, const QColor &color)=0;
             virtual void DrawBitmap(int x, int y, int width, int height, const QPixmap &bitmap)=0;
             virtual void DrawText(int x, int y, const QString &text, const QColor &color, int size = 10)=0;

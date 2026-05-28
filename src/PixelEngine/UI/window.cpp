@@ -14,6 +14,7 @@
 // Copyright (c) Petr Bena 2026
 
 #include "window.h"
+#include "combobox.h"
 #include "../camera.h"
 #include "../Graphics/renderer.h"
 #include "../Serialization/deserializer.h"
@@ -43,17 +44,46 @@ void Window::Render(Renderer *r, Camera *c)
         return;
 
     Vector position = c->ProjectedPosition(this->Position);
-    r->DrawRect(position.X2int(), position.Y2int(), static_cast<int>(this->Width), static_cast<int>(this->Height), 1, this->BackgroundColor, true);
-    r->DrawRect(position.X2int(), position.Y2int(), static_cast<int>(this->Width), this->TitleBarHeight, 1, this->TitleBarColor, true);
-    r->DrawRect(position.X2int(), position.Y2int(), static_cast<int>(this->Width), static_cast<int>(this->Height), 1, this->BorderColor);
-    r->DrawText(position.X2int() + 8, position.Y2int() + this->FontSize + 5, this->Title, this->TextColor, this->FontSize);
+    int titleBarY = position.Y2int() + static_cast<int>(this->Height) - this->TitleBarHeight;
+    int titleTextY = titleBarY + ((this->TitleBarHeight - this->FontSize) / 2);
+    this->DrawBox(r, position.X2int(), position.Y2int(), static_cast<int>(this->Width), static_cast<int>(this->Height), 1, this->BackgroundColor, true);
+    if (this->ShowTitleBar)
+        r->DrawRect(position.X2int(), titleBarY, static_cast<int>(this->Width), this->TitleBarHeight, 1, this->TitleBarColor, true);
+    this->DrawBox(r, position.X2int(), position.Y2int(), static_cast<int>(this->Width), static_cast<int>(this->Height), 1, this->BorderColor);
+    if (this->ShowTitleBar)
+    {
+        r->DrawText(position.X2int() + 8, titleTextY, this->Title, this->TextColor, this->FontSize);
+        if (this->IsCloseButtonVisible())
+        {
+            int padding = (this->TitleBarHeight - this->CloseButtonSize) / 2;
+            int x = position.X2int() + static_cast<int>(this->Width) - this->CloseButtonSize - padding;
+            int y = titleBarY + padding;
+            QColor closeColor = this->CloseButtonHovered ? this->CloseButtonHoverColor : this->CloseButtonColor;
+            this->DrawBox(r, x, y, this->CloseButtonSize, this->CloseButtonSize, 1, closeColor, true);
+            r->DrawText(x + 5, y + ((this->CloseButtonSize - this->FontSize) / 2), "x", this->CloseButtonTextColor, this->FontSize);
+        }
+    }
 
     foreach (UIElement *control, this->controls)
-        control->Render(r, c);
+    {
+        ComboBox *comboBox = dynamic_cast<ComboBox*>(control);
+        if (!comboBox || !comboBox->IsPopupExpanded())
+            control->Render(r, c);
+    }
+
+    foreach (UIElement *control, this->controls)
+    {
+        ComboBox *comboBox = dynamic_cast<ComboBox*>(control);
+        if (comboBox && comboBox->IsPopupExpanded())
+            control->Render(r, c);
+    }
 }
 
 void Window::AddControl(UIElement *control)
 {
+    control->RelativePosition = control->Position;
+    control->SetPosition(Vector(this->Position.X + control->RelativePosition.X,
+                                this->Position.Y + this->Height - control->RelativePosition.Y - control->Height));
     this->controls.append(control);
     this->AddChildren(control);
     this->RedrawNeeded = true;
@@ -73,10 +103,53 @@ UIElement *Window::GetFocusedControl() const
     return this->focusedControl.GetPtr();
 }
 
+bool Window::IsCloseButtonVisible() const
+{
+    return this->ShowTitleBar && this->ShowCloseButton && this->CloseButtonSize > 0;
+}
+
+bool Window::IsPointOnCloseButton(const Vector &point) const
+{
+    if (!this->IsCloseButtonVisible())
+        return false;
+
+    pe_float_t padding = (this->TitleBarHeight - this->CloseButtonSize) / 2;
+    pe_float_t x = this->Position.X + this->Width - this->CloseButtonSize - padding;
+    pe_float_t y = this->Position.Y + this->Height - this->TitleBarHeight + padding;
+
+    return point.X >= x &&
+           point.Y >= y &&
+           point.X <= x + this->CloseButtonSize &&
+           point.Y <= y + this->CloseButtonSize;
+}
+
 void Window::MousePress(const Vector &point)
 {
     UIElement::MousePress(point);
     this->focusedControl = nullptr;
+    this->CloseButtonPressed = false;
+
+    if (this->IsPointOnCloseButton(point))
+    {
+        this->CloseButtonPressed = true;
+        this->RedrawNeeded = true;
+        return;
+    }
+
+    for (int i = this->controls.size() - 1; i >= 0; --i)
+    {
+        ComboBox *comboBox = dynamic_cast<ComboBox*>(this->controls[i].GetPtr());
+        if (!comboBox || !comboBox->IsPopupExpanded())
+            continue;
+
+        if (comboBox->ContainsPoint(point))
+        {
+            comboBox->MousePress(point);
+            this->focusedControl = comboBox;
+            this->RedrawNeeded = true;
+            return;
+        }
+    }
 
     for (int i = this->controls.size() - 1; i >= 0; --i)
     {
@@ -96,6 +169,16 @@ void Window::MousePress(const Vector &point)
 
 void Window::MouseRelease(const Vector &point)
 {
+    bool closeClicked = this->CloseButtonPressed && this->IsPointOnCloseButton(point);
+    this->CloseButtonPressed = false;
+    if (closeClicked)
+    {
+        this->RedrawNeeded = true;
+        if (this->OnClose)
+            this->OnClose();
+        return;
+    }
+
     foreach (UIElement *control, this->controls)
         control->MouseRelease(point);
     this->RedrawNeeded = true;
@@ -103,6 +186,13 @@ void Window::MouseRelease(const Vector &point)
 
 void Window::MouseMove(const Vector &point)
 {
+    bool closeHovered = this->IsPointOnCloseButton(point);
+    if (this->CloseButtonHovered != closeHovered)
+    {
+        this->CloseButtonHovered = closeHovered;
+        this->RedrawNeeded = true;
+    }
+
     foreach (UIElement *control, this->controls)
     {
         control->MouseMove(point);
@@ -122,7 +212,10 @@ void Window::Serialize(Serializer *serializer) const
     UIElement::Serialize(serializer);
     serializer->WriteString("title", this->Title);
     serializer->WriteInteger("titleBarHeight", this->TitleBarHeight);
+    serializer->WriteInteger("closeButtonSize", this->CloseButtonSize);
     serializer->WriteInteger("fontSize", this->FontSize);
+    serializer->WriteBool("showTitleBar", this->ShowTitleBar);
+    serializer->WriteBool("showCloseButton", this->ShowCloseButton);
 }
 
 void Window::Deserialize(Deserializer *deserializer)
@@ -130,5 +223,8 @@ void Window::Deserialize(Deserializer *deserializer)
     UIElement::Deserialize(deserializer);
     this->Title = deserializer->ReadString("title", this->Title);
     this->TitleBarHeight = deserializer->ReadInteger("titleBarHeight", this->TitleBarHeight);
+    this->CloseButtonSize = deserializer->ReadInteger("closeButtonSize", this->CloseButtonSize);
     this->FontSize = deserializer->ReadInteger("fontSize", this->FontSize);
+    this->ShowTitleBar = deserializer->ReadBool("showTitleBar", this->ShowTitleBar);
+    this->ShowCloseButton = deserializer->ReadBool("showCloseButton", this->ShowCloseButton);
 }

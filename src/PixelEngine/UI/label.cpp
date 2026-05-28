@@ -43,7 +43,7 @@ void Label::Render(Renderer *r, Camera *c)
 
     Vector position = c->ProjectedPosition(this->Position);
     if (this->DrawBackground)
-        r->DrawRect(position.X2int(), position.Y2int(), static_cast<int>(this->Width), static_cast<int>(this->Height), 1, this->BackgroundColor, true);
+        this->DrawBox(r, position.X2int(), position.Y2int(), static_cast<int>(this->Width), static_cast<int>(this->Height), 1, this->BackgroundColor, true);
     r->DrawText(position.X2int() + 6, position.Y2int() + this->FontSize + 3, this->Text, this->TextColor, this->FontSize);
 }
 

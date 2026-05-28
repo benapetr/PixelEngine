@@ -22,6 +22,8 @@
 
 namespace PE
 {
+    class Renderer;
+
     class UIElement : public Object
     {
         public:
@@ -35,9 +37,11 @@ namespace PE
             virtual void MouseRelease(const Vector &point);
             virtual void MouseMove(const Vector &point);
             virtual void KeyPress(int key, const QString &text = QString());
+            void DrawBox(Renderer *renderer, int x, int y, int width, int height, int lineWidth, const QColor &color, bool fill = false) const;
 
             pe_float_t Width = 0;
             pe_float_t Height = 0;
+            int CornerRadius = 0;
             bool Enabled = true;
             bool Visible = true;
             bool Focused = false;

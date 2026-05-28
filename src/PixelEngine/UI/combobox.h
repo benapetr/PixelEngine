@@ -36,6 +36,7 @@ namespace PE
             void AddItem(const QString &item);
             void ClearItems();
             QString GetSelectedText() const;
+            bool IsPopupExpanded() const;
 
             QStringList Items;
             int SelectedIndex = -1;

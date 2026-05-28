@@ -47,8 +47,8 @@ void TextBox::Render(Renderer *r, Camera *c)
     QString text = this->Text.isEmpty() ? this->Placeholder : this->Text;
     QColor textColor = this->Text.isEmpty() ? QColor(140, 145, 155) : this->TextColor;
 
-    r->DrawRect(position.X2int(), position.Y2int(), static_cast<int>(this->Width), static_cast<int>(this->Height), 1, this->BackgroundColor, true);
-    r->DrawRect(position.X2int(), position.Y2int(), static_cast<int>(this->Width), static_cast<int>(this->Height), 1, border);
+    this->DrawBox(r, position.X2int(), position.Y2int(), static_cast<int>(this->Width), static_cast<int>(this->Height), 1, this->BackgroundColor, true);
+    this->DrawBox(r, position.X2int(), position.Y2int(), static_cast<int>(this->Width), static_cast<int>(this->Height), 1, border);
     r->DrawText(position.X2int() + 7, position.Y2int() + this->FontSize + 6, text, textColor, this->FontSize);
 
     if (this->Focused && this->Editable)

@@ -35,6 +35,7 @@ namespace PE
             void DrawBitmap(int x, int y, int width, int height, const QPixmap &bitmap) override;
             void DrawLine(Vector source, Vector target, int line_width, const QColor &color) override;
             void DrawRect(int x, int y, int width, int height, int line_width, const QColor &color, bool fill = false) override;
+            void DrawRoundedRect(int x, int y, int width, int height, int radius, int line_width, const QColor &color, bool fill = false) override;
             void DrawText(int x, int y, const QString &text, const QColor &color, int size = 10) override;
             void DrawEllipse(int x, int y, int width, int height, const QColor &color, int line_width=1) override;
             void Begin();
