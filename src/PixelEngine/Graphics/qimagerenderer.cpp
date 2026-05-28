@@ -179,6 +179,17 @@ void QImageRenderer::DrawEllipse(int x, int y, int width, int height, const QCol
         this->HasUpdate = true;
 }
 
+void QImageRenderer::PushClipRect(int x, int y, int width, int height)
+{
+    this->painter->save();
+    this->painter->setClipRect(x, this->worldToQtY(y + height), width, height, Qt::IntersectClip);
+}
+
+void QImageRenderer::PopClipRect()
+{
+    this->painter->restore();
+}
+
 int QImageRenderer::worldToQtY(int y)
 {
     return (this->r_height) - y;

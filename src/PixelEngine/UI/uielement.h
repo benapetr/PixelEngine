@@ -23,6 +23,7 @@
 namespace PE
 {
     class Renderer;
+    class Window;
 
     class UIElement : public Object
     {
@@ -36,8 +37,14 @@ namespace PE
             virtual void MousePress(const Vector &point);
             virtual void MouseRelease(const Vector &point);
             virtual void MouseMove(const Vector &point);
+            virtual bool MouseWheel(const Vector &point, pe_float_t delta);
+            virtual void MouseEnter();
+            virtual void MouseExit();
+            bool UpdateHover(const Vector &point);
             virtual void KeyPress(int key, const QString &text = QString());
+            virtual void FocusLost();
             void DrawBox(Renderer *renderer, int x, int y, int width, int height, int lineWidth, const QColor &color, bool fill = false) const;
+            Window *GetUIParent() const;
 
             pe_float_t Width = 0;
             pe_float_t Height = 0;
@@ -45,9 +52,16 @@ namespace PE
             bool Enabled = true;
             bool Visible = true;
             bool Focused = false;
+            bool Hovered = false;
+            bool BringToFrontOnFocus = false;
             QColor BackgroundColor = QColor(43, 45, 51);
             QColor BorderColor = QColor(110, 116, 128);
             QColor TextColor = QColor(240, 242, 247);
+
+        private:
+            friend class Window;
+            void SetUIParent(Window *parent);
+            Window *uiParent = nullptr;
     };
 }
 

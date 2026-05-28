@@ -30,7 +30,6 @@ namespace PE
             void Render(Renderer *r, Camera *c) override;
             void MousePress(const Vector &point) override;
             void MouseRelease(const Vector &point) override;
-            void MouseMove(const Vector &point) override;
             void Serialize(Serializer *serializer) const override;
             void Deserialize(Deserializer *deserializer) override;
 
@@ -38,7 +37,6 @@ namespace PE
             int FontSize = 13;
             QColor HoverColor = QColor(55, 59, 68);
             QColor PressedColor = QColor(78, 94, 126);
-            bool Hovered = false;
             bool Pressed = false;
             std::function<void()> OnClick;
     };

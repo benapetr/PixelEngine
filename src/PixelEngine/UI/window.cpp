@@ -14,7 +14,6 @@
 // Copyright (c) Petr Bena 2026
 
 #include "window.h"
-#include "combobox.h"
 #include "../camera.h"
 #include "../Graphics/renderer.h"
 #include "../Serialization/deserializer.h"
@@ -65,25 +64,24 @@ void Window::Render(Renderer *r, Camera *c)
     }
 
     foreach (UIElement *control, this->controls)
-    {
-        ComboBox *comboBox = dynamic_cast<ComboBox*>(control);
-        if (!comboBox || !comboBox->IsPopupExpanded())
-            control->Render(r, c);
-    }
-
-    foreach (UIElement *control, this->controls)
-    {
-        ComboBox *comboBox = dynamic_cast<ComboBox*>(control);
-        if (comboBox && comboBox->IsPopupExpanded())
-            control->Render(r, c);
-    }
+        control->Render(r, c);
 }
 
 void Window::AddControl(UIElement *control)
 {
+    if (control == nullptr)
+        return;
+
+    if (control->GetUIParent() == this && this->IndexOfControl(control) >= 0)
+        return;
+
+    if (control->GetUIParent() != nullptr)
+        control->GetUIParent()->RemoveControl(control);
+
     control->RelativePosition = control->Position;
     control->SetPosition(Vector(this->Position.X + control->RelativePosition.X,
                                 this->Position.Y + this->Height - control->RelativePosition.Y - control->Height));
+    control->SetUIParent(this);
     this->controls.append(control);
     this->AddChildren(control);
     this->RedrawNeeded = true;
@@ -91,10 +89,62 @@ void Window::AddControl(UIElement *control)
 
 void Window::RemoveControl(UIElement *control)
 {
-    this->controls.removeAll(control);
+    if (control == nullptr)
+        return;
+
+    int index = this->IndexOfControl(control);
+    if (index < 0)
+        return;
+
+    this->controls.removeAt(index);
     this->RemoveChildren(control);
+    control->SetUIParent(nullptr);
     if (this->focusedControl == control)
         this->focusedControl = nullptr;
+    this->RedrawNeeded = true;
+}
+
+void Window::BringToFront(UIElement *control)
+{
+    int index = this->IndexOfControl(control);
+    if (index < 0 || index == this->controls.size() - 1)
+        return;
+
+    Collectable_SmartPtr<UIElement> item = this->controls[index];
+    this->controls.removeAt(index);
+    this->controls.append(item);
+    this->RedrawNeeded = true;
+}
+
+void Window::SendToBack(UIElement *control)
+{
+    int index = this->IndexOfControl(control);
+    if (index <= 0)
+        return;
+
+    Collectable_SmartPtr<UIElement> item = this->controls[index];
+    this->controls.removeAt(index);
+    this->controls.prepend(item);
+    this->RedrawNeeded = true;
+}
+
+void Window::MoveForward(UIElement *control)
+{
+    int index = this->IndexOfControl(control);
+    if (index < 0 || index == this->controls.size() - 1)
+        return;
+
+    this->controls.swapItemsAt(index, index + 1);
+    this->RedrawNeeded = true;
+}
+
+void Window::MoveBackward(UIElement *control)
+{
+    int index = this->IndexOfControl(control);
+    if (index <= 0)
+        return;
+
+    this->controls.swapItemsAt(index, index - 1);
     this->RedrawNeeded = true;
 }
 
@@ -131,38 +181,36 @@ void Window::MousePress(const Vector &point)
 
     if (this->IsPointOnCloseButton(point))
     {
+        foreach (UIElement *control, this->controls)
+            control->FocusLost();
         this->CloseButtonPressed = true;
         this->RedrawNeeded = true;
         return;
     }
 
+    UIElement *hitControl = nullptr;
     for (int i = this->controls.size() - 1; i >= 0; --i)
     {
-        ComboBox *comboBox = dynamic_cast<ComboBox*>(this->controls[i].GetPtr());
-        if (!comboBox || !comboBox->IsPopupExpanded())
+        UIElement *control = this->controls[i].GetPtr();
+        if (!control->Visible || !control->Enabled || !control->ContainsPoint(point))
             continue;
 
-        if (comboBox->ContainsPoint(point))
-        {
-            comboBox->MousePress(point);
-            this->focusedControl = comboBox;
-            this->RedrawNeeded = true;
-            return;
-        }
+        hitControl = control;
+        break;
     }
 
-    for (int i = this->controls.size() - 1; i >= 0; --i)
+    foreach (UIElement *control, this->controls)
     {
-        UIElement *control = this->controls[i];
-        if (!control->Visible || !control->Enabled || !control->ContainsPoint(point))
-        {
-            control->Focused = false;
-            continue;
-        }
+        if (control != hitControl)
+            control->FocusLost();
+    }
 
-        control->MousePress(point);
-        this->focusedControl = control;
-        break;
+    if (hitControl != nullptr)
+    {
+        hitControl->MousePress(point);
+        this->focusedControl = hitControl;
+        if (hitControl->BringToFrontOnFocus)
+            this->BringToFront(hitControl);
     }
     this->RedrawNeeded = true;
 }
@@ -195,10 +243,31 @@ void Window::MouseMove(const Vector &point)
 
     foreach (UIElement *control, this->controls)
     {
+        control->UpdateHover(point);
         control->MouseMove(point);
-        control->RedrawNeeded = true;
     }
     this->RedrawNeeded = true;
+}
+
+bool Window::MouseWheel(const Vector &point, pe_float_t delta)
+{
+    if (!this->Visible || !this->Enabled || !this->ContainsPoint(point))
+        return false;
+
+    for (int i = this->controls.size() - 1; i >= 0; --i)
+    {
+        UIElement *control = this->controls[i].GetPtr();
+        if (!control->Visible || !control->Enabled || !control->ContainsPoint(point))
+            continue;
+
+        if (control->MouseWheel(point, delta))
+        {
+            this->RedrawNeeded = true;
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void Window::KeyPress(int key, const QString &text)
@@ -227,4 +296,14 @@ void Window::Deserialize(Deserializer *deserializer)
     this->FontSize = deserializer->ReadInteger("fontSize", this->FontSize);
     this->ShowTitleBar = deserializer->ReadBool("showTitleBar", this->ShowTitleBar);
     this->ShowCloseButton = deserializer->ReadBool("showCloseButton", this->ShowCloseButton);
+}
+
+int Window::IndexOfControl(UIElement *control) const
+{
+    for (int i = 0; i < this->controls.size(); ++i)
+    {
+        if (this->controls[i] == control)
+            return i;
+    }
+    return -1;
 }

@@ -173,6 +173,17 @@ void QGLRenderer::DrawEllipse(int x, int y, int width, int height, const QColor 
         this->HasUpdate = true;
 }
 
+void QGLRenderer::PushClipRect(int x, int y, int width, int height)
+{
+    this->painter->save();
+    this->painter->setClipRect(x, this->worldToQtY(y + height), width, height, Qt::IntersectClip);
+}
+
+void QGLRenderer::PopClipRect()
+{
+    this->painter->restore();
+}
+
 void QGLRenderer::Begin()
 {
     if (!this->painter)

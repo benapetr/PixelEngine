@@ -32,12 +32,17 @@ namespace PE
             void Render(Renderer *r, Camera *c) override;
             void AddControl(UIElement *control);
             void RemoveControl(UIElement *control);
+            void BringToFront(UIElement *control);
+            void SendToBack(UIElement *control);
+            void MoveForward(UIElement *control);
+            void MoveBackward(UIElement *control);
             UIElement *GetFocusedControl() const;
             bool IsCloseButtonVisible() const;
             bool IsPointOnCloseButton(const Vector &point) const;
             void MousePress(const Vector &point) override;
             void MouseRelease(const Vector &point) override;
             void MouseMove(const Vector &point) override;
+            bool MouseWheel(const Vector &point, pe_float_t delta) override;
             void KeyPress(int key, const QString &text = QString()) override;
             void Serialize(Serializer *serializer) const override;
             void Deserialize(Deserializer *deserializer) override;
@@ -57,6 +62,7 @@ namespace PE
             std::function<void()> OnClose;
 
         private:
+            int IndexOfControl(UIElement *control) const;
             QList<Collectable_SmartPtr<UIElement>> controls;
             Collectable_SmartPtr<UIElement> focusedControl;
     };

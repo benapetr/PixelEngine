@@ -24,12 +24,12 @@ using namespace PE;
 
 ComboBox::ComboBox()
 {
-
+    this->BringToFrontOnFocus = true;
 }
 
 ComboBox::ComboBox(const Vector &position, pe_float_t width, pe_float_t height, Object *parent) : UIElement(position, width, height, parent)
 {
-
+    this->BringToFrontOnFocus = true;
 }
 
 QString ComboBox::GetClassName() const
@@ -54,7 +54,7 @@ void ComboBox::Render(Renderer *r, Camera *c)
     for (int i = 0; i < this->Items.size(); ++i)
     {
         int y = position.Y2int() - static_cast<int>(this->Height) * (i + 1);
-        QColor fill = (i == this->SelectedIndex) ? QColor(58, 74, 104) : QColor(30, 32, 38);
+        QColor fill = (i == this->SelectedIndex) ? QColor(58, 74, 104) : ((i == this->HoveredIndex) ? this->HoverColor : QColor(30, 32, 38));
         this->DrawBox(r, position.X2int(), y, static_cast<int>(this->Width), static_cast<int>(this->Height), 1, fill, true);
         this->DrawBox(r, position.X2int(), y, static_cast<int>(this->Width), static_cast<int>(this->Height), 1, this->BorderColor);
         r->DrawText(position.X2int() + 7, y + this->FontSize + 6, this->Items[i], this->TextColor, this->FontSize);
@@ -79,6 +79,7 @@ void ComboBox::MousePress(const Vector &point)
     {
         this->Expanded = false;
         this->Focused = false;
+        this->HoveredIndex = -1;
         this->RedrawNeeded = true;
         return;
     }
@@ -87,11 +88,12 @@ void ComboBox::MousePress(const Vector &point)
     if (!this->Expanded || point.Y >= this->Position.Y)
     {
         this->Expanded = !this->Expanded;
+        this->HoveredIndex = this->Expanded ? this->itemIndexAtPoint(point) : -1;
         this->RedrawNeeded = true;
         return;
     }
 
-    int index = static_cast<int>((this->Position.Y - point.Y) / this->Height);
+    int index = this->itemIndexAtPoint(point);
     if (index >= 0 && index < this->Items.size())
     {
         this->SelectedIndex = index;
@@ -99,7 +101,37 @@ void ComboBox::MousePress(const Vector &point)
             this->OnSelectionChanged(index, this->Items[index]);
     }
     this->Expanded = false;
+    this->HoveredIndex = -1;
     this->RedrawNeeded = true;
+}
+
+void ComboBox::MouseMove(const Vector &point)
+{
+    int previousIndex = this->HoveredIndex;
+    this->HoveredIndex = this->Expanded ? this->itemIndexAtPoint(point) : -1;
+    if (this->HoveredIndex != previousIndex)
+        this->RedrawNeeded = true;
+}
+
+void ComboBox::MouseExit()
+{
+    UIElement::MouseExit();
+    if (this->HoveredIndex != -1)
+    {
+        this->HoveredIndex = -1;
+        this->RedrawNeeded = true;
+    }
+}
+
+void ComboBox::FocusLost()
+{
+    UIElement::FocusLost();
+    if (this->Expanded || this->HoveredIndex != -1)
+    {
+        this->Expanded = false;
+        this->HoveredIndex = -1;
+        this->RedrawNeeded = true;
+    }
 }
 
 void ComboBox::Serialize(Serializer *serializer) const
@@ -136,6 +168,7 @@ void ComboBox::ClearItems()
 {
     this->Items.clear();
     this->SelectedIndex = -1;
+    this->HoveredIndex = -1;
     this->RedrawNeeded = true;
 }
 
@@ -149,4 +182,17 @@ QString ComboBox::GetSelectedText() const
 bool ComboBox::IsPopupExpanded() const
 {
     return this->Expanded;
+}
+
+int ComboBox::itemIndexAtPoint(const Vector &point) const
+{
+    if (!this->Expanded ||
+        point.X < this->Position.X ||
+        point.X > this->Position.X + this->Width ||
+        point.Y >= this->Position.Y ||
+        point.Y < this->Position.Y - (this->Height * this->Items.size()))
+        return -1;
+
+    int index = static_cast<int>((this->Position.Y - point.Y) / this->Height);
+    return (index >= 0 && index < this->Items.size()) ? index : -1;
 }

@@ -71,16 +71,6 @@ void Button::MouseRelease(const Vector &point)
         this->OnClick();
 }
 
-void Button::MouseMove(const Vector &point)
-{
-    bool hovered = this->Enabled && this->ContainsPoint(point);
-    if (this->Hovered != hovered)
-    {
-        this->Hovered = hovered;
-        this->RedrawNeeded = true;
-    }
-}
-
 void Button::Serialize(Serializer *serializer) const
 {
     UIElement::Serialize(serializer);

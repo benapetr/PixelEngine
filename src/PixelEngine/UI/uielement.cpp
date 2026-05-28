@@ -44,6 +44,7 @@ void UIElement::Serialize(Serializer *serializer) const
     serializer->WriteInteger("cornerRadius", this->CornerRadius);
     serializer->WriteBool("enabled", this->Enabled);
     serializer->WriteBool("visible", this->Visible);
+    serializer->WriteBool("bringToFrontOnFocus", this->BringToFrontOnFocus);
 }
 
 void UIElement::Deserialize(Deserializer *deserializer)
@@ -54,6 +55,7 @@ void UIElement::Deserialize(Deserializer *deserializer)
     this->CornerRadius = deserializer->ReadInteger("cornerRadius", this->CornerRadius);
     this->Enabled = deserializer->ReadBool("enabled", this->Enabled);
     this->Visible = deserializer->ReadBool("visible", this->Visible);
+    this->BringToFrontOnFocus = deserializer->ReadBool("bringToFrontOnFocus", this->BringToFrontOnFocus);
 }
 
 bool UIElement::ContainsPoint(const Vector &point) const
@@ -79,10 +81,46 @@ void UIElement::MouseMove(const Vector &point)
     (void)point;
 }
 
+bool UIElement::MouseWheel(const Vector &point, pe_float_t delta)
+{
+    (void)point;
+    (void)delta;
+    return false;
+}
+
+void UIElement::MouseEnter()
+{
+    this->RedrawNeeded = true;
+}
+
+void UIElement::MouseExit()
+{
+    this->RedrawNeeded = true;
+}
+
+bool UIElement::UpdateHover(const Vector &point)
+{
+    bool hovered = this->Enabled && this->Visible && this->ContainsPoint(point);
+    if (hovered == this->Hovered)
+        return false;
+
+    this->Hovered = hovered;
+    if (this->Hovered)
+        this->MouseEnter();
+    else
+        this->MouseExit();
+    return true;
+}
+
 void UIElement::KeyPress(int key, const QString &text)
 {
     (void)key;
     (void)text;
+}
+
+void UIElement::FocusLost()
+{
+    this->Focused = false;
 }
 
 void UIElement::DrawBox(Renderer *renderer, int x, int y, int width, int height, int lineWidth, const QColor &color, bool fill) const
@@ -91,4 +129,14 @@ void UIElement::DrawBox(Renderer *renderer, int x, int y, int width, int height,
         renderer->DrawRoundedRect(x, y, width, height, this->CornerRadius, lineWidth, color, fill);
     else
         renderer->DrawRect(x, y, width, height, lineWidth, color, fill);
+}
+
+Window *UIElement::GetUIParent() const
+{
+    return this->uiParent;
+}
+
+void UIElement::SetUIParent(Window *parent)
+{
+    this->uiParent = parent;
 }

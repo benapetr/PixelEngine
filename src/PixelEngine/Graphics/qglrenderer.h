@@ -38,6 +38,8 @@ namespace PE
             void DrawRoundedRect(int x, int y, int width, int height, int radius, int line_width, const QColor &color, bool fill = false) override;
             void DrawText(int x, int y, const QString &text, const QColor &color, int size = 10) override;
             void DrawEllipse(int x, int y, int width, int height, const QColor &color, int line_width=1) override;
+            void PushClipRect(int x, int y, int width, int height) override;
+            void PopClipRect() override;
             void Begin();
             void End();
             //! This is experimental and doesn't seem to work
