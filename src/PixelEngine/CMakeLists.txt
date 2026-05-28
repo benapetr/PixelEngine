@@ -1,5 +1,5 @@
+cmake_minimum_required(VERSION 3.10)
 PROJECT(pixelengine)
-cmake_minimum_required (VERSION 2.8.0)
 if(WIN32)
     if (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 3.0)
         add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)

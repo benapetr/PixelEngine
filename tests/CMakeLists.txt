@@ -1,8 +1,8 @@
+cmake_minimum_required(VERSION 3.10)
 # So that MacOS builds are working on older versions as well
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.10)
 
 project(PixelEngine_tests)
-cmake_minimum_required (VERSION 2.8.0)
 if(WIN32)
     if (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 3.0)
         add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
