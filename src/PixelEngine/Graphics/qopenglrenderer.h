@@ -70,6 +70,12 @@ namespace PE
                 GLfloat V;
             };
 
+            struct LineVertex
+            {
+                GLfloat X;
+                GLfloat Y;
+            };
+
             bool initializeGLResources();
             void beginPainter();
             void endPainter();
@@ -79,6 +85,9 @@ namespace PE
             void flushCommands();
             void flushCommandBatch(QOpenGLTexture *texture, const QVector<DrawCommand> &batch);
             void appendCommandVertices(const DrawCommand &command, QVector<Vertex> *vertices) const;
+            bool drawGLLine(Vector source, Vector target, int lineWidth, const QColor &color);
+            void appendLineVertices(Vector source, Vector target, int lineWidth, QVector<LineVertex> *vertices) const;
+            LineVertex lineVertexFromScreenPoint(float x, float y) const;
             int worldToQtY(int y) const;
 
             QPaintDevice *paintDevice = nullptr;
@@ -86,6 +95,7 @@ namespace PE
             QPainter *painter = nullptr;
             QOpenGLTextureBlitter blitter;
             QOpenGLShaderProgram *textureProgram = nullptr;
+            QOpenGLShaderProgram *lineProgram = nullptr;
             QOpenGLBuffer vertexBuffer;
             QHash<qint64, QOpenGLTexture*> textureCache;
             QHash<QRgb, QOpenGLTexture*> colorTextureCache;

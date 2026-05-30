@@ -16,6 +16,8 @@
 #include <QOpenGLFunctions>
 #include <QPainter>
 #include <QPixmap>
+#include <algorithm>
+#include <cmath>
 
 using namespace PE;
 
@@ -33,6 +35,7 @@ QOpenGLRenderer::~QOpenGLRenderer()
     qDeleteAll(this->colorTextureCache);
     this->colorTextureCache.clear();
     delete this->textureProgram;
+    delete this->lineProgram;
     delete this->painter;
 }
 
@@ -115,6 +118,13 @@ void QOpenGLRenderer::DrawLine(Vector source, Vector target, int line_width, con
 {
     if (!this->Enabled)
         return;
+
+    if (this->drawGLLine(source, target, line_width, color))
+    {
+        if (!this->ManualUpdate)
+            this->HasUpdate = true;
+        return;
+    }
 
     this->beginPainter();
     QPen pen(color);
@@ -310,6 +320,33 @@ bool QOpenGLRenderer::initializeGLResources()
         }
     }
 
+    if (!this->lineProgram)
+    {
+        this->lineProgram = new QOpenGLShaderProgram();
+        const char *vertexShader =
+                "attribute vec2 position;\n"
+                "void main() {\n"
+                "    gl_Position = vec4(position, 0.0, 1.0);\n"
+                "}\n";
+        const char *fragmentShader =
+#ifdef GL_ES
+                "precision mediump float;\n"
+#endif
+                "uniform vec4 lineColor;\n"
+                "void main() {\n"
+                "    gl_FragColor = lineColor;\n"
+                "}\n";
+
+        if (!this->lineProgram->addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShader) ||
+            !this->lineProgram->addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShader) ||
+            !this->lineProgram->link())
+        {
+            delete this->lineProgram;
+            this->lineProgram = nullptr;
+            return false;
+        }
+    }
+
     if (!this->vertexBuffer.isCreated())
         this->vertexBuffer.create();
 
@@ -476,6 +513,80 @@ void QOpenGLRenderer::appendCommandVertices(const DrawCommand &command, QVector<
     vertices->append(Vertex{left, top, 0.0f, 0.0f});
     vertices->append(Vertex{right, bottom, 1.0f, 1.0f});
     vertices->append(Vertex{right, top, 1.0f, 0.0f});
+}
+
+bool QOpenGLRenderer::drawGLLine(Vector source, Vector target, int lineWidth, const QColor &color)
+{
+    if (!this->initializeGLResources() || !this->lineProgram)
+        return false;
+
+    this->flushCommands();
+    this->endPainter();
+
+    QVector<LineVertex> vertices;
+    vertices.reserve(6);
+    this->appendLineVertices(source, target, lineWidth, &vertices);
+    if (vertices.isEmpty())
+        return true;
+
+    QOpenGLFunctions *f = this->context->functions();
+    f->glEnable(GL_BLEND);
+    f->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    this->lineProgram->bind();
+    this->lineProgram->setUniformValue("lineColor", QVector4D(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
+
+    this->vertexBuffer.bind();
+    this->vertexBuffer.allocate(vertices.constData(), vertices.size() * static_cast<int>(sizeof(LineVertex)));
+
+    int positionLocation = this->lineProgram->attributeLocation("position");
+    this->lineProgram->enableAttributeArray(positionLocation);
+    this->lineProgram->setAttributeBuffer(positionLocation, GL_FLOAT, offsetof(LineVertex, X), 2, sizeof(LineVertex));
+
+    f->glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+
+    this->lineProgram->disableAttributeArray(positionLocation);
+    this->vertexBuffer.release();
+    this->lineProgram->release();
+    this->stats.DrawCalls++;
+    return true;
+}
+
+void QOpenGLRenderer::appendLineVertices(Vector source, Vector target, int lineWidth, QVector<LineVertex> *vertices) const
+{
+    float sourceX = source.X;
+    float sourceY = source.Y;
+    float targetX = target.X;
+    float targetY = target.Y;
+    float dx = targetX - sourceX;
+    float dy = targetY - sourceY;
+    float length = std::sqrt((dx * dx) + (dy * dy));
+    if (length <= 0)
+        return;
+
+    float halfWidth = std::max(1, lineWidth) / 2.0f;
+    float normalX = (-dy / length) * halfWidth;
+    float normalY = (dx / length) * halfWidth;
+
+    LineVertex a = this->lineVertexFromScreenPoint(sourceX + normalX, sourceY + normalY);
+    LineVertex b = this->lineVertexFromScreenPoint(sourceX - normalX, sourceY - normalY);
+    LineVertex c = this->lineVertexFromScreenPoint(targetX - normalX, targetY - normalY);
+    LineVertex d = this->lineVertexFromScreenPoint(targetX + normalX, targetY + normalY);
+
+    vertices->append(a);
+    vertices->append(b);
+    vertices->append(c);
+    vertices->append(a);
+    vertices->append(c);
+    vertices->append(d);
+}
+
+QOpenGLRenderer::LineVertex QOpenGLRenderer::lineVertexFromScreenPoint(float x, float y) const
+{
+    return LineVertex{
+        (static_cast<GLfloat>(x) / this->r_width) * 2.0f - 1.0f,
+        (static_cast<GLfloat>(y) / this->r_height) * 2.0f - 1.0f
+    };
 }
 
 int QOpenGLRenderer::worldToQtY(int y) const
