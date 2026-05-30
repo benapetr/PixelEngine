@@ -86,6 +86,11 @@ namespace PE
             void flushCommands();
             void flushCommandBatch(QOpenGLTexture *texture, const QVector<DrawCommand> &batch);
             void appendCommandVertices(const DrawCommand &command, QVector<Vertex> *vertices) const;
+            QRect activeClipRect() const;
+            bool hasActiveClip() const;
+            void applyGLClip();
+            void applyPainterClip();
+            qreal devicePixelRatio() const;
             bool drawGLLine(Vector source, Vector target, int lineWidth, const QColor &color);
             void appendLineVertices(Vector source, Vector target, int lineWidth, QVector<LineVertex> *vertices) const;
             LineVertex lineVertexFromScreenPoint(float x, float y) const;
@@ -109,6 +114,7 @@ namespace PE
             QHash<qint64, QOpenGLTexture*> textureCache;
             QHash<QRgb, QOpenGLTexture*> colorTextureCache;
             QVector<DrawCommand> commands;
+            QVector<QRect> clipStack;
             RendererStats stats;
             bool glResourcesInitialized = false;
             bool painterActive = false;

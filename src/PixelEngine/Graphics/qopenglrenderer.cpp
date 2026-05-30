@@ -15,6 +15,7 @@
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
 #include <QPainter>
+#include <QPaintDevice>
 #include <QPointF>
 #include <QPixmap>
 #include <algorithm>
@@ -83,6 +84,7 @@ void QOpenGLRenderer::Clear(const QColor &color)
 
     QOpenGLFunctions *f = this->context->functions();
     f->glViewport(0, 0, this->r_width, this->r_height);
+    f->glDisable(GL_SCISSOR_TEST);
     f->glClearColor(color.redF(), color.greenF(), color.blueF(), color.alphaF());
     f->glClear(GL_COLOR_BUFFER_BIT);
     this->stats.Frames++;
@@ -256,15 +258,26 @@ void QOpenGLRenderer::DrawEllipse(int x, int y, int width, int height, const QCo
 
 void QOpenGLRenderer::PushClipRect(int x, int y, int width, int height)
 {
-    this->beginPainter();
-    this->painter->save();
-    this->painter->setClipRect(x, this->worldToQtY(y + height), width, height, Qt::IntersectClip);
+    this->flushCommands();
+    this->endPainter();
+
+    QRect clipRect(x, y, width, height);
+    QRect bounds(0, 0, this->r_width, this->r_height);
+    if (this->hasActiveClip())
+        clipRect = clipRect.intersected(this->activeClipRect());
+    else
+        clipRect = clipRect.intersected(bounds);
+
+    this->clipStack.append(clipRect);
 }
 
 void QOpenGLRenderer::PopClipRect()
 {
-    this->beginPainter();
-    this->painter->restore();
+    this->flushCommands();
+    this->endPainter();
+
+    if (!this->clipStack.isEmpty())
+        this->clipStack.removeLast();
 }
 
 void QOpenGLRenderer::ClearCaches()
@@ -379,6 +392,7 @@ void QOpenGLRenderer::beginPainter()
         this->painter = new QPainter();
     this->painter->begin(this->paintDevice);
     this->painterActive = true;
+    this->applyPainterClip();
     this->stats.PainterFallbacks++;
 }
 
@@ -488,6 +502,7 @@ void QOpenGLRenderer::flushCommandBatch(QOpenGLTexture *texture, const QVector<D
         this->appendCommandVertices(command, &vertices);
 
     QOpenGLFunctions *f = this->context->functions();
+    this->applyGLClip();
     f->glEnable(GL_BLEND);
     f->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -513,6 +528,68 @@ void QOpenGLRenderer::flushCommandBatch(QOpenGLTexture *texture, const QVector<D
     this->textureProgram->release();
     texture->release();
     this->stats.DrawCalls++;
+}
+
+QRect QOpenGLRenderer::activeClipRect() const
+{
+    if (this->clipStack.isEmpty())
+        return QRect(0, 0, this->r_width, this->r_height);
+    return this->clipStack.last();
+}
+
+bool QOpenGLRenderer::hasActiveClip() const
+{
+    return !this->clipStack.isEmpty();
+}
+
+void QOpenGLRenderer::applyGLClip()
+{
+    if (!this->initializeGLResources())
+        return;
+
+    QOpenGLFunctions *f = this->context->functions();
+    if (!this->hasActiveClip())
+    {
+        f->glDisable(GL_SCISSOR_TEST);
+        return;
+    }
+
+    QRect clipRect = this->activeClipRect();
+    if (clipRect.isEmpty())
+    {
+        f->glEnable(GL_SCISSOR_TEST);
+        f->glScissor(0, 0, 0, 0);
+        return;
+    }
+
+    f->glEnable(GL_SCISSOR_TEST);
+    qreal ratio = this->devicePixelRatio();
+    f->glScissor(static_cast<GLint>(std::floor(clipRect.x() * ratio)),
+                 static_cast<GLint>(std::floor(clipRect.y() * ratio)),
+                 static_cast<GLsizei>(std::ceil(clipRect.width() * ratio)),
+                 static_cast<GLsizei>(std::ceil(clipRect.height() * ratio)));
+}
+
+void QOpenGLRenderer::applyPainterClip()
+{
+    if (!this->painter)
+        return;
+
+    if (!this->hasActiveClip())
+    {
+        this->painter->setClipping(false);
+        return;
+    }
+
+    QRect clipRect = this->activeClipRect();
+    this->painter->setClipRect(clipRect.x(), this->worldToQtY(clipRect.y() + clipRect.height()), clipRect.width(), clipRect.height(), Qt::ReplaceClip);
+}
+
+qreal QOpenGLRenderer::devicePixelRatio() const
+{
+    if (!this->paintDevice)
+        return 1.0;
+    return this->paintDevice->devicePixelRatioF();
 }
 
 void QOpenGLRenderer::appendCommandVertices(const DrawCommand &command, QVector<Vertex> *vertices) const
@@ -545,6 +622,7 @@ bool QOpenGLRenderer::drawGLLine(Vector source, Vector target, int lineWidth, co
         return true;
 
     QOpenGLFunctions *f = this->context->functions();
+    this->applyGLClip();
     f->glEnable(GL_BLEND);
     f->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -633,6 +711,7 @@ bool QOpenGLRenderer::drawGLEllipse(int x, int y, int width, int height, const Q
     }
 
     QOpenGLFunctions *f = this->context->functions();
+    this->applyGLClip();
     f->glEnable(GL_BLEND);
     f->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -678,6 +757,7 @@ bool QOpenGLRenderer::drawColoredGeometry(const QVector<LineVertex> &vertices, G
     this->endPainter();
 
     QOpenGLFunctions *f = this->context->functions();
+    this->applyGLClip();
     f->glEnable(GL_BLEND);
     f->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
