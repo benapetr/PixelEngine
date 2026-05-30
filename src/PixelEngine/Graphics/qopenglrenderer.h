@@ -15,8 +15,12 @@
 
 #include "renderer.h"
 #include <QHash>
+#include <QOpenGLBuffer>
+#include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
 #include <QOpenGLTextureBlitter>
+#include <QRect>
+#include <QVector>
 
 class QOpenGLContext;
 class QPaintDevice;
@@ -52,20 +56,40 @@ namespace PE
             void SetContext(QOpenGLContext *context) { this->context = context; }
 
         private:
+            struct DrawCommand
+            {
+                QOpenGLTexture *Texture = nullptr;
+                QRect Rect;
+            };
+
+            struct Vertex
+            {
+                GLfloat X;
+                GLfloat Y;
+                GLfloat U;
+                GLfloat V;
+            };
+
             bool initializeGLResources();
             void beginPainter();
             void endPainter();
             QOpenGLTexture *textureForPixmap(const QPixmap &pixmap);
             QOpenGLTexture *textureForColor(const QColor &color);
-            void drawTextureRect(QOpenGLTexture *texture, int x, int y, int width, int height);
+            void queueTextureRect(QOpenGLTexture *texture, int x, int y, int width, int height);
+            void flushCommands();
+            void flushCommandBatch(QOpenGLTexture *texture, const QVector<DrawCommand> &batch);
+            void appendCommandVertices(const DrawCommand &command, QVector<Vertex> *vertices) const;
             int worldToQtY(int y) const;
 
             QPaintDevice *paintDevice = nullptr;
             QOpenGLContext *context = nullptr;
             QPainter *painter = nullptr;
             QOpenGLTextureBlitter blitter;
+            QOpenGLShaderProgram *textureProgram = nullptr;
+            QOpenGLBuffer vertexBuffer;
             QHash<qint64, QOpenGLTexture*> textureCache;
             QHash<QRgb, QOpenGLTexture*> colorTextureCache;
+            QVector<DrawCommand> commands;
             RendererStats stats;
             bool glResourcesInitialized = false;
             bool painterActive = false;

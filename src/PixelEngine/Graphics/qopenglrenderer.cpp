@@ -32,6 +32,7 @@ QOpenGLRenderer::~QOpenGLRenderer()
     this->textureCache.clear();
     qDeleteAll(this->colorTextureCache);
     this->colorTextureCache.clear();
+    delete this->textureProgram;
     delete this->painter;
 }
 
@@ -50,7 +51,8 @@ int QOpenGLRenderer::GetCapabilities() const
     return RendererCapability_Textures |
            RendererCapability_Text |
            RendererCapability_Clipping |
-           RendererCapability_RoundedRects;
+           RendererCapability_RoundedRects |
+           RendererCapability_Batching;
 }
 
 RendererStats QOpenGLRenderer::GetStats() const
@@ -70,6 +72,7 @@ void QOpenGLRenderer::Clear()
 
 void QOpenGLRenderer::Clear(const QColor &color)
 {
+    this->flushCommands();
     this->endPainter();
     if (!this->initializeGLResources())
         return;
@@ -102,7 +105,7 @@ void QOpenGLRenderer::DrawBitmap(int x, int y, int width, int height, const QPix
     if (!texture)
         return;
 
-    this->drawTextureRect(texture, x, y, width, height);
+    this->queueTextureRect(texture, x, y, width, height);
 
     if (!this->ManualUpdate)
         this->HasUpdate = true;
@@ -135,7 +138,7 @@ void QOpenGLRenderer::DrawRect(int x, int y, int width, int height, int line_wid
         QOpenGLTexture *texture = this->textureForColor(color);
         if (texture)
         {
-            this->drawTextureRect(texture, x, y, width, height);
+            this->queueTextureRect(texture, x, y, width, height);
             if (!this->ManualUpdate)
                 this->HasUpdate = true;
             return;
@@ -261,6 +264,7 @@ void QOpenGLRenderer::Begin()
 
 void QOpenGLRenderer::End()
 {
+    this->flushCommands();
     this->endPainter();
 }
 
@@ -275,6 +279,40 @@ bool QOpenGLRenderer::initializeGLResources()
     if (!this->blitter.isCreated() && !this->blitter.create())
         return false;
 
+    if (!this->textureProgram)
+    {
+        this->textureProgram = new QOpenGLShaderProgram();
+        const char *vertexShader =
+                "attribute vec2 position;\n"
+                "attribute vec2 texCoord;\n"
+                "varying vec2 vTexCoord;\n"
+                "void main() {\n"
+                "    gl_Position = vec4(position, 0.0, 1.0);\n"
+                "    vTexCoord = texCoord;\n"
+                "}\n";
+        const char *fragmentShader =
+#ifdef GL_ES
+                "precision mediump float;\n"
+#endif
+                "uniform sampler2D textureSampler;\n"
+                "varying vec2 vTexCoord;\n"
+                "void main() {\n"
+                "    gl_FragColor = texture2D(textureSampler, vTexCoord);\n"
+                "}\n";
+
+        if (!this->textureProgram->addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShader) ||
+            !this->textureProgram->addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShader) ||
+            !this->textureProgram->link())
+        {
+            delete this->textureProgram;
+            this->textureProgram = nullptr;
+            return false;
+        }
+    }
+
+    if (!this->vertexBuffer.isCreated())
+        this->vertexBuffer.create();
+
     this->glResourcesInitialized = true;
     return true;
 }
@@ -284,6 +322,7 @@ void QOpenGLRenderer::beginPainter()
     if (this->painterActive)
         return;
 
+    this->flushCommands();
     if (!this->painter)
         this->painter = new QPainter();
     this->painter->begin(this->paintDevice);
@@ -341,26 +380,102 @@ QOpenGLTexture *QOpenGLRenderer::textureForColor(const QColor &color)
     return texture;
 }
 
-void QOpenGLRenderer::drawTextureRect(QOpenGLTexture *texture, int x, int y, int width, int height)
+void QOpenGLRenderer::queueTextureRect(QOpenGLTexture *texture, int x, int y, int width, int height)
 {
     if (!texture || !this->initializeGLResources())
         return;
 
     this->endPainter();
-    int qtY = this->worldToQtY(y + height);
+
+    DrawCommand command;
+    command.Texture = texture;
+    command.Rect = QRect(x, y, width, height);
+    this->commands.append(command);
+}
+
+void QOpenGLRenderer::flushCommands()
+{
+    if (this->commands.isEmpty())
+        return;
+
+    this->endPainter();
+    if (!this->initializeGLResources() || !this->textureProgram)
+    {
+        this->commands.clear();
+        return;
+    }
+
+    QOpenGLTexture *batchTexture = nullptr;
+    QVector<DrawCommand> batch;
+    foreach (const DrawCommand &command, this->commands)
+    {
+        if (!batch.isEmpty() && command.Texture != batchTexture)
+        {
+            this->flushCommandBatch(batchTexture, batch);
+            batch.clear();
+        }
+
+        batchTexture = command.Texture;
+        batch.append(command);
+    }
+
+    if (!batch.isEmpty())
+        this->flushCommandBatch(batchTexture, batch);
+
+    this->commands.clear();
+}
+
+void QOpenGLRenderer::flushCommandBatch(QOpenGLTexture *texture, const QVector<DrawCommand> &batch)
+{
+    if (!texture || batch.isEmpty())
+        return;
+
+    QVector<Vertex> vertices;
+    vertices.reserve(batch.size() * 6);
+    foreach (const DrawCommand &command, batch)
+        this->appendCommandVertices(command, &vertices);
 
     QOpenGLFunctions *f = this->context->functions();
     f->glEnable(GL_BLEND);
     f->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    QRectF targetRect(x, qtY, width, height);
-    QRect viewportRect(0, 0, this->r_width, this->r_height);
-    QMatrix4x4 transform = QOpenGLTextureBlitter::targetTransform(targetRect, viewportRect);
+    texture->bind(0);
+    this->textureProgram->bind();
+    this->textureProgram->setUniformValue("textureSampler", 0);
 
-    this->blitter.bind();
-    this->blitter.blit(texture->textureId(), transform, QOpenGLTextureBlitter::OriginTopLeft);
-    this->blitter.release();
+    this->vertexBuffer.bind();
+    this->vertexBuffer.allocate(vertices.constData(), vertices.size() * static_cast<int>(sizeof(Vertex)));
+
+    int positionLocation = this->textureProgram->attributeLocation("position");
+    int texCoordLocation = this->textureProgram->attributeLocation("texCoord");
+    this->textureProgram->enableAttributeArray(positionLocation);
+    this->textureProgram->enableAttributeArray(texCoordLocation);
+    this->textureProgram->setAttributeBuffer(positionLocation, GL_FLOAT, offsetof(Vertex, X), 2, sizeof(Vertex));
+    this->textureProgram->setAttributeBuffer(texCoordLocation, GL_FLOAT, offsetof(Vertex, U), 2, sizeof(Vertex));
+
+    f->glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+
+    this->textureProgram->disableAttributeArray(positionLocation);
+    this->textureProgram->disableAttributeArray(texCoordLocation);
+    this->vertexBuffer.release();
+    this->textureProgram->release();
+    texture->release();
     this->stats.DrawCalls++;
+}
+
+void QOpenGLRenderer::appendCommandVertices(const DrawCommand &command, QVector<Vertex> *vertices) const
+{
+    GLfloat left = (static_cast<GLfloat>(command.Rect.x()) / this->r_width) * 2.0f - 1.0f;
+    GLfloat right = (static_cast<GLfloat>(command.Rect.x() + command.Rect.width()) / this->r_width) * 2.0f - 1.0f;
+    GLfloat bottom = (static_cast<GLfloat>(command.Rect.y()) / this->r_height) * 2.0f - 1.0f;
+    GLfloat top = (static_cast<GLfloat>(command.Rect.y() + command.Rect.height()) / this->r_height) * 2.0f - 1.0f;
+
+    vertices->append(Vertex{left, top, 0.0f, 0.0f});
+    vertices->append(Vertex{left, bottom, 0.0f, 1.0f});
+    vertices->append(Vertex{right, bottom, 1.0f, 1.0f});
+    vertices->append(Vertex{left, top, 0.0f, 0.0f});
+    vertices->append(Vertex{right, bottom, 1.0f, 1.0f});
+    vertices->append(Vertex{right, top, 1.0f, 0.0f});
 }
 
 int QOpenGLRenderer::worldToQtY(int y) const
