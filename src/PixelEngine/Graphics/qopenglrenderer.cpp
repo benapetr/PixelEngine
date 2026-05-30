@@ -11,6 +11,7 @@
 // Copyright (c) Petr Bena 2026
 
 #include "qopenglrenderer.h"
+#include <QImage>
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
 #include <QPainter>
@@ -29,6 +30,8 @@ QOpenGLRenderer::~QOpenGLRenderer()
     this->endPainter();
     qDeleteAll(this->textureCache);
     this->textureCache.clear();
+    qDeleteAll(this->colorTextureCache);
+    this->colorTextureCache.clear();
     delete this->painter;
 }
 
@@ -99,21 +102,7 @@ void QOpenGLRenderer::DrawBitmap(int x, int y, int width, int height, const QPix
     if (!texture)
         return;
 
-    this->endPainter();
-    int qtY = this->worldToQtY(y + height);
-
-    QOpenGLFunctions *f = this->context->functions();
-    f->glEnable(GL_BLEND);
-    f->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    QRectF targetRect(x, qtY, width, height);
-    QRect viewportRect(0, 0, this->r_width, this->r_height);
-    QMatrix4x4 transform = QOpenGLTextureBlitter::targetTransform(targetRect, viewportRect);
-
-    this->blitter.bind();
-    this->blitter.blit(texture->textureId(), transform, QOpenGLTextureBlitter::OriginTopLeft);
-    this->blitter.release();
-    this->stats.DrawCalls++;
+    this->drawTextureRect(texture, x, y, width, height);
 
     if (!this->ManualUpdate)
         this->HasUpdate = true;
@@ -140,6 +129,18 @@ void QOpenGLRenderer::DrawRect(int x, int y, int width, int height, int line_wid
 {
     if (!this->Enabled)
         return;
+
+    if (fill)
+    {
+        QOpenGLTexture *texture = this->textureForColor(color);
+        if (texture)
+        {
+            this->drawTextureRect(texture, x, y, width, height);
+            if (!this->ManualUpdate)
+                this->HasUpdate = true;
+            return;
+        }
+    }
 
     this->beginPainter();
     if (fill)
@@ -243,6 +244,8 @@ void QOpenGLRenderer::ClearCaches()
     this->endPainter();
     qDeleteAll(this->textureCache);
     this->textureCache.clear();
+    qDeleteAll(this->colorTextureCache);
+    this->colorTextureCache.clear();
 }
 
 void QOpenGLRenderer::InvalidateTexture(qint64 cacheKey)
@@ -317,6 +320,47 @@ QOpenGLTexture *QOpenGLRenderer::textureForPixmap(const QPixmap &pixmap)
     this->textureCache.insert(key, texture);
     this->stats.TextureUploads++;
     return texture;
+}
+
+QOpenGLTexture *QOpenGLRenderer::textureForColor(const QColor &color)
+{
+    if (!this->initializeGLResources())
+        return nullptr;
+
+    QRgb key = color.rgba();
+    if (this->colorTextureCache.contains(key))
+        return this->colorTextureCache[key];
+
+    QImage image(1, 1, QImage::Format_RGBA8888);
+    image.fill(color);
+    QOpenGLTexture *texture = new QOpenGLTexture(image);
+    texture->setMinificationFilter(QOpenGLTexture::Nearest);
+    texture->setMagnificationFilter(QOpenGLTexture::Nearest);
+    texture->setWrapMode(QOpenGLTexture::ClampToEdge);
+    this->colorTextureCache.insert(key, texture);
+    return texture;
+}
+
+void QOpenGLRenderer::drawTextureRect(QOpenGLTexture *texture, int x, int y, int width, int height)
+{
+    if (!texture || !this->initializeGLResources())
+        return;
+
+    this->endPainter();
+    int qtY = this->worldToQtY(y + height);
+
+    QOpenGLFunctions *f = this->context->functions();
+    f->glEnable(GL_BLEND);
+    f->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    QRectF targetRect(x, qtY, width, height);
+    QRect viewportRect(0, 0, this->r_width, this->r_height);
+    QMatrix4x4 transform = QOpenGLTextureBlitter::targetTransform(targetRect, viewportRect);
+
+    this->blitter.bind();
+    this->blitter.blit(texture->textureId(), transform, QOpenGLTextureBlitter::OriginTopLeft);
+    this->blitter.release();
+    this->stats.DrawCalls++;
 }
 
 int QOpenGLRenderer::worldToQtY(int y) const

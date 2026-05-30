@@ -56,6 +56,8 @@ namespace PE
             void beginPainter();
             void endPainter();
             QOpenGLTexture *textureForPixmap(const QPixmap &pixmap);
+            QOpenGLTexture *textureForColor(const QColor &color);
+            void drawTextureRect(QOpenGLTexture *texture, int x, int y, int width, int height);
             int worldToQtY(int y) const;
 
             QPaintDevice *paintDevice = nullptr;
@@ -63,6 +65,7 @@ namespace PE
             QPainter *painter = nullptr;
             QOpenGLTextureBlitter blitter;
             QHash<qint64, QOpenGLTexture*> textureCache;
+            QHash<QRgb, QOpenGLTexture*> colorTextureCache;
             RendererStats stats;
             bool glResourcesInitialized = false;
             bool painterActive = false;
