@@ -91,10 +91,13 @@ void QOpenGLRenderer::DrawBitmap(int x, int y, int width, int height, const QPix
     this->endPainter();
     int qtY = this->worldToQtY(y + height);
 
-    QMatrix4x4 transform;
-    transform.ortho(0, this->r_width, this->r_height, 0, -1, 1);
-    transform.translate(x, qtY);
-    transform.scale(width, height);
+    QOpenGLFunctions *f = this->context->functions();
+    f->glEnable(GL_BLEND);
+    f->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    QRectF targetRect(x, qtY, width, height);
+    QRect viewportRect(0, 0, this->r_width, this->r_height);
+    QMatrix4x4 transform = QOpenGLTextureBlitter::targetTransform(targetRect, viewportRect);
 
     this->blitter.bind();
     this->blitter.blit(texture->textureId(), transform, QOpenGLTextureBlitter::OriginTopLeft);
