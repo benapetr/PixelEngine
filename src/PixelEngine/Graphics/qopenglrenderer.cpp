@@ -50,6 +50,16 @@ int QOpenGLRenderer::GetCapabilities() const
            RendererCapability_RoundedRects;
 }
 
+RendererStats QOpenGLRenderer::GetStats() const
+{
+    return this->stats;
+}
+
+void QOpenGLRenderer::ResetStats()
+{
+    this->stats = RendererStats();
+}
+
 void QOpenGLRenderer::Clear()
 {
     this->Clear(Qt::white);
@@ -65,6 +75,7 @@ void QOpenGLRenderer::Clear(const QColor &color)
     f->glViewport(0, 0, this->r_width, this->r_height);
     f->glClearColor(color.redF(), color.greenF(), color.blueF(), color.alphaF());
     f->glClear(GL_COLOR_BUFFER_BIT);
+    this->stats.Frames++;
 }
 
 void QOpenGLRenderer::DrawPixel(int x, int y, const QColor &color)
@@ -102,6 +113,7 @@ void QOpenGLRenderer::DrawBitmap(int x, int y, int width, int height, const QPix
     this->blitter.bind();
     this->blitter.blit(texture->textureId(), transform, QOpenGLTextureBlitter::OriginTopLeft);
     this->blitter.release();
+    this->stats.DrawCalls++;
 
     if (!this->ManualUpdate)
         this->HasUpdate = true;
@@ -273,6 +285,7 @@ void QOpenGLRenderer::beginPainter()
         this->painter = new QPainter();
     this->painter->begin(this->paintDevice);
     this->painterActive = true;
+    this->stats.PainterFallbacks++;
 }
 
 void QOpenGLRenderer::endPainter()
@@ -291,7 +304,10 @@ QOpenGLTexture *QOpenGLRenderer::textureForPixmap(const QPixmap &pixmap)
 
     qint64 key = pixmap.cacheKey();
     if (this->textureCache.contains(key))
+    {
+        this->stats.TextureCacheHits++;
         return this->textureCache[key];
+    }
 
     QImage image = pixmap.toImage().convertToFormat(QImage::Format_RGBA8888);
     QOpenGLTexture *texture = new QOpenGLTexture(image);
@@ -299,6 +315,7 @@ QOpenGLTexture *QOpenGLRenderer::textureForPixmap(const QPixmap &pixmap)
     texture->setMagnificationFilter(QOpenGLTexture::Linear);
     texture->setWrapMode(QOpenGLTexture::ClampToEdge);
     this->textureCache.insert(key, texture);
+    this->stats.TextureUploads++;
     return texture;
 }
 

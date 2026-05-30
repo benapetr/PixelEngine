@@ -41,6 +41,15 @@ namespace PE
         RendererCapability_Batching = 0x10
     };
 
+    struct RendererStats
+    {
+        quint64 Frames = 0;
+        quint64 TextureUploads = 0;
+        quint64 TextureCacheHits = 0;
+        quint64 PainterFallbacks = 0;
+        quint64 DrawCalls = 0;
+    };
+
     class Vector;
 
     /*!
@@ -57,6 +66,8 @@ namespace PE
             virtual RendererBackend GetBackend() const = 0;
             virtual int GetCapabilities() const = 0;
             bool HasCapability(RendererCapability capability) const;
+            virtual RendererStats GetStats() const;
+            virtual void ResetStats();
             virtual void Clear()=0;
             virtual void Clear(const QColor &color)=0;
             virtual void DrawPixel(int x, int y, const QColor &color)=0;

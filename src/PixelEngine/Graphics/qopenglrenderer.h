@@ -32,6 +32,8 @@ namespace PE
             RendererType GetType() override;
             RendererBackend GetBackend() const override;
             int GetCapabilities() const override;
+            RendererStats GetStats() const override;
+            void ResetStats() override;
             void Clear() override;
             void Clear(const QColor &color) override;
             void DrawPixel(int x, int y, const QColor &color) override;
@@ -61,6 +63,7 @@ namespace PE
             QPainter *painter = nullptr;
             QOpenGLTextureBlitter blitter;
             QHash<qint64, QOpenGLTexture*> textureCache;
+            RendererStats stats;
             bool glResourcesInitialized = false;
             bool painterActive = false;
     };

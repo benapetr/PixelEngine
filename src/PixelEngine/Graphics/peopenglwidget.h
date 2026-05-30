@@ -13,6 +13,7 @@
 #ifndef PEOPENGLWIDGET_H
 #define PEOPENGLWIDGET_H
 
+#include "renderer.h"
 #include <QOpenGLWidget>
 
 namespace PE
@@ -28,6 +29,7 @@ namespace PE
             World *GetWorld() const;
             void SetWorld(World *world);
             float GetFPS() const;
+            RendererStats GetRendererStats() const;
 
         protected:
             void initializeGL() override;

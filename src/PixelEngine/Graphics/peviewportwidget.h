@@ -41,6 +41,7 @@ namespace PE
             void Advance();
             void RequestRender();
             float GetFPS() const;
+            RendererStats GetRendererStats() const;
             static bool IsBackendAvailable(RendererBackend backend);
 
         protected:

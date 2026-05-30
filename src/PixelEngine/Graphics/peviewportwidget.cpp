@@ -54,6 +54,13 @@ namespace
                 return this->lastFPS;
             }
 
+            RendererStats GetRendererStats() const
+            {
+                if (!this->renderer)
+                    return RendererStats();
+                return this->renderer->GetStats();
+            }
+
         protected:
             void paintEvent(QPaintEvent *event) override
             {
@@ -178,6 +185,15 @@ float PEViewportWidget::GetFPS() const
     if (PEOpenGLWidget *openGLViewport = dynamic_cast<PEOpenGLWidget*>(this->viewport))
         return openGLViewport->GetFPS();
     return 0;
+}
+
+RendererStats PEViewportWidget::GetRendererStats() const
+{
+    if (PEImageViewportWidget *imageViewport = dynamic_cast<PEImageViewportWidget*>(this->viewport))
+        return imageViewport->GetRendererStats();
+    if (PEOpenGLWidget *openGLViewport = dynamic_cast<PEOpenGLWidget*>(this->viewport))
+        return openGLViewport->GetRendererStats();
+    return RendererStats();
 }
 
 bool PEViewportWidget::IsBackendAvailable(RendererBackend backend)

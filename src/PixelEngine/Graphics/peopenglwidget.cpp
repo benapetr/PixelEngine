@@ -48,6 +48,13 @@ float PEOpenGLWidget::GetFPS() const
     return this->lastFPS;
 }
 
+RendererStats PEOpenGLWidget::GetRendererStats() const
+{
+    if (!this->renderer)
+        return RendererStats();
+    return this->renderer->GetStats();
+}
+
 void PEOpenGLWidget::initializeGL()
 {
     this->recreateRenderer(this->width(), this->height());
