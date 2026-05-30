@@ -15,6 +15,7 @@
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
 #include <QPainter>
+#include <QPointF>
 #include <QPixmap>
 #include <algorithm>
 #include <cmath>
@@ -180,6 +181,13 @@ void QOpenGLRenderer::DrawRoundedRect(int x, int y, int width, int height, int r
     if (!this->Enabled)
         return;
 
+    if (this->drawGLRoundedRect(x, y, width, height, radius, line_width, color, fill))
+    {
+        if (!this->ManualUpdate)
+            this->HasUpdate = true;
+        return;
+    }
+
     QRectF rect(x, this->worldToQtY(y + height), width, height);
     this->beginPainter();
     this->painter->save();
@@ -228,6 +236,13 @@ void QOpenGLRenderer::DrawEllipse(int x, int y, int width, int height, const QCo
 {
     if (!this->Enabled)
         return;
+
+    if (this->drawGLEllipse(x, y, width, height, color, line_width))
+    {
+        if (!this->ManualUpdate)
+            this->HasUpdate = true;
+        return;
+    }
 
     this->beginPainter();
     QPen pen(color);
@@ -587,6 +602,199 @@ QOpenGLRenderer::LineVertex QOpenGLRenderer::lineVertexFromScreenPoint(float x, 
         (static_cast<GLfloat>(x) / this->r_width) * 2.0f - 1.0f,
         (static_cast<GLfloat>(y) / this->r_height) * 2.0f - 1.0f
     };
+}
+
+bool QOpenGLRenderer::drawGLEllipse(int x, int y, int width, int height, const QColor &color, int lineWidth)
+{
+    if (!this->initializeGLResources() || !this->lineProgram || width <= 0 || height <= 0)
+        return false;
+
+    this->flushCommands();
+    this->endPainter();
+
+    QVector<LineVertex> vertices;
+    const int segments = 72;
+    vertices.reserve((segments + 1) * 2);
+
+    float centerX = x + (width / 2.0f);
+    float centerY = y + (height / 2.0f);
+    float outerRadiusX = width / 2.0f;
+    float outerRadiusY = height / 2.0f;
+    float innerRadiusX = std::max(0.0f, outerRadiusX - std::max(1, lineWidth));
+    float innerRadiusY = std::max(0.0f, outerRadiusY - std::max(1, lineWidth));
+
+    for (int i = 0; i <= segments; ++i)
+    {
+        float angle = (static_cast<float>(i) / segments) * 2.0f * static_cast<float>(M_PI);
+        float cosAngle = std::cos(angle);
+        float sinAngle = std::sin(angle);
+        vertices.append(this->lineVertexFromScreenPoint(centerX + (cosAngle * outerRadiusX), centerY + (sinAngle * outerRadiusY)));
+        vertices.append(this->lineVertexFromScreenPoint(centerX + (cosAngle * innerRadiusX), centerY + (sinAngle * innerRadiusY)));
+    }
+
+    QOpenGLFunctions *f = this->context->functions();
+    f->glEnable(GL_BLEND);
+    f->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    this->lineProgram->bind();
+    this->lineProgram->setUniformValue("lineColor", QVector4D(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
+
+    this->vertexBuffer.bind();
+    this->vertexBuffer.allocate(vertices.constData(), vertices.size() * static_cast<int>(sizeof(LineVertex)));
+
+    int positionLocation = this->lineProgram->attributeLocation("position");
+    this->lineProgram->enableAttributeArray(positionLocation);
+    this->lineProgram->setAttributeBuffer(positionLocation, GL_FLOAT, offsetof(LineVertex, X), 2, sizeof(LineVertex));
+
+    f->glDrawArrays(GL_TRIANGLE_STRIP, 0, vertices.size());
+
+    this->lineProgram->disableAttributeArray(positionLocation);
+    this->vertexBuffer.release();
+    this->lineProgram->release();
+    this->stats.DrawCalls++;
+    return true;
+}
+
+bool QOpenGLRenderer::drawGLRoundedRect(int x, int y, int width, int height, int radius, int lineWidth, const QColor &color, bool fill)
+{
+    if (!this->initializeGLResources() || !this->lineProgram || width <= 0 || height <= 0)
+        return false;
+
+    QVector<LineVertex> vertices;
+    if (fill)
+        this->appendRoundedRectFan(x, y, width, height, radius, &vertices);
+    else
+        this->appendRoundedRectRing(x, y, width, height, radius, std::max(1, lineWidth), &vertices);
+
+    return this->drawColoredGeometry(vertices, fill ? GL_TRIANGLE_FAN : GL_TRIANGLE_STRIP, color);
+}
+
+bool QOpenGLRenderer::drawColoredGeometry(const QVector<LineVertex> &vertices, GLenum primitiveMode, const QColor &color)
+{
+    if (vertices.isEmpty() || !this->initializeGLResources() || !this->lineProgram)
+        return false;
+
+    this->flushCommands();
+    this->endPainter();
+
+    QOpenGLFunctions *f = this->context->functions();
+    f->glEnable(GL_BLEND);
+    f->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    this->lineProgram->bind();
+    this->lineProgram->setUniformValue("lineColor", QVector4D(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
+
+    this->vertexBuffer.bind();
+    this->vertexBuffer.allocate(vertices.constData(), vertices.size() * static_cast<int>(sizeof(LineVertex)));
+
+    int positionLocation = this->lineProgram->attributeLocation("position");
+    this->lineProgram->enableAttributeArray(positionLocation);
+    this->lineProgram->setAttributeBuffer(positionLocation, GL_FLOAT, offsetof(LineVertex, X), 2, sizeof(LineVertex));
+
+    f->glDrawArrays(primitiveMode, 0, vertices.size());
+
+    this->lineProgram->disableAttributeArray(positionLocation);
+    this->vertexBuffer.release();
+    this->lineProgram->release();
+    this->stats.DrawCalls++;
+    return true;
+}
+
+void QOpenGLRenderer::appendRoundedRectRing(int x, int y, int width, int height, int radius, int thickness, QVector<LineVertex> *vertices) const
+{
+    float halfThickness = std::max(1, thickness) / 2.0f;
+    QVector<QPointF> outerPoints = this->roundedRectStrokePoints(x, y, width, height, radius, halfThickness);
+    QVector<QPointF> innerPoints = this->roundedRectStrokePoints(x, y, width, height, radius, -halfThickness);
+
+    for (int i = 0; i < outerPoints.size() && i < innerPoints.size(); ++i)
+    {
+        QPointF point = outerPoints[i];
+        QPointF inner = innerPoints[i];
+        vertices->append(this->lineVertexFromScreenPoint(point.x(), point.y()));
+        vertices->append(this->lineVertexFromScreenPoint(inner.x(), inner.y()));
+    }
+
+    if (!outerPoints.isEmpty())
+    {
+        QPointF point = outerPoints[0];
+        QPointF inner = innerPoints[0];
+        vertices->append(this->lineVertexFromScreenPoint(point.x(), point.y()));
+        vertices->append(this->lineVertexFromScreenPoint(inner.x(), inner.y()));
+    }
+}
+
+void QOpenGLRenderer::appendRoundedRectFan(int x, int y, int width, int height, int radius, QVector<LineVertex> *vertices) const
+{
+    QVector<QPointF> points = this->roundedRectPoints(x, y, width, height, radius);
+    vertices->append(this->lineVertexFromScreenPoint(x + (width / 2.0f), y + (height / 2.0f)));
+    foreach (const QPointF &point, points)
+        vertices->append(this->lineVertexFromScreenPoint(point.x(), point.y()));
+    if (!points.isEmpty())
+        vertices->append(this->lineVertexFromScreenPoint(points[0].x(), points[0].y()));
+}
+
+QVector<QPointF> QOpenGLRenderer::roundedRectPoints(float x, float y, float width, float height, float radius) const
+{
+    return this->roundedRectStrokePoints(x, y, width, height, radius, 0);
+}
+
+QVector<QPointF> QOpenGLRenderer::roundedRectStrokePoints(float x, float y, float width, float height, float radius, float offset) const
+{
+    QVector<QPointF> points;
+    float strokeX = x - offset;
+    float strokeY = y - offset;
+    float strokeWidth = std::max(0.0f, width + (offset * 2.0f));
+    float strokeHeight = std::max(0.0f, height + (offset * 2.0f));
+    float clampedRadius = std::max(0.0f, std::min(radius + offset, std::min(strokeWidth, strokeHeight) / 2.0f));
+    const int segments = 12;
+
+    struct Corner
+    {
+        float CenterX;
+        float CenterY;
+        float StartAngle;
+        float EndAngle;
+    };
+
+    Corner corners[4] = {
+        { strokeX + strokeWidth - clampedRadius, strokeY + strokeHeight - clampedRadius, 0.0f, static_cast<float>(M_PI) / 2.0f },
+        { strokeX + clampedRadius, strokeY + strokeHeight - clampedRadius, static_cast<float>(M_PI) / 2.0f, static_cast<float>(M_PI) },
+        { strokeX + clampedRadius, strokeY + clampedRadius, static_cast<float>(M_PI), static_cast<float>(M_PI) * 1.5f },
+        { strokeX + strokeWidth - clampedRadius, strokeY + clampedRadius, static_cast<float>(M_PI) * 1.5f, static_cast<float>(M_PI) * 2.0f }
+    };
+
+    if (clampedRadius <= 0)
+    {
+        points.append(QPointF(strokeX + strokeWidth, strokeY + strokeHeight));
+        points.append(QPointF(strokeX, strokeY + strokeHeight));
+        points.append(QPointF(strokeX, strokeY));
+        points.append(QPointF(strokeX + strokeWidth, strokeY));
+        return points;
+    }
+
+    for (const Corner &corner : corners)
+    {
+        for (int i = 0; i <= segments; ++i)
+        {
+            float t = static_cast<float>(i) / segments;
+            float angle = corner.StartAngle + ((corner.EndAngle - corner.StartAngle) * t);
+            points.append(QPointF(corner.CenterX + (std::cos(angle) * clampedRadius),
+                                  corner.CenterY + (std::sin(angle) * clampedRadius)));
+        }
+    }
+    return points;
+}
+
+QPointF QOpenGLRenderer::roundedRectInnerPoint(const QPointF &point, const QPointF &center, float thickness) const
+{
+    QPointF vector = center - point;
+    float length = std::sqrt((vector.x() * vector.x()) + (vector.y() * vector.y()));
+    if (length <= 0)
+        return point;
+
+    float move = std::min(thickness, length);
+    return QPointF(point.x() + ((vector.x() / length) * move),
+                   point.y() + ((vector.y() / length) * move));
 }
 
 int QOpenGLRenderer::worldToQtY(int y) const

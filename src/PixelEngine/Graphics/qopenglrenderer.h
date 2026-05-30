@@ -19,6 +19,7 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
 #include <QOpenGLTextureBlitter>
+#include <QPointF>
 #include <QRect>
 #include <QVector>
 
@@ -88,6 +89,14 @@ namespace PE
             bool drawGLLine(Vector source, Vector target, int lineWidth, const QColor &color);
             void appendLineVertices(Vector source, Vector target, int lineWidth, QVector<LineVertex> *vertices) const;
             LineVertex lineVertexFromScreenPoint(float x, float y) const;
+            bool drawGLEllipse(int x, int y, int width, int height, const QColor &color, int lineWidth);
+            bool drawGLRoundedRect(int x, int y, int width, int height, int radius, int lineWidth, const QColor &color, bool fill);
+            bool drawColoredGeometry(const QVector<LineVertex> &vertices, GLenum primitiveMode, const QColor &color);
+            void appendRoundedRectRing(int x, int y, int width, int height, int radius, int thickness, QVector<LineVertex> *vertices) const;
+            void appendRoundedRectFan(int x, int y, int width, int height, int radius, QVector<LineVertex> *vertices) const;
+            QVector<QPointF> roundedRectPoints(float x, float y, float width, float height, float radius) const;
+            QVector<QPointF> roundedRectStrokePoints(float x, float y, float width, float height, float radius, float offset) const;
+            QPointF roundedRectInnerPoint(const QPointF &point, const QPointF &center, float thickness) const;
             int worldToQtY(int y) const;
 
             QPaintDevice *paintDevice = nullptr;
