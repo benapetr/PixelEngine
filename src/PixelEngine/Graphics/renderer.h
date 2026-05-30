@@ -68,6 +68,7 @@ namespace PE
             virtual void DrawEllipse(int x, int y, int width, int height, const QColor &color, int line_width=1)=0;
             virtual void PushClipRect(int x, int y, int width, int height)=0;
             virtual void PopClipRect()=0;
+            virtual void ClearCaches();
             int GetHeight() { return this->r_height; }
             int GetWidth() { return this->r_width; }
             //! If true the underlying image has changed and should be redrawn to the screen
