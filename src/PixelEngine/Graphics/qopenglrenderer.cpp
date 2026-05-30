@@ -83,7 +83,10 @@ void QOpenGLRenderer::Clear(const QColor &color)
         return;
 
     QOpenGLFunctions *f = this->context->functions();
-    f->glViewport(0, 0, this->r_width, this->r_height);
+    qreal ratio = this->devicePixelRatio();
+    f->glViewport(0, 0,
+                  static_cast<GLsizei>(std::ceil(this->r_width * ratio)),
+                  static_cast<GLsizei>(std::ceil(this->r_height * ratio)));
     f->glDisable(GL_SCISSOR_TEST);
     f->glClearColor(color.redF(), color.greenF(), color.blueF(), color.alphaF());
     f->glClear(GL_COLOR_BUFFER_BIT);
