@@ -24,3 +24,23 @@ Renderer::~Renderer()
 {
 
 }
+
+bool Renderer::HasCapability(RendererCapability capability) const
+{
+    return (this->GetCapabilities() & capability) != 0;
+}
+
+RendererStats Renderer::GetStats() const
+{
+    return RendererStats();
+}
+
+void Renderer::ResetStats()
+{
+
+}
+
+void Renderer::ClearCaches()
+{
+
+}

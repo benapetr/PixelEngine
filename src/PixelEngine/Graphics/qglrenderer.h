@@ -29,6 +29,8 @@ namespace PE
             QGLRenderer(int width, int height, QPaintDevice *widget, QOpenGLContext *gl_context);
             ~QGLRenderer() override;
             RendererType GetType() override;
+            RendererBackend GetBackend() const override;
+            int GetCapabilities() const override;
             void Clear() override;
             void Clear(const QColor &color) override;
             void DrawPixel(int x, int y, const QColor &color) override;
@@ -51,12 +53,14 @@ namespace PE
             void SetContext(QOpenGLContext *gc) { this->context = gc; }
 
         private:
+            bool initializeGLResources();
             //! Qt has Y other way this function maps the world Y to Qt Y
             int worldToQtY(int y);
             QOpenGLTextureBlitter blitter;
             QOpenGLContext *context;
             QPaintDevice *paintDevice;
             QPainter *painter = nullptr;
+            bool glResourcesInitialized = false;
     };
 }
 
