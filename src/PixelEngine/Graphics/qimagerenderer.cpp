@@ -39,6 +39,19 @@ RendererType QImageRenderer::GetType()
     return RendererType_QImage;
 }
 
+RendererBackend QImageRenderer::GetBackend() const
+{
+    return RendererBackend_QImage;
+}
+
+int QImageRenderer::GetCapabilities() const
+{
+    return RendererCapability_Textures |
+           RendererCapability_Text |
+           RendererCapability_Clipping |
+           RendererCapability_RoundedRects;
+}
+
 void QImageRenderer::Clear()
 {
     this->image->fill(Qt::white);

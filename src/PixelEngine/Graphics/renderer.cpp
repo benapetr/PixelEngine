@@ -24,3 +24,8 @@ Renderer::~Renderer()
 {
 
 }
+
+bool Renderer::HasCapability(RendererCapability capability) const
+{
+    return (this->GetCapabilities() & capability) != 0;
+}

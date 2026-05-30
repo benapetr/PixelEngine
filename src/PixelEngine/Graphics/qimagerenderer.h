@@ -28,6 +28,8 @@ namespace PE
             ~QImageRenderer() override;
             QImage *GetImage();
             RendererType GetType() override;
+            RendererBackend GetBackend() const override;
+            int GetCapabilities() const override;
             void Clear() override;
             void Clear(const QColor &color) override;
             QPixmap GetPixmap();

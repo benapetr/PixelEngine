@@ -25,6 +25,22 @@ namespace PE
         RendererType_OpenGL
     };
 
+    enum RendererBackend
+    {
+        RendererBackend_QImage,
+        RendererBackend_QPainterOpenGL,
+        RendererBackend_OpenGL
+    };
+
+    enum RendererCapability
+    {
+        RendererCapability_Textures = 0x01,
+        RendererCapability_Text = 0x02,
+        RendererCapability_Clipping = 0x04,
+        RendererCapability_RoundedRects = 0x08,
+        RendererCapability_Batching = 0x10
+    };
+
     class Vector;
 
     /*!
@@ -38,6 +54,9 @@ namespace PE
             Renderer(int width, int height);
             virtual ~Renderer();
             virtual RendererType GetType()=0;
+            virtual RendererBackend GetBackend() const = 0;
+            virtual int GetCapabilities() const = 0;
+            bool HasCapability(RendererCapability capability) const;
             virtual void Clear()=0;
             virtual void Clear(const QColor &color)=0;
             virtual void DrawPixel(int x, int y, const QColor &color)=0;

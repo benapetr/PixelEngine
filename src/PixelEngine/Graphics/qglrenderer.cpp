@@ -22,9 +22,6 @@ QGLRenderer::QGLRenderer(int width, int height, QPaintDevice *widget, QOpenGLCon
 {
     this->context = gl_context;
     this->paintDevice = widget;
-
-    if (!this->blitter.isCreated())
-        this->blitter.create();
 }
 
 QGLRenderer::~QGLRenderer()
@@ -35,6 +32,19 @@ QGLRenderer::~QGLRenderer()
 RendererType QGLRenderer::GetType()
 {
     return RendererType_OpenGL;
+}
+
+RendererBackend QGLRenderer::GetBackend() const
+{
+    return RendererBackend_QPainterOpenGL;
+}
+
+int QGLRenderer::GetCapabilities() const
+{
+    return RendererCapability_Textures |
+           RendererCapability_Text |
+           RendererCapability_Clipping |
+           RendererCapability_RoundedRects;
 }
 
 void QGLRenderer::Clear()
@@ -57,7 +67,7 @@ void QGLRenderer::DrawPixel(int x, int y, const QColor &color)
         return;
     QPen pen(color);
     this->painter->setPen(pen);
-    this->painter->drawPoint(x, y);
+    this->painter->drawPoint(x, this->worldToQtY(y));
     if (!this->ManualUpdate)
         this->HasUpdate = true;
 }
@@ -186,6 +196,7 @@ void QGLRenderer::PopClipRect()
 
 void QGLRenderer::Begin()
 {
+    this->initializeGLResources();
     if (!this->painter)
         this->painter = new QPainter();
     this->painter->begin(this->paintDevice);
@@ -198,6 +209,9 @@ void QGLRenderer::End()
 
 GLuint QGLRenderer::LoadTexture(const QImage &image)
 {
+    if (!this->initializeGLResources())
+        return 0;
+
     // Get the current OpenGL context functions
     QOpenGLFunctions *f = this->context->functions();
 
@@ -223,6 +237,9 @@ GLuint QGLRenderer::LoadTexture(const QImage &image)
 
 void QGLRenderer::DrawBitmap(int x, int y, int width, int height, GLuint textureID)
 {
+    if (!this->initializeGLResources() || textureID == 0)
+        return;
+
     QOpenGLFunctions *f = this->context->functions();
 
     f->glBindTexture(GL_TEXTURE_2D, textureID);
@@ -248,6 +265,9 @@ void QGLRenderer::DrawBitmap(int x, int y, int width, int height, GLuint texture
 
 void QGLRenderer::DrawTexture(int x, int y, int width, int height, QOpenGLTexture *texture)
 {
+    if (!this->initializeGLResources())
+        return;
+
     if (!texture)
         return;
 
@@ -268,6 +288,21 @@ void QGLRenderer::DrawTexture(int x, int y, int width, int height, QOpenGLTextur
     this->blitter.bind();
     this->blitter.blit(texture->textureId(), transform, QOpenGLTextureBlitter::OriginBottomLeft);
     this->blitter.release();
+}
+
+bool QGLRenderer::initializeGLResources()
+{
+    if (this->glResourcesInitialized)
+        return true;
+
+    if (!this->context || QOpenGLContext::currentContext() != this->context)
+        return false;
+
+    if (!this->blitter.isCreated() && !this->blitter.create())
+        return false;
+
+    this->glResourcesInitialized = true;
+    return true;
 }
 
 int QGLRenderer::worldToQtY(int y)
