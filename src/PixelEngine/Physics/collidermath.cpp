@@ -18,6 +18,36 @@
 
 using namespace PE;
 
+namespace
+{
+    bool aabbOverlap(pe_float_t ax, pe_float_t ay, pe_float_t aw, pe_float_t ah,
+                     pe_float_t bx, pe_float_t by, pe_float_t bw, pe_float_t bh)
+    {
+        return ax < bx + bw &&
+               ax + aw > bx &&
+               ay < by + bh &&
+               ay + ah > by;
+    }
+
+    bool boxBitmapAabbOverlap(BoxCollider *box, BitmapCollider *bitmap)
+    {
+        return aabbOverlap(box->Position.X, box->Position.Y, box->Width * box->Scale, box->Height * box->Scale,
+                           bitmap->Position.X, bitmap->Position.Y, bitmap->GetWidth(), bitmap->GetHeight());
+    }
+
+    bool circleBitmapAabbOverlap(CircleCollider *circle, BitmapCollider *bitmap)
+    {
+        pe_float_t radius = circle->Radius * circle->Scale;
+        return aabbOverlap(circle->Position.X - radius, circle->Position.Y - radius, radius * 2, radius * 2,
+                           bitmap->Position.X, bitmap->Position.Y, bitmap->GetWidth(), bitmap->GetHeight());
+    }
+
+    pe_float_t sampleStep(pe_float_t span)
+    {
+        return std::max(static_cast<pe_float_t>(1), std::min(static_cast<pe_float_t>(4), span / 8));
+    }
+}
+
 bool ColliderMath::IntersectionCheckLineCircle(Vector a, Vector b, CircleCollider *c)
 {
     // Doesn't work:
@@ -105,18 +135,27 @@ bool ColliderMath::IntersectionCheckBoxBox(BoxCollider *a, BoxCollider *b)
 
 bool ColliderMath::IntersectionCheckBoxBitmap(BoxCollider *a, BitmapCollider *b)
 {
-    // Check collision vs corners (4 points)
-    if (b->PositionMatch(a->A()))
-        return true;
+    if (!boxBitmapAabbOverlap(a, b))
+        return false;
 
-    if (b->PositionMatch(a->B()))
-        return true;
+    pe_float_t left = a->Position.X;
+    pe_float_t right = a->Position.X + (a->Width * a->Scale);
+    pe_float_t bottom = a->Position.Y;
+    pe_float_t top = a->Position.Y + (a->Height * a->Scale);
+    pe_float_t step_x = sampleStep(right - left);
+    pe_float_t step_y = sampleStep(top - bottom);
 
-    if (b->PositionMatch(a->C()))
-        return true;
+    for (pe_float_t x = left; x <= right; x += step_x)
+    {
+        if (b->PositionMatch(Vector(x, bottom)) || b->PositionMatch(Vector(x, top)))
+            return true;
+    }
 
-    if (b->PositionMatch(a->D()))
-        return true;
+    for (pe_float_t y = bottom; y <= top; y += step_y)
+    {
+        if (b->PositionMatch(Vector(left, y)) || b->PositionMatch(Vector(right, y)))
+            return true;
+    }
 
     return false;
 }
@@ -160,30 +199,35 @@ bool ColliderMath::IntersectionCheckBoxCircle(BoxCollider *a, CircleCollider *b)
 
 bool ColliderMath::IntersectionCheckCircleBitmap(BitmapCollider *a, CircleCollider *b)
 {
+    if (!circleBitmapAabbOverlap(b, a))
+        return false;
+
     if (a->PositionMatch(b->Position))
         return true;
-    // Calculate 4 points of circle and check each of them
-    Vector v1(b->Position), v2(b->Position), v3(b->Position), v4(b->Position);
 
     pe_float_t radius = b->Scale * b->Radius;
+    pe_float_t diagonal_radius = radius * static_cast<pe_float_t>(0.70710678118);
+    Vector samples[] = {
+        Vector(b->Position.X - radius, b->Position.Y),
+        Vector(b->Position.X + radius, b->Position.Y),
+        Vector(b->Position.X, b->Position.Y - radius),
+        Vector(b->Position.X, b->Position.Y + radius),
+        Vector(b->Position.X - diagonal_radius, b->Position.Y - diagonal_radius),
+        Vector(b->Position.X + diagonal_radius, b->Position.Y - diagonal_radius),
+        Vector(b->Position.X - diagonal_radius, b->Position.Y + diagonal_radius),
+        Vector(b->Position.X + diagonal_radius, b->Position.Y + diagonal_radius)
+    };
 
-    v1.X -= radius;
-    if (a->PositionMatch(v1))
-        return true;
-    v2.X += radius;
-    if (a->PositionMatch(v2))
-        return true;
-    v3.Y -= radius;
-    if (a->PositionMatch(v3))
-        return true;
-    v4.Y += radius;
-    if (a->PositionMatch(v4))
-        return true;
+    for (const Vector &sample : samples)
+    {
+        if (a->PositionMatch(sample))
+            return true;
+    }
 
     return false;
 }
 
 bool ColliderMath::IntersectionCheckCircleCircle(CircleCollider *a, CircleCollider *b)
 {
-    return (b->Position.DistanceTo(a->Position) <= (a->Radius * a->Scale) + (b->Radius + b->Scale));
+    return (b->Position.DistanceTo(a->Position) <= (a->Radius * a->Scale) + (b->Radius * b->Scale));
 }

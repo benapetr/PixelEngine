@@ -290,14 +290,15 @@ void World::updateMovement()
                     if (collider_actor->GetColliderType() == PE_ColliderType_Pixel)
                     {
                         // Only ray trace if speed is worth it
-                        if (a->RigidBody->Velocity.X > 2 || a->RigidBody->Velocity.Y > 2)
+                        if (std::abs(a->RigidBody->Velocity.X) > 2 || std::abs(a->RigidBody->Velocity.Y) > 2)
                         {
                             pe_float_t distance = old_position.DistanceTo(a->Position);
+                            Vector ray_origin = old_position;
                             Vector step = a->RigidBody->Velocity / distance;
                             int current_step = 0;
                             while (++current_step < static_cast<int>(distance))
                             {
-                                Vector cp = a->Position + (step * current_step);
+                                Vector cp = ray_origin + (step * current_step);
                                 if (collider_other->PositionMatch(cp))
                                 {
                                     collision_target = collider_other;
@@ -305,7 +306,7 @@ void World::updateMovement()
                                     // Because we did a pixel ray trace and hit something, we know exactly where is last pixel
                                     // where we didn't hit it. So we can shift the old_position to that place, so that object
                                     // is moved right in front of whatever is there
-                                    old_position = a->Position + (step * (current_step-1));
+                                    old_position = ray_origin + (step * (current_step-1));
                                     goto loop_exit;
                                 }
                             }
