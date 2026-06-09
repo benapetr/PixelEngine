@@ -49,6 +49,7 @@ void Object::Serialize(Serializer *serializer) const
     serializer->WriteVector("position", this->Position);
     serializer->WriteVector("relativePosition", this->RelativePosition);
     serializer->WriteFloat("scale", this->Scale);
+    serializer->WriteFloat("rotation", this->Rotation);
 }
 
 void Object::Deserialize(Deserializer *deserializer)
@@ -56,6 +57,7 @@ void Object::Deserialize(Deserializer *deserializer)
     this->Position = deserializer->ReadVector("position", this->Position);
     this->RelativePosition = deserializer->ReadVector("relativePosition", this->RelativePosition);
     this->Scale = deserializer->ReadFloat("scale", this->Scale);
+    this->Rotation = deserializer->ReadFloat("rotation", this->Rotation);
 }
 
 bool Object::HasChildren()
@@ -117,6 +119,19 @@ void Object::SetScale(pe_float_t scale)
     {
         c->SetScale(scale);
     }
+}
+
+void Object::SetRotation(pe_float_t rotation)
+{
+    this->Rotation = rotation;
+}
+
+pe_float_t Object::GetWorldRotation() const
+{
+    if (this->parent.GetPtr())
+        return this->parent.GetPtr()->GetWorldRotation() + this->Rotation;
+
+    return this->Rotation;
 }
 
 void Object::DestroyNow()

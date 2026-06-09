@@ -40,10 +40,13 @@ namespace PE
              *   |        |
              * A +--------+ B
              * */
-            inline Vector A();
-            inline Vector B();
-            inline Vector C();
-            inline Vector D();
+            Vector A();
+            Vector B();
+            Vector C();
+            Vector D();
+            Vector Center() const;
+            Vector LocalToWorld(Vector local) const;
+            Vector WorldToLocal(Vector world) const;
             pe_float_t Width;
             pe_float_t Height;
 
@@ -52,33 +55,6 @@ namespace PE
 
             friend class ColliderMath;
     };
-
-    inline Vector BoxCollider::A()
-    {
-        return this->Position;
-    }
-
-    inline Vector BoxCollider::B()
-    {
-        Vector b(this->Position);
-        b.X += this->Width * this->Scale;
-        return b;
-    }
-
-    inline Vector BoxCollider::C()
-    {
-        Vector c(this->Position);
-        c.X += this->Width * this->Scale;
-        c.Y += this->Height * this->Scale;
-        return c;
-    }
-
-    inline Vector BoxCollider::D()
-    {
-        Vector d(this->Position);
-        d.Y += this->Height * this->Scale;
-        return d;
-    }
 }
 
 #endif // BOXCOLLIDER_H

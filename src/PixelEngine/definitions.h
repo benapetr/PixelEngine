@@ -30,15 +30,19 @@
 
 //! \def PE_PI
 //! Mathematical constant Pi.
-#define PE_PI 3.14159265
+#define PE_PI 3.14159265358979323846
 
 //! \def PE_PI_RAD_CNV
-//! Conversion factor from degrees to radians (Pi / 180).
+//! Legacy PixelEngine angle unit to radians conversion factor.
 #define PE_PI_RAD_CNV 1.74532925
+
+//! \def PE_DEG_RAD_CNV
+//! Conversion factor from degrees to radians.
+#define PE_DEG_RAD_CNV 0.01745329251994329577
 
 //! \def PE_RAD_DEG_CNV
 //! Conversion factor from radians to degrees.
-#define PE_RAD_DEG_CNV 57.2958
+#define PE_RAD_DEG_CNV 57.295779513082320876
 
 //! \def PE_BITSET_MAX
 //! Maximum size of a bitmap.

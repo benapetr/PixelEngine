@@ -26,6 +26,7 @@
 namespace PE
 {
     class Renderer;
+    class World;
 
     //! \enum PE_ObjectType
     //! \brief Enumerates the types of objects in the Pixel Engine.
@@ -101,6 +102,12 @@ namespace PE
             //! \brief Handle the destruction event of the object.
             virtual void Event_Destroyed() {}
 
+            //! \brief Handle registration into a world.
+            virtual void Event_RegisteredToWorld(World *world) { (void)world; }
+
+            //! \brief Handle removal from a world.
+            virtual void Event_UnregisteredFromWorld(World *world) { (void)world; }
+
             //! \brief Get the current position of the object.
             //! \return The position as a Vector.
             virtual Vector GetPosition() const;
@@ -116,6 +123,13 @@ namespace PE
             //! \brief Set the scale of the object.
             //! \param scale The new scale value.
             virtual void SetScale(pe_float_t scale);
+
+            //! \brief Set the local rotation of the object in degrees.
+            //! \param rotation The new local rotation.
+            virtual void SetRotation(pe_float_t rotation);
+
+            //! \brief Get final rotation including parent rotations.
+            pe_float_t GetWorldRotation() const;
             
             //! Called when object is being destroyed - this will remove all references to other objects and prepare this object
             //! for deletion from operating memory
@@ -136,6 +150,7 @@ namespace PE
             Vector Position; //!< Current absolute position of the object in the world.
             Vector RelativePosition; //!< Relative position to the parent object.
             pe_float_t Scale = 1; //!< Scale of the object.
+            pe_float_t Rotation = 0; //!< Local rotation in degrees.
             qint64 LastMovementUpdate = 0; //!< Timestamp of the last movement update.
             bool RedrawNeeded = false; //!< Indicates if the object needs to be redrawn.
 

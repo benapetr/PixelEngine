@@ -20,6 +20,12 @@ using namespace PE;
 
 namespace
 {
+    struct Projection
+    {
+        pe_float_t Min;
+        pe_float_t Max;
+    };
+
     bool aabbOverlap(pe_float_t ax, pe_float_t ay, pe_float_t aw, pe_float_t ah,
                      pe_float_t bx, pe_float_t by, pe_float_t bw, pe_float_t bh)
     {
@@ -29,10 +35,36 @@ namespace
                ay + ah > by;
     }
 
+    void boxWorldAabb(BoxCollider *box, pe_float_t *x, pe_float_t *y, pe_float_t *w, pe_float_t *h)
+    {
+        Vector corners[] = { box->A(), box->B(), box->C(), box->D() };
+        pe_float_t min_x = corners[0].X;
+        pe_float_t max_x = corners[0].X;
+        pe_float_t min_y = corners[0].Y;
+        pe_float_t max_y = corners[0].Y;
+
+        for (int i = 1; i < 4; i++)
+        {
+            min_x = std::min(min_x, corners[i].X);
+            max_x = std::max(max_x, corners[i].X);
+            min_y = std::min(min_y, corners[i].Y);
+            max_y = std::max(max_y, corners[i].Y);
+        }
+
+        *x = min_x;
+        *y = min_y;
+        *w = max_x - min_x;
+        *h = max_y - min_y;
+    }
+
     bool boxBitmapAabbOverlap(BoxCollider *box, BitmapCollider *bitmap)
     {
-        return aabbOverlap(box->Position.X, box->Position.Y, box->Width * box->Scale, box->Height * box->Scale,
-                           bitmap->Position.X, bitmap->Position.Y, bitmap->GetWidth(), bitmap->GetHeight());
+        pe_float_t x;
+        pe_float_t y;
+        pe_float_t w;
+        pe_float_t h;
+        boxWorldAabb(box, &x, &y, &w, &h);
+        return aabbOverlap(x, y, w, h, bitmap->Position.X, bitmap->Position.Y, bitmap->GetWidth(), bitmap->GetHeight());
     }
 
     bool circleBitmapAabbOverlap(CircleCollider *circle, BitmapCollider *bitmap)
@@ -45,6 +77,94 @@ namespace
     pe_float_t sampleStep(pe_float_t span)
     {
         return std::max(static_cast<pe_float_t>(1), std::min(static_cast<pe_float_t>(4), span / 8));
+    }
+
+    Vector edgeAxis(Vector a, Vector b)
+    {
+        Vector edge(b.X - a.X, b.Y - a.Y);
+        Vector axis(-edge.Y, edge.X);
+        pe_float_t length = std::sqrt((axis.X * axis.X) + (axis.Y * axis.Y));
+        if (length <= static_cast<pe_float_t>(0.0001))
+            return Vector(0, 0);
+
+        return Vector(axis.X / length, axis.Y / length);
+    }
+
+    Projection projectCorners(const Vector *corners, Vector axis)
+    {
+        pe_float_t dot = (corners[0].X * axis.X) + (corners[0].Y * axis.Y);
+        Projection projection = { dot, dot };
+
+        for (int i = 1; i < 4; i++)
+        {
+            dot = (corners[i].X * axis.X) + (corners[i].Y * axis.Y);
+            projection.Min = std::min(projection.Min, dot);
+            projection.Max = std::max(projection.Max, dot);
+        }
+
+        return projection;
+    }
+
+    bool projectionsOverlap(Projection a, Projection b)
+    {
+        return a.Max >= b.Min && b.Max >= a.Min;
+    }
+
+    bool boxSatOverlap(BoxCollider *a, BoxCollider *b)
+    {
+        Vector ac[] = { a->A(), a->B(), a->C(), a->D() };
+        Vector bc[] = { b->A(), b->B(), b->C(), b->D() };
+        Vector axes[] = {
+            edgeAxis(ac[0], ac[1]),
+            edgeAxis(ac[1], ac[2]),
+            edgeAxis(bc[0], bc[1]),
+            edgeAxis(bc[1], bc[2])
+        };
+
+        for (const Vector &axis : axes)
+        {
+            if (axis.X == 0 && axis.Y == 0)
+                continue;
+
+            if (!projectionsOverlap(projectCorners(ac, axis), projectCorners(bc, axis)))
+                return false;
+        }
+
+        return true;
+    }
+
+    bool boxCircleOverlap(BoxCollider *box, CircleCollider *circle)
+    {
+        Vector local_circle = box->WorldToLocal(circle->Position);
+        pe_float_t left = box->Position.X;
+        pe_float_t right = box->Position.X + (box->Width * box->Scale);
+        pe_float_t bottom = box->Position.Y;
+        pe_float_t top = box->Position.Y + (box->Height * box->Scale);
+        pe_float_t closest_x = std::max(left, std::min(local_circle.X, right));
+        pe_float_t closest_y = std::max(bottom, std::min(local_circle.Y, top));
+        pe_float_t dx = local_circle.X - closest_x;
+        pe_float_t dy = local_circle.Y - closest_y;
+        pe_float_t radius = circle->Radius * circle->Scale;
+
+        return (dx * dx) + (dy * dy) <= radius * radius;
+    }
+
+    bool sampleLineAgainstBitmap(Vector a, Vector b, BitmapCollider *bitmap)
+    {
+        pe_float_t dx = b.X - a.X;
+        pe_float_t dy = b.Y - a.Y;
+        pe_float_t length = std::sqrt((dx * dx) + (dy * dy));
+        pe_float_t step = sampleStep(length);
+        pe_float_t samples = std::max(static_cast<pe_float_t>(1), std::ceil(length / step));
+
+        for (pe_float_t i = 0; i <= samples; i++)
+        {
+            pe_float_t t = i / samples;
+            if (bitmap->PositionMatch(Vector(a.X + (dx * t), a.Y + (dy * t))))
+                return true;
+        }
+
+        return false;
     }
 }
 
@@ -121,6 +241,9 @@ bool ColliderMath::IntersectionCheckLineCircle(Vector a, Vector b, CircleCollide
 
 bool ColliderMath::IntersectionCheckBoxBox(BoxCollider *a, BoxCollider *b)
 {
+    if (a->IsOriented() || b->IsOriented())
+        return boxSatOverlap(a, b);
+
     if (a->Position.X < b->Position.X + (b->Width * b->Scale) &&
         a->Position.X + (a->Width * a->Scale) > b->Position.X &&
         a->Position.Y < b->Position.Y + (b->Height * b->Scale) &&
@@ -137,6 +260,14 @@ bool ColliderMath::IntersectionCheckBoxBitmap(BoxCollider *a, BitmapCollider *b)
 {
     if (!boxBitmapAabbOverlap(a, b))
         return false;
+
+    if (a->IsOriented())
+    {
+        return sampleLineAgainstBitmap(a->A(), a->B(), b) ||
+               sampleLineAgainstBitmap(a->B(), a->C(), b) ||
+               sampleLineAgainstBitmap(a->C(), a->D(), b) ||
+               sampleLineAgainstBitmap(a->D(), a->A(), b);
+    }
 
     pe_float_t left = a->Position.X;
     pe_float_t right = a->Position.X + (a->Width * a->Scale);
@@ -162,39 +293,7 @@ bool ColliderMath::IntersectionCheckBoxBitmap(BoxCollider *a, BitmapCollider *b)
 
 bool ColliderMath::IntersectionCheckBoxCircle(BoxCollider *a, CircleCollider *b)
 {
-    // This doesn't seem to work - taken from https://stackoverflow.com/questions/401847/circle-rectangle-collision-detection-intersection
-    /*
-    double cdist_x = std::abs(b->Position.X - a->Position.X);
-    double cdist_y = std::abs(b->Position.Y - a->Position.Y);
-    if (cdist_x > (a->Width / 2 + b->Radius))
-        return false;
-    if (cdist_y > (a->Height / 2 + b->Radius))
-        return false;
-    double cdist = std::pow(cdist_x - a->Width / 2, 2) + std::pow(cdist_y - a->Height / 2, 2);
-    return (cdist <= std::pow(b->Radius, 2));
-    */
-
-
-    // Our own idiot-proof implementation - let's check intersection of individual points
-    // Circle centre in box
-    if (a->PositionMatch(b->Position))
-        return true;
-
-    // Line checks
-    // AB
-    if (IntersectionCheckLineCircle(a->A(), a->B(), b))
-        return true;
-    // BC
-    if (IntersectionCheckLineCircle(a->B(), a->C(), b))
-        return true;
-    // CD
-    if (IntersectionCheckLineCircle(a->C(), a->D(), b))
-        return true;
-    // DA
-    if (IntersectionCheckLineCircle(a->D(), a->A(), b))
-        return true;
-
-    return false;
+    return boxCircleOverlap(a, b);
 }
 
 bool ColliderMath::IntersectionCheckCircleBitmap(BitmapCollider *a, CircleCollider *b)

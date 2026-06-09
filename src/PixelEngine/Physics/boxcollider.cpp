@@ -16,6 +16,7 @@
 #include "collidermath.h"
 #include "../Serialization/deserializer.h"
 #include "../Serialization/serializer.h"
+#include <cmath>
 #ifdef PE_DEBUG
 #include "../camera.h"
 #include "../Graphics/renderer.h"
@@ -52,15 +53,73 @@ void BoxCollider::Deserialize(Deserializer *deserializer)
     this->Height = deserializer->ReadFloat("height", this->Height);
 }
 
+Vector BoxCollider::Center() const
+{
+    return Vector(this->Position.X + (this->Width * this->Scale / 2),
+                  this->Position.Y + (this->Height * this->Scale / 2));
+}
+
+Vector BoxCollider::LocalToWorld(Vector local) const
+{
+    if (!this->IsOriented())
+        return local;
+
+    Vector center = this->Center();
+    pe_float_t angle = this->GetWorldRotation() * PE_DEG_RAD_CNV;
+    pe_float_t cos_a = std::cos(angle);
+    pe_float_t sin_a = std::sin(angle);
+    pe_float_t x = local.X - center.X;
+    pe_float_t y = local.Y - center.Y;
+    return Vector(center.X + (x * cos_a) - (y * sin_a),
+                  center.Y + (x * sin_a) + (y * cos_a));
+}
+
+Vector BoxCollider::WorldToLocal(Vector world) const
+{
+    if (!this->IsOriented())
+        return world;
+
+    Vector center = this->Center();
+    pe_float_t angle = -this->GetWorldRotation() * PE_DEG_RAD_CNV;
+    pe_float_t cos_a = std::cos(angle);
+    pe_float_t sin_a = std::sin(angle);
+    pe_float_t x = world.X - center.X;
+    pe_float_t y = world.Y - center.Y;
+    return Vector(center.X + (x * cos_a) - (y * sin_a),
+                  center.Y + (x * sin_a) + (y * cos_a));
+}
+
+Vector BoxCollider::A()
+{
+    return this->LocalToWorld(this->Position);
+}
+
+Vector BoxCollider::B()
+{
+    return this->LocalToWorld(Vector(this->Position.X + (this->Width * this->Scale), this->Position.Y));
+}
+
+Vector BoxCollider::C()
+{
+    return this->LocalToWorld(Vector(this->Position.X + (this->Width * this->Scale), this->Position.Y + (this->Height * this->Scale)));
+}
+
+Vector BoxCollider::D()
+{
+    return this->LocalToWorld(Vector(this->Position.X, this->Position.Y + (this->Height * this->Scale)));
+}
+
 bool BoxCollider::PositionMatch(Vector position)
 {
-    if (position.X < this->Position.X)
+    Vector local_position = this->WorldToLocal(position);
+
+    if (local_position.X < this->Position.X)
         return false;
-    if (position.Y < this->Position.Y)
+    if (local_position.Y < this->Position.Y)
         return false;
-    if (position.X > this->Position.X + (this->Width * this->Scale))
+    if (local_position.X > this->Position.X + (this->Width * this->Scale))
         return false;
-    if (position.Y > this->Position.Y + (this->Height * this->Scale))
+    if (local_position.Y > this->Position.Y + (this->Height * this->Scale))
         return false;
     return true;
 }
@@ -85,9 +144,20 @@ void BoxCollider::Render(Renderer *r, Camera *c)
     if (!Collider::Debug)
         return;
 
-    PE::Vector root = c->ProjectedPosition(this->Position);
-    r->DrawRect(root.X2int(), root.Y2int(), (this->Width * this->Scale), (this->Height * this->Scale), 1, Qt::green);
+    if (!this->IsOriented())
+    {
+        PE::Vector root = c->ProjectedPosition(this->Position);
+        r->DrawRect(root.X2int(), root.Y2int(), (this->Width * this->Scale), (this->Height * this->Scale), 1, Qt::green);
+        return;
+    }
+
+    PE::Vector a = c->ProjectedPosition(this->A());
+    PE::Vector b = c->ProjectedPosition(this->B());
+    PE::Vector cc = c->ProjectedPosition(this->C());
+    PE::Vector d = c->ProjectedPosition(this->D());
+    r->DrawLine(a.X, a.Y, b.X, b.Y, 1, Qt::green);
+    r->DrawLine(b.X, b.Y, cc.X, cc.Y, 1, Qt::green);
+    r->DrawLine(cc.X, cc.Y, d.X, d.Y, 1, Qt::green);
+    r->DrawLine(d.X, d.Y, a.X, a.Y, 1, Qt::green);
 }
 #endif
-
-

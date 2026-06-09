@@ -35,6 +35,7 @@ namespace PE
             void Clear(const QColor &color) override;
             void DrawPixel(int x, int y, const QColor &color) override;
             void DrawBitmap(int x, int y, int width, int height, const QPixmap &bitmap) override;
+            void DrawBitmapRotated(int x, int y, int width, int height, const QPixmap &bitmap, pe_float_t rotation) override;
             void DrawLine(Vector source, Vector target, int line_width, const QColor &color) override;
             void DrawRect(int x, int y, int width, int height, int line_width, const QColor &color, bool fill = false) override;
             void DrawRoundedRect(int x, int y, int width, int height, int radius, int line_width, const QColor &color, bool fill = false) override;

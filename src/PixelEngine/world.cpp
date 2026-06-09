@@ -35,6 +35,12 @@ World::World(pe_float_t width, pe_float_t height)
 
 World::~World()
 {
+    QList<int> indexes = this->objects.keys();
+    foreach (int i, indexes)
+    {
+        foreach (Object *o, this->objects[i])
+            o->Event_UnregisteredFromWorld(this);
+    }
     foreach (Actor *a, this->actors)
         a->DestroyNow();
     this->actors.clear();
@@ -148,6 +154,7 @@ void World::RegisterActor(Actor *a, int zindex)
         this->objects.insert(zindex, QList<Collectable_SmartPtr<Object>>());
     this->objects[zindex].append(a);
     this->actors.append(a);
+    a->Event_RegisteredToWorld(this);
     this->redrawNeeded = true;
 }
 
@@ -156,22 +163,28 @@ void World::RegisterObject(Object *o, int zindex)
     if (!this->objects.contains(zindex))
         this->objects.insert(zindex, QList<Collectable_SmartPtr<Object>>());
     this->objects[zindex].append(o);
+    o->Event_RegisteredToWorld(this);
+    this->redrawNeeded = true;
 }
 
 void World::RegisterTerrain(Terrain *t, int zindex)
 {
+    (void)zindex;
     this->terrains.append(t);
     this->colliders.append(dynamic_cast<Collider*>(t->Collider.GetPtr()));
+    t->Event_RegisteredToWorld(this);
     this->redrawNeeded = true;
 }
 
 void World::RegisterCollider(Collider *c)
 {
     this->colliders.append(c);
+    c->Event_RegisteredToWorld(this);
 }
 
 void World::DestroyObject(Collectable_SmartPtr<Object> o)
 {
+    o->Event_UnregisteredFromWorld(this);
     o->DestroyNow();
     if (o->GetType() == PE_ObjectType_Actor)
     {

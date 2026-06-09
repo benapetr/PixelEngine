@@ -82,6 +82,28 @@ void QGLRenderer::DrawBitmap(int x, int y, int width, int height, const QPixmap 
         this->HasUpdate = true;
 }
 
+void QGLRenderer::DrawBitmapRotated(int x, int y, int width, int height, const QPixmap &bitmap, pe_float_t rotation)
+{
+    if (!this->Enabled)
+        return;
+    if (rotation == 0)
+    {
+        this->DrawBitmap(x, y, width, height, bitmap);
+        return;
+    }
+
+    int qtY = this->worldToQtY(y + height);
+    this->painter->save();
+    this->painter->setPen(QPen());
+    this->painter->translate(x + (width / 2.0), qtY + (height / 2.0));
+    this->painter->rotate(-rotation);
+    this->painter->drawPixmap(-width / 2, -height / 2, width, height, bitmap);
+    this->painter->restore();
+
+    if (!this->ManualUpdate)
+        this->HasUpdate = true;
+}
+
 void QGLRenderer::DrawLine(Vector source, Vector target, int line_width, const QColor &color)
 {
     if (!this->Enabled)

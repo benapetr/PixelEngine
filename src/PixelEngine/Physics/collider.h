@@ -42,11 +42,13 @@ namespace PE
             virtual bool PositionMatch(Vector position)=0;
             virtual bool IntersectionMatch(Collider *collider)=0;
             virtual PE_ColliderType GetColliderType()=0;
+            bool IsOriented() const;
             PE_ObjectType GetType() override;
             QString GetClassName() const override;
             void Serialize(Serializer *serializer) const override;
             void Deserialize(Deserializer *deserializer) override;
             unsigned int Layer = 0;
+            bool BlocksNavigation = true;
     };
 }
 
