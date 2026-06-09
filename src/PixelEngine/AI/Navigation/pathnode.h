@@ -8,33 +8,39 @@
 //MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //GNU Lesser General Public License for more details.
 
-// Copyright (c) Petr Bena 2019
+// Copyright (c) Petr Bena 2026
 
-#ifndef SPRITE_H
-#define SPRITE_H
+#ifndef PATHNODE_H
+#define PATHNODE_H
 
-#include "../object.h"
-#include <QPixmap>
+#include "../../object.h"
 
 namespace PE
 {
-    class Sprite : public Object
+    class PathNode : public Object
     {
         public:
-            Sprite();
-            Sprite(const Vector &position, int width, int height, const QString &resourceName = QString(), Object *parent = nullptr);
+            PathNode();
+            PathNode(const Vector &position, Object *parent = nullptr);
+
             QString GetClassName() const override;
             void Serialize(Serializer *serializer) const override;
             void Deserialize(Deserializer *deserializer) override;
             void Render(Renderer *r, Camera *c) override;
-            void SetPixmap(const QPixmap &pixmap);
-            void SetResourceName(const QString &resourceName);
+            void Paint(Renderer *r, Camera *c);
+            void PaintPaths(Renderer *r, Camera *c);
+            void Event_RegisteredToWorld(World *world) override;
+            void Event_UnregisteredFromWorld(World *world) override;
+            void Event_Destroyed() override;
+            World *GetWorld() const;
 
-            QString ResourceName;
-            QPixmap Pixmap;
-            int Width = 0;
-            int Height = 0;
+            pe_float_t MaxDistance = 200;
+            bool RespectColliders = false;
+            static bool Debug;
+
+        private:
+            World *world = nullptr;
     };
 }
 
-#endif // SPRITE_H
+#endif // PATHNODE_H

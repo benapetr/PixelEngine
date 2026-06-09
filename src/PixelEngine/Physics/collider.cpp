@@ -10,6 +10,7 @@
 
 // Copyright (c) Petr Bena 2019
 
+#include <cmath>
 #include "collider.h"
 #include "../Serialization/deserializer.h"
 #include "../Serialization/serializer.h"
@@ -42,6 +43,11 @@ PE_ObjectType Collider::GetType()
     return PE_ObjectType_Collider;
 }
 
+bool Collider::IsOriented() const
+{
+    return std::abs(this->GetWorldRotation()) > static_cast<pe_float_t>(0.001);
+}
+
 QString Collider::GetClassName() const
 {
     return "PE::Collider";
@@ -51,10 +57,12 @@ void Collider::Serialize(Serializer *serializer) const
 {
     Object::Serialize(serializer);
     serializer->WriteInteger("layer", static_cast<int>(this->Layer));
+    serializer->WriteBool("blocksNavigation", this->BlocksNavigation);
 }
 
 void Collider::Deserialize(Deserializer *deserializer)
 {
     Object::Deserialize(deserializer);
     this->Layer = static_cast<unsigned int>(deserializer->ReadInteger("layer", static_cast<int>(this->Layer)));
+    this->BlocksNavigation = deserializer->ReadBool("blocksNavigation", this->BlocksNavigation);
 }

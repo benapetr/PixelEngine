@@ -75,6 +75,7 @@ namespace PE
             virtual void DrawRoundedRect(int x, int y, int width, int height, int radius, int line_width, const QColor &color, bool fill = false)=0;
             virtual void DrawLine(Vector source, Vector target, int line_width, const QColor &color)=0;
             virtual void DrawBitmap(int x, int y, int width, int height, const QPixmap &bitmap)=0;
+            virtual void DrawBitmapRotated(int x, int y, int width, int height, const QPixmap &bitmap, pe_float_t rotation);
             virtual void DrawText(int x, int y, const QString &text, const QColor &color, int size = 10)=0;
             virtual void DrawEllipse(int x, int y, int width, int height, const QColor &color, int line_width=1)=0;
             virtual void PushClipRect(int x, int y, int width, int height)=0;

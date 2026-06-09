@@ -35,6 +35,12 @@ World::World(pe_float_t width, pe_float_t height)
 
 World::~World()
 {
+    QList<int> indexes = this->objects.keys();
+    foreach (int i, indexes)
+    {
+        foreach (Object *o, this->objects[i])
+            o->Event_UnregisteredFromWorld(this);
+    }
     foreach (Actor *a, this->actors)
         a->DestroyNow();
     this->actors.clear();
@@ -148,6 +154,7 @@ void World::RegisterActor(Actor *a, int zindex)
         this->objects.insert(zindex, QList<Collectable_SmartPtr<Object>>());
     this->objects[zindex].append(a);
     this->actors.append(a);
+    a->Event_RegisteredToWorld(this);
     this->redrawNeeded = true;
 }
 
@@ -156,22 +163,28 @@ void World::RegisterObject(Object *o, int zindex)
     if (!this->objects.contains(zindex))
         this->objects.insert(zindex, QList<Collectable_SmartPtr<Object>>());
     this->objects[zindex].append(o);
+    o->Event_RegisteredToWorld(this);
+    this->redrawNeeded = true;
 }
 
 void World::RegisterTerrain(Terrain *t, int zindex)
 {
+    (void)zindex;
     this->terrains.append(t);
     this->colliders.append(dynamic_cast<Collider*>(t->Collider.GetPtr()));
+    t->Event_RegisteredToWorld(this);
     this->redrawNeeded = true;
 }
 
 void World::RegisterCollider(Collider *c)
 {
     this->colliders.append(c);
+    c->Event_RegisteredToWorld(this);
 }
 
 void World::DestroyObject(Collectable_SmartPtr<Object> o)
 {
+    o->Event_UnregisteredFromWorld(this);
     o->DestroyNow();
     if (o->GetType() == PE_ObjectType_Actor)
     {
@@ -290,14 +303,15 @@ void World::updateMovement()
                     if (collider_actor->GetColliderType() == PE_ColliderType_Pixel)
                     {
                         // Only ray trace if speed is worth it
-                        if (a->RigidBody->Velocity.X > 2 || a->RigidBody->Velocity.Y > 2)
+                        if (std::abs(a->RigidBody->Velocity.X) > 2 || std::abs(a->RigidBody->Velocity.Y) > 2)
                         {
                             pe_float_t distance = old_position.DistanceTo(a->Position);
+                            Vector ray_origin = old_position;
                             Vector step = a->RigidBody->Velocity / distance;
                             int current_step = 0;
                             while (++current_step < static_cast<int>(distance))
                             {
-                                Vector cp = a->Position + (step * current_step);
+                                Vector cp = ray_origin + (step * current_step);
                                 if (collider_other->PositionMatch(cp))
                                 {
                                     collision_target = collider_other;
@@ -305,7 +319,7 @@ void World::updateMovement()
                                     // Because we did a pixel ray trace and hit something, we know exactly where is last pixel
                                     // where we didn't hit it. So we can shift the old_position to that place, so that object
                                     // is moved right in front of whatever is there
-                                    old_position = a->Position + (step * (current_step-1));
+                                    old_position = ray_origin + (step * (current_step-1));
                                     goto loop_exit;
                                 }
                             }

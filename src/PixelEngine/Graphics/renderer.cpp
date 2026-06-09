@@ -44,3 +44,9 @@ void Renderer::ClearCaches()
 {
 
 }
+
+void Renderer::DrawBitmapRotated(int x, int y, int width, int height, const QPixmap &bitmap, pe_float_t rotation)
+{
+    (void)rotation;
+    this->DrawBitmap(x, y, width, height, bitmap);
+}
