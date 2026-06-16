@@ -14,13 +14,14 @@
 #include "qglrenderer.h"
 #include "../world.h"
 #include <QDateTime>
+#include <QSizePolicy>
 
 using namespace PE;
 
 PEGLWidget::PEGLWidget(QWidget *parent, World *w) : QOpenGLWidget (parent)
 {
     this->fps_start = QDateTime::currentDateTime().toMSecsSinceEpoch();
-    setFixedSize(parent->width(), parent->height());
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     this->renderer = new QGLRenderer(parent->width(), parent->height(), this, this->context());
     this->world = w;
     this->setAutoFillBackground(false);

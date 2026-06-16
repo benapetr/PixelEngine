@@ -23,7 +23,10 @@ namespace PE
         PE_ColliderType_Box,
         PE_ColliderType_Bitmap,
         PE_ColliderType_Ellipse,
-        PE_ColliderType_Circle
+        PE_ColliderType_Circle,
+        PE_ColliderType_Capsule,
+        PE_ColliderType_Line,
+        PE_ColliderType_Polygon
     };
 
     class Collider : public Object

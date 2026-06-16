@@ -8,34 +8,37 @@
 //MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //GNU Lesser General Public License for more details.
 
-// Copyright (c) Petr Bena 2019
+// Copyright (c) Petr Bena 2026
 
-#ifndef ELLIPTICCOLLIDER_H
-#define ELLIPTICCOLLIDER_H
+#ifndef LINECOLLIDER_H
+#define LINECOLLIDER_H
 
 #include "../definitions.h"
 #include "collider.h"
 
 namespace PE
 {
-    class EllipticCollider : public Collider
+    class LineCollider : public Collider
     {
         public:
-            EllipticCollider(pe_float_t x = 0, pe_float_t y = 0, pe_float_t rx = 0, pe_float_t ry = 0, Object *parent = nullptr, unsigned int layer = 0);
+            LineCollider(Vector start = Vector(), Vector end = Vector(), pe_float_t thickness = 1, Object *parent = nullptr, unsigned int layer = 0);
             bool PositionMatch(Vector position) override;
             bool IntersectionMatch(Collider *collider) override;
             QString GetClassName() const override;
             void Serialize(Serializer *serializer) const override;
             void Deserialize(Deserializer *deserializer) override;
-            PE_ColliderType GetColliderType() override { return PE_ColliderType_Ellipse; }
+            PE_ColliderType GetColliderType() override { return PE_ColliderType_Line; }
+            Vector Start() const;
+            Vector End() const;
             Vector LocalToWorld(Vector local) const;
             Vector WorldToLocal(Vector world) const;
 #ifdef PE_DEBUG
             void Render(PE::Renderer *r, PE::Camera *c) override;
 #endif
-            pe_float_t RadiusX = 0;
-            pe_float_t RadiusY = 0;
+            Vector LocalStart;
+            Vector LocalEnd;
+            pe_float_t Thickness = 1;
     };
 }
 
-#endif // ELLIPTICCOLLIDER_H
+#endif // LINECOLLIDER_H

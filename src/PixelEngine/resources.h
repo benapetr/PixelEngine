@@ -21,6 +21,8 @@
 
 namespace PE
 {
+    class AssetContainer;
+
     //! \class Resources
     //! \brief Manages game assets such as pixmaps and text resources.
     class Resources
@@ -30,6 +32,17 @@ namespace PE
             //! \param name The name of the pixmap.
             //! \return A constant reference to the QPixmap.
             static const QPixmap &GetPixmap(const QString &name);
+
+            //! \brief Retrieve a pixmap stored as a binary entry in a mounted asset container.
+            //! \param packagePath Mounted package key/path. If empty, every mounted package is searched.
+            //! \param entryId The binary image entry id.
+            //! \return A constant reference to the QPixmap.
+            static const QPixmap &GetPixmap(const QString &packagePath, const QString &entryId);
+
+            //! \brief Mount an asset container so resource references can resolve binary image entries from it.
+            //! \param packagePath Stable package key/path. Empty keys are ignored.
+            //! \param container The container to mount. Ownership stays with the caller.
+            static void MountAssetContainer(const QString &packagePath, AssetContainer *container);
 
             //! \brief Retrieve a text resource by its name.
             //! \param name The name of the text resource.
@@ -45,6 +58,7 @@ namespace PE
 
         private:
             static QHash<QString, QPixmap> pixmaps; //!< Cache of pixmaps.
+            static QHash<QString, AssetContainer*> assetContainers; //!< Mounted asset containers.
             static qint64 resourcesSize; //!< Total size of cached resources.
     };
 }

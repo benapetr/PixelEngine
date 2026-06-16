@@ -66,11 +66,12 @@ namespace PE
             //! \brief Render the object using the specified renderer and camera.
             //! \param r The renderer to use.
             //! \param c The camera to use.
-            virtual void Render(Renderer *r, Camera *c) { (void)r; (void)c; }
+            virtual void Render(Renderer *r, Camera *c);
 
             //! \brief Get the parent of this object.
             //! \return A pointer to the parent object.
             Object *GetParent() { return this->parent; }
+            const Object *GetParent() const { return this->parent.GetPtr(); }
 
             //! \brief Get the type of this object.
             //! \return The type of the object as a PE_ObjectType.

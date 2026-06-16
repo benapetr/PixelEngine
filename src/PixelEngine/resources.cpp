@@ -15,11 +15,14 @@
 #include <QTextStream>
 #include "engine.h"
 #include "ringlog.h"
+#include "Resources/assetcontainer.h"
+#include "Resources/containerentry.h"
 #include "resources.h"
 
 using namespace PE;
 
 QHash<QString, QPixmap> Resources::pixmaps;
+QHash<QString, AssetContainer*> Resources::assetContainers;
 qint64 Resources::resourcesSize = 0;
 
 const QPixmap &Resources::GetPixmap(const QString &name)
@@ -32,6 +35,46 @@ const QPixmap &Resources::GetPixmap(const QString &name)
     }
 
     return Resources::pixmaps[name];
+}
+
+const QPixmap &Resources::GetPixmap(const QString &packagePath, const QString &entryId)
+{
+    QString cacheKey = "pe:" + packagePath + ":" + entryId;
+    if (!Resources::pixmaps.contains(cacheKey))
+    {
+        QPixmap pixmap;
+        const ContainerEntry *entry = nullptr;
+
+        if (!packagePath.isEmpty() && Resources::assetContainers.contains(packagePath))
+        {
+            entry = Resources::assetContainers[packagePath]->GetEntry(entryId);
+        } else {
+            for (AssetContainer *container : Resources::assetContainers)
+            {
+                if (!container)
+                    continue;
+                entry = container->GetEntry(entryId);
+                if (entry)
+                    break;
+            }
+        }
+
+        if (entry && entry->Type == PE_ContainerEntryType_BinaryBlob)
+            pixmap.loadFromData(entry->Data);
+
+        Resources::pixmaps.insert(cacheKey, pixmap);
+        Resources::resourcesSize += pixmap.size().width() * pixmap.size().height() * 4;
+    }
+
+    return Resources::pixmaps[cacheKey];
+}
+
+void Resources::MountAssetContainer(const QString &packagePath, AssetContainer *container)
+{
+    if (packagePath.isEmpty() || !container)
+        return;
+
+    Resources::assetContainers.insert(packagePath, container);
 }
 
 const QString Resources::GetText(const QString &name)

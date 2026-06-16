@@ -11,8 +11,11 @@
 // Copyright (c) Petr Bena 2019
 
 #include "bitmapcollider.h"
+#include "capsulecollider.h"
 #include "circlecollider.h"
 #include "collidermath.h"
+#include "linecollider.h"
+#include "polygoncollider.h"
 #include "boxcollider.h"
 #include "../exception.h"
 
@@ -53,6 +56,12 @@ bool BitmapCollider::IntersectionMatch(Collider *collider)
         return ColliderMath::IntersectionCheckBoxBitmap(dynamic_cast<BoxCollider*>(collider), this);
     if (collider->GetColliderType() == PE_ColliderType_Circle)
         return ColliderMath::IntersectionCheckCircleBitmap(this, dynamic_cast<CircleCollider*>(collider));
+    if (collider->GetColliderType() == PE_ColliderType_Capsule)
+        return ColliderMath::IntersectionCheckCapsuleBitmap(dynamic_cast<CapsuleCollider*>(collider), this);
+    if (collider->GetColliderType() == PE_ColliderType_Line)
+        return ColliderMath::IntersectionCheckLineBitmap(dynamic_cast<LineCollider*>(collider), this);
+    if (collider->GetColliderType() == PE_ColliderType_Polygon)
+        return ColliderMath::IntersectionCheckPolygonBitmap(dynamic_cast<PolygonCollider*>(collider), this);
 
     return this->PositionMatch(collider->Position);
 }

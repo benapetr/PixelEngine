@@ -29,8 +29,11 @@ namespace PE
             void Render(Renderer *r, Camera *c) override;
             void SetPixmap(const QPixmap &pixmap);
             void SetResourceName(const QString &resourceName);
+            void SetImageResource(const QString &entryId, const QString &packagePath = QString());
 
             QString ResourceName;
+            QString ImagePackagePath;
+            QString ImageEntryId;
             QPixmap Pixmap;
             int Width = 0;
             int Height = 0;

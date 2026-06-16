@@ -40,6 +40,8 @@ void Sprite::Serialize(Serializer *serializer) const
 {
     Object::Serialize(serializer);
     serializer->WriteString("resourceName", this->ResourceName);
+    serializer->WriteString("imagePackage", this->ImagePackagePath);
+    serializer->WriteString("imageEntry", this->ImageEntryId);
     serializer->WriteInteger("width", this->Width);
     serializer->WriteInteger("height", this->Height);
 }
@@ -48,6 +50,8 @@ void Sprite::Deserialize(Deserializer *deserializer)
 {
     Object::Deserialize(deserializer);
     this->ResourceName = deserializer->ReadString("resourceName", this->ResourceName);
+    this->ImagePackagePath = deserializer->ReadString("imagePackage", this->ImagePackagePath);
+    this->ImageEntryId = deserializer->ReadString("imageEntry", this->ImageEntryId);
     this->Width = deserializer->ReadInteger("width", this->Width);
     this->Height = deserializer->ReadInteger("height", this->Height);
 }
@@ -57,6 +61,8 @@ void Sprite::Render(Renderer *r, Camera *c)
     const QPixmap *pixmap = nullptr;
     if (!this->Pixmap.isNull())
         pixmap = &this->Pixmap;
+    else if (!this->ImageEntryId.isEmpty())
+        pixmap = &Resources::GetPixmap(this->ImagePackagePath, this->ImageEntryId);
     else if (!this->ResourceName.isEmpty())
         pixmap = &Resources::GetPixmap(this->ResourceName);
 
@@ -82,5 +88,12 @@ void Sprite::SetPixmap(const QPixmap &pixmap)
 void Sprite::SetResourceName(const QString &resourceName)
 {
     this->ResourceName = resourceName;
+    this->RedrawNeeded = true;
+}
+
+void Sprite::SetImageResource(const QString &entryId, const QString &packagePath)
+{
+    this->ImagePackagePath = packagePath;
+    this->ImageEntryId = entryId;
     this->RedrawNeeded = true;
 }

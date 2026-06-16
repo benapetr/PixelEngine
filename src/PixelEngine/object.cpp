@@ -13,6 +13,8 @@
 #include "object.h"
 #include "Serialization/deserializer.h"
 #include "Serialization/serializer.h"
+#include "Graphics/renderer.h"
+#include "camera.h"
 #include <QDateTime>
 
 using namespace PE;
@@ -41,6 +43,15 @@ PE_ObjectType Object::GetType()
 QString Object::GetClassName() const
 {
     return "PE::Object";
+}
+
+void Object::Render(Renderer *r, Camera *c)
+{
+    if (this->children == nullptr)
+        return;
+
+    foreach (Object *child, *this->children)
+        child->Render(r, c);
 }
 
 void Object::Serialize(Serializer *serializer) const

@@ -12,8 +12,12 @@
 
 #include "boxcollider.h"
 #include "bitmapcollider.h"
+#include "capsulecollider.h"
 #include "circlecollider.h"
 #include "collidermath.h"
+#include "ellipticcollider.h"
+#include "linecollider.h"
+#include "polygoncollider.h"
 #include "../Serialization/deserializer.h"
 #include "../Serialization/serializer.h"
 #include <cmath>
@@ -134,6 +138,18 @@ bool BoxCollider::IntersectionMatch(Collider *collider)
 
     if (collider->GetColliderType() == PE::PE_ColliderType_Circle)
         return ColliderMath::IntersectionCheckBoxCircle(this, dynamic_cast<CircleCollider*>(collider));
+
+    if (collider->GetColliderType() == PE::PE_ColliderType_Capsule)
+        return ColliderMath::IntersectionCheckBoxCapsule(this, dynamic_cast<CapsuleCollider*>(collider));
+
+    if (collider->GetColliderType() == PE::PE_ColliderType_Ellipse)
+        return ColliderMath::IntersectionCheckEllipseBox(dynamic_cast<EllipticCollider*>(collider), this);
+
+    if (collider->GetColliderType() == PE::PE_ColliderType_Line)
+        return ColliderMath::IntersectionCheckLineBox(dynamic_cast<LineCollider*>(collider), this);
+
+    if (collider->GetColliderType() == PE::PE_ColliderType_Polygon)
+        return ColliderMath::IntersectionCheckPolygonBox(dynamic_cast<PolygonCollider*>(collider), this);
 
     return this->PositionMatch(collider->Position);
 }
